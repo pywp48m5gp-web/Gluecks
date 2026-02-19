@@ -446,14 +446,21 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
   }
 
   // ═══════ SEARCH ═══════
-  // SearXNG public instances - tries multiple if one fails (CORS)
-  var searxInstances = [
-    'https://search.sapti.me',
-    'https://searx.be',
-    'https://search.bus-hit.me',
-    'https://priv.au'
+  // SearXNG instances + CORS proxy strategies
+  var searxBase = 'https://search.sapti.me';
+
+  var proxyStrategies = [
+    // Strategy 1: direct (some instances allow it)
+    function(q){ return searxBase + '/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; },
+    // Strategy 2: allorigins proxy
+    function(q){ var target = searxBase + '/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(target); },
+    // Strategy 3: corsproxy.io
+    function(q){ var target = searxBase + '/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; return 'https://corsproxy.io/?' + encodeURIComponent(target); },
+    // Strategy 4: different instance direct
+    function(q){ return 'https://searx.be/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; },
+    // Strategy 5: different instance via allorigins
+    function(q){ var target = 'https://searx.be/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(target); },
   ];
-  var currentInstance = 0;
 
   function doSearch(inputId){
     var q = $(inputId).value.trim();
@@ -462,7 +469,7 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
     $('pg-results').style.display='flex';
     $('si2').value=q;
     showLoading(q);
-    searchSearx(q, 0);
+    trySearch(q, 0);
   }
 
   function showLoading(query){
@@ -471,16 +478,16 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
       '<div style="text-align:center;padding:40px 0;color:var(--dm);font-size:0.8rem;">Lade Ergebnisse...</div>';
   }
 
-  function searchSearx(query, instanceIdx){
-    if(instanceIdx >= searxInstances.length){
-      // All instances failed - use mock data
-      showResults(query, getMockResults(query));
+  function trySearch(query, stratIdx){
+    if(stratIdx >= proxyStrategies.length){
+      // All failed - use mock data
+      showResults(query, getMockResults(query), true);
       return;
     }
 
-    var url = searxInstances[instanceIdx] + '/search?q=' + encodeURIComponent(query) + '&format=json&language=de&categories=general';
+    var url = proxyStrategies[stratIdx](query);
 
-    fetch(url)
+    fetch(url, {signal: AbortSignal.timeout ? AbortSignal.timeout(6000) : undefined})
       .then(function(res){
         if(!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
@@ -497,16 +504,14 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
               link: r.url
             };
           });
-          showResults(query, results);
+          showResults(query, results, false);
         } else {
-          // No results from this instance, try next
-          searchSearx(query, instanceIdx + 1);
+          trySearch(query, stratIdx + 1);
         }
       })
       .catch(function(err){
-        // CORS or network error, try next instance
-        console.log('Instance ' + searxInstances[instanceIdx] + ' failed:', err.message);
-        searchSearx(query, instanceIdx + 1);
+        console.log('Strategy ' + stratIdx + ' failed:', err.message);
+        trySearch(query, stratIdx + 1);
       });
   }
 
@@ -516,7 +521,7 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
     return data.map(function(r){ return {u: r.u, t: r.t, d: r.d, link: 'https://' + r.u}; });
   }
 
-  function showResults(query, data){
+  function showResults(query, data, isMock){
     // Filter blacklisted
     data = data.filter(function(r){
       return !blacklist.some(function(b){ return r.u.indexOf(b) !== -1 || (r.link && r.link.indexOf(b) !== -1); });
@@ -525,11 +530,10 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
     var el = $('results');
     el.innerHTML = '';
 
-    // Info line
-    var isMock = (!data[0] || !data[0].link || data[0].link.indexOf('undefined') !== -1) ? false : true;
     var info = document.createElement('div');
     info.className = 'res-info';
-    info.innerHTML = data.length + ' Ergebnisse fuer <strong style="color:var(--p);">"' + esc(query) + '"</strong> &middot; Gefiltert durch Community-Blacklist';
+    var src = isMock ? ' &middot; <span style="color:var(--yl);">Beispieldaten (API nicht erreichbar)</span>' : ' &middot; via SearXNG (anonym)';
+    info.innerHTML = data.length + ' Ergebnisse fuer <strong style="color:var(--p);">"' + esc(query) + '"</strong>' + src + ' &middot; Gefiltert durch Blacklist';
     el.appendChild(info);
 
     if(data.length === 0){
@@ -537,11 +541,9 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
       return;
     }
 
-    // Results
     data.forEach(function(r, i){
       var item = document.createElement('div');
       item.className = 'r-item';
-
       var domain = r.u.split('/')[0];
       var href = r.link || ('https://' + r.u);
 
@@ -656,7 +658,7 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
       if(blacklist.indexOf(dom) === -1) blacklist.push(dom);
       closeMenus();
       var q = $('si2').value.trim();
-      if(q) { showLoading(q); searchSearx(q, 0); }
+      if(q) { showLoading(q); trySearch(q, 0); }
       return;
     }
 
