@@ -446,22 +446,7 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
   }
 
   // ═══════ SEARCH ═══════
-  // SearXNG instances + CORS proxy strategies
-  var searxBase = 'https://search.sapti.me';
-
-  var proxyStrategies = [
-    // Strategy 1: direct (some instances allow it)
-    function(q){ return searxBase + '/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; },
-    // Strategy 2: allorigins proxy
-    function(q){ var target = searxBase + '/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(target); },
-    // Strategy 3: corsproxy.io
-    function(q){ var target = searxBase + '/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; return 'https://corsproxy.io/?' + encodeURIComponent(target); },
-    // Strategy 4: different instance direct
-    function(q){ return 'https://searx.be/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; },
-    // Strategy 5: different instance via allorigins
-    function(q){ var target = 'https://searx.be/search?q=' + encodeURIComponent(q) + '&format=json&language=de&categories=general'; return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(target); },
-  ];
-
+  // Search via Node.js backend (/api/search)
   function doSearch(inputId){
     var q = $(inputId).value.trim();
     if(!q) return;
@@ -469,29 +454,9 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
     $('pg-results').style.display='flex';
     $('si2').value=q;
     showLoading(q);
-    trySearch(q, 0);
-  }
 
-  function showLoading(query){
-    var el = $('results');
-    el.innerHTML = '<div class="res-info">Suche nach <strong style="color:var(--p);">"' + esc(query) + '"</strong> ...</div>' +
-      '<div style="text-align:center;padding:40px 0;color:var(--dm);font-size:0.8rem;">Lade Ergebnisse...</div>';
-  }
-
-  function trySearch(query, stratIdx){
-    if(stratIdx >= proxyStrategies.length){
-      // All failed - use mock data
-      showResults(query, getMockResults(query), true);
-      return;
-    }
-
-    var url = proxyStrategies[stratIdx](query);
-
-    fetch(url, {signal: AbortSignal.timeout ? AbortSignal.timeout(6000) : undefined})
-      .then(function(res){
-        if(!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
+    fetch('/api/search?q=' + encodeURIComponent(q))
+      .then(function(res){ return res.json(); })
       .then(function(data){
         if(data.results && data.results.length > 0){
           var results = data.results.slice(0, 15).map(function(r){
@@ -504,15 +469,21 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
               link: r.url
             };
           });
-          showResults(query, results, false);
+          showResults(q, results, false);
         } else {
-          trySearch(query, stratIdx + 1);
+          showResults(q, getMockResults(q), true);
         }
       })
       .catch(function(err){
-        console.log('Strategy ' + stratIdx + ' failed:', err.message);
-        trySearch(query, stratIdx + 1);
+        console.log('API nicht erreichbar:', err.message);
+        showResults(q, getMockResults(q), true);
       });
+  }
+
+  function showLoading(query){
+    var el = $('results');
+    el.innerHTML = '<div class="res-info">Suche nach <strong style="color:var(--p);">"' + esc(query) + '"</strong> ...</div>' +
+      '<div style="text-align:center;padding:40px 0;color:var(--dm);font-size:0.8rem;">Lade Ergebnisse...</div>';
   }
 
   function getMockResults(query){
@@ -657,8 +628,7 @@ display: flex; align-items: center; justify-content: space-between; padding: 0 1
       var dom = blockBtn.getAttribute('data-block');
       if(blacklist.indexOf(dom) === -1) blacklist.push(dom);
       closeMenus();
-      var q = $('si2').value.trim();
-      if(q) { showLoading(q); trySearch(q, 0); }
+      doSearch('si2');
       return;
     }
 
