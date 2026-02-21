@@ -696,28 +696,32 @@
   .ln-link:hover { border-bottom-style: solid; color: #7eb8ff; }
 
   /* ═══════ AKTIVITAETEN MODULE ═══════ */
-  .akt-body { padding: 16px 20px; max-width: 640px; }
-  .akt-hero { text-align: center; padding: 16px 0 20px; }
-  .akt-hero-icon { font-size: 2.8rem; margin-bottom: 8px; }
-  .akt-hero-title { font-size: 1.3rem; font-weight: 800; color: #f0f4ff; margin-bottom: 6px; }
-  .akt-hero-desc { font-size: 0.78rem; color: #3d4d6e; max-width: 320px; margin: 0 auto; line-height: 1.55; }
+  /* ═══════ AKTIVITAETEN — MAP-CENTRIC ═══════ */
+  .akt-wrap { display: flex; flex-direction: column; height: calc(100vh - 54px); overflow: hidden; position: relative; }
 
-  .akt-search-section { margin-bottom: 20px; }
-  .akt-plz-row { display: flex; gap: 8px; }
-  .akt-plz {
-    flex: 1; height: 48px;
-    background: #131a2e; border: 1px solid rgba(120,160,255,0.12);
-    border-radius: 12px; padding: 0 16px;
-    font-family: 'Lexend'; font-size: 16px; color: #f0f4ff;
-    outline: none; -webkit-appearance: none; transition: all 0.2s;
+  /* Search bar floating over map */
+  .akt-search-bar {
+    position: absolute; top: 12px; left: 12px; right: 12px; z-index: 600;
+    display: flex; gap: 8px;
   }
-  .akt-plz::placeholder { color: #3d4d6e; }
-  .akt-plz:focus { border-color: rgba(77,148,255,0.4); background: #1a2542; }
+  .akt-search-input-wrap { flex: 1; position: relative; }
+  .akt-plz {
+    width: 100%; height: 46px;
+    background: rgba(13,19,34,0.92); border: 1px solid rgba(120,160,255,0.18);
+    border-radius: 13px; padding: 0 16px;
+    font-family: 'Lexend'; font-size: 15px; color: #f0f4ff;
+    outline: none; -webkit-appearance: none; transition: all 0.2s;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .akt-plz::placeholder { color: #4d5d7e; }
+  .akt-plz:focus { border-color: rgba(77,148,255,0.5); background: rgba(26,37,66,0.95); }
   .akt-suggest {
-    display: none; position: absolute; left: 0; right: 0; top: 52px; z-index: 500;
-    background: #131a2e; border: 1px solid rgba(120,160,255,0.15);
-    border-radius: 12px; overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5); max-height: 220px; overflow-y: auto;
+    display: none; position: absolute; left: 0; right: 0; top: 50px; z-index: 700;
+    background: rgba(13,19,34,0.96); border: 1px solid rgba(120,160,255,0.18);
+    border-radius: 13px; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6); max-height: 220px; overflow-y: auto;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   }
   .akt-suggest.open { display: block; }
   .akt-suggest-item {
@@ -727,72 +731,164 @@
     transition: background 0.15s;
   }
   .akt-suggest-item:last-child { border-bottom: none; }
-  .akt-suggest-item:hover { background: rgba(77,148,255,0.08); color: #f0f4ff; }
+  .akt-suggest-item:hover { background: rgba(77,148,255,0.1); color: #f0f4ff; }
   .akt-suggest-item small { display: block; font-size: 0.62rem; color: #3d4d6e; margin-top: 2px; }
-  .akt-plz-btn {
-    height: 48px; padding: 0 18px; white-space: nowrap;
-    background: linear-gradient(135deg, #4d94ff, #3d7de6);
-    border: none; border-radius: 12px;
-    font-family: 'Lexend'; font-size: 0.75rem; font-weight: 600;
-    color: #fff; cursor: pointer; transition: all 0.2s;
-  }
-  .akt-plz-btn:hover { opacity: 0.9; }
-  .akt-plz-btn:active { transform: scale(0.97); }
-
-  .akt-map-wrap {
-    margin-bottom: 20px; border-radius: 14px; overflow: hidden;
-    border: 1px solid rgba(120,160,255,0.12); position: relative;
-  }
-  .akt-map { height: 280px; background: #0d1322; }
-  .akt-map-close {
-    position: absolute; top: 10px; right: 10px; z-index: 600;
-    background: rgba(10,14,26,0.85); border: 1px solid rgba(120,160,255,0.2);
-    border-radius: 8px; padding: 6px 14px;
-    font-family: 'Lexend'; font-size: 0.68rem; font-weight: 600;
-    color: #f0f4ff; cursor: pointer; backdrop-filter: blur(8px);
-  }
-
-  .akt-cat-label {
-    font-size: 0.6rem; font-weight: 700; color: #3d4d6e;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    margin-bottom: 10px;
-  }
-  .akt-cats { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-  .akt-cat {
-    background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
-    border-radius: 14px; padding: 14px 16px;
-    display: flex; align-items: center; gap: 14px;
-    cursor: pointer; transition: all 0.2s;
-    min-height: 64px;
-  }
-  .akt-cat:hover { border-color: rgba(120,160,255,0.2); background: #1a2542; transform: translateX(3px); }
-  .akt-cat:active { transform: translateX(0); }
-  .akt-cat-icon {
-    width: 40px; height: 40px; border-radius: 11px;
+  .akt-locate-btn {
+    width: 46px; height: 46px; flex-shrink: 0;
+    background: rgba(13,19,34,0.92); border: 1px solid rgba(120,160,255,0.18);
+    border-radius: 13px; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; flex-shrink: 0;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4); transition: all 0.2s;
+    color: #4d94ff;
   }
-  .akt-cat-info { flex: 1; }
-  .akt-cat-info h4 { font-size: 0.82rem; font-weight: 600; color: #dce4f2; margin-bottom: 2px; }
-  .akt-cat-info p { font-size: 0.68rem; color: #3d4d6e; line-height: 1.4; margin: 0; }
-  .akt-cat-arr { color: #3d4d6e; font-size: 1.1rem; flex-shrink: 0; }
+  .akt-locate-btn:hover { background: rgba(26,37,66,0.95); border-color: rgba(77,148,255,0.4); }
+  .akt-locate-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-  .akt-coming {
-    text-align: center; padding: 16px;
-    border-top: 1px solid rgba(120,160,255,0.06); margin-top: 10px;
+  /* Full map */
+  .akt-fullmap { flex: 1; background: #0a0e1a; min-height: 0; }
+
+  /* Welcome overlay before search */
+  .akt-welcome {
+    position: absolute; inset: 0; z-index: 550;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(10,14,26,0.85); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    text-align: center; padding: 20px;
+    transition: opacity 0.4s, visibility 0.4s;
   }
-  .akt-item {
-    background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
-    border-radius: 14px; padding: 16px 18px;
+  .akt-welcome.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .akt-welcome-icon { font-size: 3rem; margin-bottom: 12px; }
+  .akt-welcome-title { font-size: 1.2rem; font-weight: 800; color: #f0f4ff; margin-bottom: 6px; }
+  .akt-welcome-desc { font-size: 0.78rem; color: #4d5d7e; max-width: 300px; line-height: 1.55; }
+
+  /* Diablo-style filter overlay */
+  .akt-filter-toggle {
+    position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 650;
+    height: 42px; padding: 0 20px;
+    background: rgba(13,19,34,0.92); border: 1px solid rgba(120,160,255,0.2);
+    border-radius: 21px; cursor: pointer;
+    font-family: 'Lexend'; font-size: 0.75rem; font-weight: 600;
+    color: #a0b0cc; transition: all 0.25s;
+    display: flex; align-items: center; gap: 8px;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+  .akt-filter-toggle:hover { background: rgba(26,37,66,0.95); color: #f0f4ff; border-color: rgba(77,148,255,0.4); }
+  .akt-filter-toggle .akt-ft-count {
+    background: #4d94ff; color: #fff; font-size: 0.6rem; font-weight: 700;
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .akt-filter-panel {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 700;
+    background: rgba(10,14,26,0.96);
+    border-top: 1px solid rgba(120,160,255,0.12);
+    border-radius: 20px 20px 0 0;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    max-height: 65vh; overflow-y: auto;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+  }
+  .akt-filter-panel.open { transform: translateY(0); }
+
+  .akt-fp-handle {
+    width: 36px; height: 4px; border-radius: 2px;
+    background: rgba(120,160,255,0.2);
+    margin: 10px auto 0;
+  }
+  .akt-fp-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px 8px;
+  }
+  .akt-fp-title { font-size: 0.85rem; font-weight: 700; color: #f0f4ff; }
+  .akt-fp-close {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: transparent; border: 1px solid rgba(120,160,255,0.1);
+    color: #4d5d7e; font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
-  .akt-back-btn {
-    background: transparent; border: 1px solid rgba(120,160,255,0.12);
-    border-radius: 9px; padding: 8px 14px;
-    font-family: 'Lexend'; font-size: 0.72rem; font-weight: 600;
-    color: #4d94ff; cursor: pointer; transition: all 0.2s;
+  .akt-fp-close:hover { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); color: #f87171; }
+
+  .akt-fp-actions {
+    display: flex; gap: 8px; padding: 0 20px 12px;
   }
-  .akt-back-btn:hover { background: rgba(77,148,255,0.08); }
+  .akt-fp-act {
+    padding: 6px 14px; border-radius: 8px;
+    background: transparent; border: 1px solid rgba(120,160,255,0.1);
+    font-family: 'Lexend'; font-size: 0.65rem; font-weight: 600;
+    color: #4d5d7e; cursor: pointer; transition: all 0.2s;
+  }
+  .akt-fp-act:hover { color: #a0b0cc; border-color: rgba(120,160,255,0.25); }
+
+  .akt-fp-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; padding: 0 16px 20px;
+  }
+  .akt-fp-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border-radius: 12px;
+    background: #131a2e; border: 1px solid rgba(120,160,255,0.06);
+    cursor: pointer; transition: all 0.2s; min-height: 52px;
+    user-select: none; -webkit-user-select: none;
+  }
+  .akt-fp-item:hover { border-color: rgba(120,160,255,0.15); }
+  .akt-fp-item.active { border-color: var(--cat-color, rgba(77,148,255,0.4)); background: var(--cat-bg, rgba(77,148,255,0.08)); }
+  .akt-fp-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    background: var(--cat-color, #4d94ff);
+    opacity: 0.35; transition: opacity 0.2s;
+  }
+  .akt-fp-item.active .akt-fp-dot { opacity: 1; box-shadow: 0 0 8px var(--cat-color, #4d94ff); }
+  .akt-fp-label { font-size: 0.72rem; font-weight: 500; color: #6678a0; transition: color 0.2s; }
+  .akt-fp-item.active .akt-fp-label { color: #dce4f2; }
+  .akt-fp-item .akt-fp-count {
+    margin-left: auto; font-size: 0.6rem; font-weight: 600;
+    color: #3d4d6e; font-family: 'DM Mono';
+  }
+  .akt-fp-item.active .akt-fp-count { color: var(--cat-color, #4d94ff); }
+
+  /* Loading spinner */
+  .akt-loading {
+    position: absolute; top: 70px; left: 50%; transform: translateX(-50%); z-index: 620;
+    background: rgba(13,19,34,0.92); border: 1px solid rgba(120,160,255,0.15);
+    border-radius: 12px; padding: 10px 20px;
+    font-size: 0.72rem; font-weight: 600; color: #a0b0cc;
+    backdrop-filter: blur(16px); box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    display: none; align-items: center; gap: 10px;
+  }
+  .akt-loading.show { display: flex; }
+  .akt-spinner {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid rgba(77,148,255,0.2);
+    border-top-color: #4d94ff;
+    animation: aktSpin 0.7s linear infinite;
+  }
+  @keyframes aktSpin { to { transform: rotate(360deg); } }
+
+  /* POI popup */
+  .akt-popup { font-family: 'Lexend'; }
+  .akt-popup-name { font-size: 0.82rem; font-weight: 700; color: #0a0e1a; margin-bottom: 3px; }
+  .akt-popup-cat { font-size: 0.65rem; font-weight: 500; color: #666; display: flex; align-items: center; gap: 4px; }
+  .akt-popup-cat .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .akt-popup-detail { font-size: 0.65rem; color: #888; margin-top: 4px; }
+
+  /* Radius selector */
+  .akt-radius-wrap {
+    position: absolute; top: 66px; right: 12px; z-index: 620;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .akt-radius-btn {
+    height: 32px; padding: 0 12px;
+    background: rgba(13,19,34,0.88); border: 1px solid rgba(120,160,255,0.15);
+    border-radius: 9px; font-family: 'Lexend'; font-size: 0.65rem; font-weight: 600;
+    color: #6678a0; cursor: pointer; transition: all 0.2s;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  .akt-radius-btn.active { color: #4d94ff; border-color: rgba(77,148,255,0.4); background: rgba(13,19,34,0.95); }
+  .akt-radius-btn:hover { color: #a0b0cc; }
 
   /* Suche im Lernen-Modul */
   .ln-search-w { max-width: 440px; position: relative; margin-bottom: 20px; }
@@ -997,35 +1093,59 @@
 
 <!-- PAGE: AKTIVITAETEN -->
 <div class="page" id="pg-aktivitaeten" style="display:none;">
-  <div class="akt-body">
-    <div class="akt-hero">
-      <div class="akt-hero-icon">&#x1F3AF;</div>
-      <h2 class="akt-hero-title">Aktivitaeten</h2>
-      <p class="akt-hero-desc">Entdecke Veranstaltungen und Aktivitaeten in deiner Naehe. Oder lass dich inspirieren.</p>
+  <div class="akt-wrap">
+    <!-- Welcome overlay -->
+    <div class="akt-welcome" id="aktWelcome">
+      <div class="akt-welcome-icon">&#x1F3AF;</div>
+      <div class="akt-welcome-title">Aktivitaeten entdecken</div>
+      <div class="akt-welcome-desc">Gib oben deinen Ort oder PLZ ein, um Spielplaetze, Parks, Seen, Sportanlagen und mehr in deiner Naehe zu finden.</div>
     </div>
 
-    <div class="akt-search-section">
-      <div class="akt-plz-row">
-        <div style="flex:1;position:relative;">
-          <input class="akt-plz" type="text" id="aktPlz" placeholder="PLZ oder Ort eingeben..." autocomplete="off" style="width:100%;">
-          <div class="akt-suggest" id="aktSuggest"></div>
-        </div>
-        <button class="akt-plz-btn" id="btnAktSearch">Karte anzeigen</button>
+    <!-- Search bar -->
+    <div class="akt-search-bar">
+      <div class="akt-search-input-wrap">
+        <input class="akt-plz" type="text" id="aktPlz" placeholder="Ort oder PLZ eingeben..." autocomplete="off">
+        <div class="akt-suggest" id="aktSuggest"></div>
       </div>
+      <button class="akt-locate-btn" id="btnAktLocate" title="Mein Standort">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      </button>
     </div>
 
-    <div class="akt-map-wrap" id="aktMapWrap" style="display:none;">
-      <div class="akt-map" id="aktMap"></div>
-      <button class="akt-map-close" id="btnAktMapClose">Karte schliessen</button>
+    <!-- Radius selector -->
+    <div class="akt-radius-wrap" id="aktRadiusWrap" style="display:none;">
+      <button class="akt-radius-btn" data-radius="2000">2km</button>
+      <button class="akt-radius-btn active" data-radius="5000">5km</button>
+      <button class="akt-radius-btn" data-radius="10000">10km</button>
     </div>
 
-    <div class="akt-cat-label">Kategorien</div>
-    <div id="aktCats"></div>
-    <div id="aktContent"></div>
+    <!-- Loading indicator -->
+    <div class="akt-loading" id="aktLoading">
+      <div class="akt-spinner"></div>
+      <span id="aktLoadingText">Lade Aktivitaeten...</span>
+    </div>
 
-    <div class="akt-coming">
-      <div class="ph-badge" style="margin-bottom:8px;">In Entwicklung</div>
-      <p style="font-size:0.72rem;color:#3d4d6e;line-height:1.6;">Inhalte werden bald von der Community gepflegt. Vorschlaege einreichen und per Voting abstimmen.</p>
+    <!-- Full map -->
+    <div class="akt-fullmap" id="aktMap"></div>
+
+    <!-- Filter toggle button -->
+    <button class="akt-filter-toggle" id="btnAktFilter" style="display:none;">
+      &#x1F3AE; Filter
+      <span class="akt-ft-count" id="aktFilterCount">0</span>
+    </button>
+
+    <!-- Diablo-style filter panel -->
+    <div class="akt-filter-panel" id="aktFilterPanel">
+      <div class="akt-fp-handle"></div>
+      <div class="akt-fp-header">
+        <span class="akt-fp-title">&#x1F3AE; Karten-Overlay</span>
+        <button class="akt-fp-close" id="btnAktFPClose">&#x2715;</button>
+      </div>
+      <div class="akt-fp-actions">
+        <button class="akt-fp-act" id="btnAktAll">Alle an</button>
+        <button class="akt-fp-act" id="btnAktNone">Alle aus</button>
+      </div>
+      <div class="akt-fp-grid" id="aktFilterGrid"></div>
     </div>
   </div>
 </div>
@@ -1995,138 +2115,243 @@
   }
 
   // ═══════ AKTIVITAETEN MODULE ═══════
-  var aktItems = {
-    'kostenlos': [
-      {title:'Geocaching', desc:'Schatzsuche mit GPS. Weltweit Millionen versteckter Caches.', tags:['Draussen','Abenteuer'], free:true},
-      {title:'Bibliothek besuchen', desc:'Buecher, Filme, Musik, Veranstaltungen – alles kostenlos mit Bibliotheksausweis.', tags:['Drinnen','Wissen'], free:true},
-      {title:'Wandern in der Umgebung', desc:'Entdecke Wanderwege. Komoot oder Outdooractive zeigen kostenlose Routen.', tags:['Draussen','Sport'], free:true},
-      {title:'Museen am Sonntag', desc:'Viele Staedte bieten kostenlosen Museumseintritt an bestimmten Tagen.', tags:['Kultur','Wissen'], free:true},
-      {title:'Open-Air Events', desc:'Im Sommer gibt es in vielen Staedten kostenlose Freiluft-Konzerte und Kinos.', tags:['Kultur','Sommer'], free:true},
-      {title:'Sprachtandem', desc:'Finde jemanden der deine Sprache lernen will, waehrend du seine lernst.', tags:['Sozial','Lernen'], free:true}
-    ],
-    'kostet': [
-      {title:'Escape Room', desc:'Raetsel loesen unter Zeitdruck. Ca. 20-30 Euro/Person.', tags:['Gruppe','Spass'], free:false},
-      {title:'Kochkurs machen', desc:'Lerne neue Kueche kennen. Viele VHS-Kurse sind guenstig.', tags:['Lernen','Essen'], free:false},
-      {title:'Kletterhalle', desc:'Bouldern oder Klettern. Gutes Training. Meist ab 10 Euro.', tags:['Sport','Drinnen'], free:false},
-      {title:'Kino-Abend', desc:'Manche Kinos haben Sparpreise an bestimmten Wochentagen.', tags:['Kultur','Abend'], free:false},
-      {title:'Toepfer-Workshop', desc:'Kreativ werden mit Ton, Holz oder Farbe.', tags:['Kreativ','Handwerk'], free:false}
-    ],
-    'zeitvertreib': [
-      {title:'Brettspiel-Abend', desc:'Catan, Codenames oder neue Spiele. Am besten mit Freunden.', tags:['Sozial','Drinnen'], free:true},
-      {title:'Podcast-Marathon', desc:'Entdecke neue Podcasts. Kostenlos und ueberall hoerbar.', tags:['Solo','Entspannung'], free:true},
-      {title:'Fotowalk', desc:'Nimm dein Handy und fotografiere deine Stadt aus neuen Blickwinkeln.', tags:['Kreativ','Draussen'], free:true},
-      {title:'Neues Rezept ausprobieren', desc:'Such dir was aus das du noch nie gekocht hast.', tags:['Kochen','Solo'], free:true},
-      {title:'Retro-Games Abend', desc:'Emulator oder alte Konsole – Nostalgie pur.', tags:['Gaming','Abend'], free:true}
-    ],
-    'nuetzlich': [
-      {title:'Erste-Hilfe-Kurs', desc:'Oft kostenlos beim DRK. Wissen das Leben rettet.', tags:['Wichtig','Lernen'], free:true},
-      {title:'Online-Kurse', desc:'Coursera, edX, Khan Academy – vieles kostenlos.', tags:['Lernen','Karriere'], free:true},
-      {title:'Steuererklaerung machen', desc:'Im Schnitt bekommt man 1.000 Euro zurueck.', tags:['Geld','Pflicht'], free:true},
-      {title:'Digital aufraeumen', desc:'Passwoerter pruefen, alte Accounts loeschen, Cloud sortieren.', tags:['Digital','Ordnung'], free:true}
-    ],
-    'sport': [
-      {title:'Fahrradtour', desc:'Komoot oder Google Maps zeigen Radwege. Pack ein Picknick ein.', tags:['Natur','Bewegung'], free:true},
-      {title:'Calisthenics-Park', desc:'In vielen Staedten. Kostenlos trainieren an der frischen Luft.', tags:['Fitness','Draussen'], free:true},
-      {title:'Sport-Verein', desc:'Von Fussball bis Tischtennis – guenstiger als Fitnessstudio.', tags:['Regelmaessig','Sozial'], free:false},
-      {title:'Schwimmen', desc:'Freibaeder bieten oft Fruehschwimmer-Tarife an.', tags:['Gesundheit','Bewegung'], free:false}
-    ],
-    'kultur': [
-      {title:'Stadtfuehrung', desc:'Viele Staedte bieten Free Walking Tours an.', tags:['Geschichte','Draussen'], free:true},
-      {title:'Uni-Vorlesungen', desc:'Viele Unis erlauben Gasthoerer – kostenlos.', tags:['Lernen','Akademisch'], free:true},
-      {title:'Flohmaerkte', desc:'Stoebern, Schaetze finden, Leute treffen.', tags:['Shopping','Sozial'], free:true}
-    ],
-    'natur': [
-      {title:'Botanischer Garten', desc:'Oft kostenlos. Ideal zum Entspannen.', tags:['Pflanzen','Ruhe'], free:true},
-      {title:'Nachtwanderung', desc:'Stirnlampe an, Wald rein. Am besten mit Freunden.', tags:['Abenteuer','Abend'], free:true},
-      {title:'Voegel beobachten', desc:'NABU hat Tipps und Apps. Entschleunigung pur.', tags:['Tiere','Entspannung'], free:true}
-    ],
-    'soziales': [
-      {title:'Ehrenamt starten', desc:'Tafel, Tierheim, Lesepaten – engagier dich.', tags:['Sinnvoll','Helfen'], free:true},
-      {title:'Nachbarschafts-Treff', desc:'Viele Viertel haben offene Treffs.', tags:['Lokal','Offen'], free:true},
-      {title:'Meetup / Stammtisch', desc:'Meetup.com zeigt Gruppen zu fast jedem Interesse.', tags:['Neu','Leute'], free:true}
-    ]
-  };
+  // ═══════ AKTIVITAETEN — MAP + OVERPASS API ═══════
 
   var leafletLoaded = false;
   var aktMap = null;
+  var aktMapReady = false;
+  var aktLat = null, aktLon = null;
+  var aktRadius = 5000;
+  var aktPOILayers = {};  // { catId: L.layerGroup }
+  var aktPOIData = {};    // { catId: [poi, ...] }
+  var aktFilterOpen = false;
+
+  // POI-Kategorie-Definitionen mit Overpass-Tags
+  var aktPoiCats = [
+    { id:'playground',  icon:'\u{1F3A0}', name:'Spielplaetze',      color:'#3ddc97', query:'node["leisure"="playground"]' },
+    { id:'park',        icon:'\u{1F333}', name:'Parks & Gaerten',    color:'#22c55e', query:'way["leisure"="park"];node["leisure"="garden"];way["leisure"="garden"]' },
+    { id:'lake',        icon:'\u{1F30A}', name:'Seen & Gewaesser',   color:'#38bdf8', query:'node["natural"="water"];way["natural"="water"];node["water"="lake"];way["water"="lake"];node["water"="pond"];way["water"="pond"]' },
+    { id:'pool',        icon:'\u{1F3CA}', name:'Schwimmbad & Freibad', color:'#06b6d4', query:'node["leisure"="swimming_pool"];way["leisure"="swimming_pool"];node["amenity"="swimming_pool"];node["leisure"="water_park"]' },
+    { id:'fitness',     icon:'\u{1F4AA}', name:'Fitnessstudio',      color:'#f97316', query:'node["leisure"="fitness_centre"];way["leisure"="fitness_centre"]' },
+    { id:'calisthenics',icon:'\u{1F3CB}', name:'Calisthenics & Outdoor-Fitness', color:'#ef4444', query:'node["leisure"="fitness_station"];way["leisure"="fitness_station"]' },
+    { id:'sports',      icon:'\u26BD',    name:'Sportanlagen',       color:'#eab308', query:'node["leisure"="sports_centre"];way["leisure"="sports_centre"];node["leisure"="pitch"];way["leisure"="pitch"]' },
+    { id:'museum',      icon:'\u{1F3DB}', name:'Museen',             color:'#a78bfa', query:'node["tourism"="museum"];way["tourism"="museum"]' },
+    { id:'cinema',      icon:'\u{1F3AC}', name:'Kino',               color:'#f472b6', query:'node["amenity"="cinema"]' },
+    { id:'theatre',     icon:'\u{1F3AD}', name:'Theater',            color:'#e879f9', query:'node["amenity"="theatre"]' },
+    { id:'library',     icon:'\u{1F4DA}', name:'Bibliotheken',       color:'#fb923c', query:'node["amenity"="library"];way["amenity"="library"]' },
+    { id:'zoo',         icon:'\u{1F981}', name:'Zoo & Tierpark',     color:'#a3e635', query:'node["tourism"="zoo"];way["tourism"="zoo"];node["zoo"="*"]' },
+    { id:'climbing',    icon:'\u{1FA78}', name:'Kletterhalle',       color:'#f43f5e', query:'node["sport"="climbing"];way["sport"="climbing"];node["leisure"="climbing"]' },
+    { id:'skatepark',   icon:'\u{1F6F9}', name:'Skatepark',          color:'#64748b', query:'node["sport"="skateboard"];way["sport"="skateboard"]' },
+    { id:'minigolf',    icon:'\u26F3',    name:'Minigolf',           color:'#2dd4bf', query:'node["sport"="miniature_golf"];way["sport"="miniature_golf"];node["leisure"="miniature_golf"]' },
+    { id:'viewpoint',   icon:'\u{1F304}', name:'Aussichtspunkte',    color:'#fbbf24', query:'node["tourism"="viewpoint"]' },
+    { id:'bbq',         icon:'\u{1F525}', name:'Grillplaetze',       color:'#dc2626', query:'node["amenity"="bbq"];node["leisure"="firepit"]' },
+    { id:'cafe',        icon:'\u2615',    name:'Cafes',              color:'#92400e', query:'node["amenity"="cafe"]' }
+  ];
+
+  var aktActiveCats = {};
+  aktPoiCats.forEach(function(c) { aktActiveCats[c.id] = true; });
 
   function showAktivitaeten(state) {
     var el = $('pg-aktivitaeten');
     el.style.display = 'flex';
     animPage(el);
-    renderAktCatsHtml();
-    $('aktCats').style.display = '';
-    $('aktContent').style.display = 'none';
-    $('aktContent').innerHTML = '';
-    if (state.aktCat) renderAktDetail(state.aktCat);
+    renderAktFilterGrid();
     setTimeout(setupAktSuggest, 100);
+    // Close filter panel when navigating in
+    $('aktFilterPanel').classList.remove('open');
+    aktFilterOpen = false;
+    // Handle map state
+    if (aktLat && aktLon) {
+      if (aktMapReady && aktMap) {
+        setTimeout(function() { aktMap.invalidateSize(); }, 200);
+      } else {
+        setTimeout(function() { initAktMap(aktLat, aktLon); }, 150);
+      }
+    }
   }
 
-  var aktCatDefs = [
-    {id:'kostenlos', icon:'\u{1F389}', name:'Kostenlos', desc:'Gratis Veranstaltungen, offene Treffs', bg:'rgba(61,220,151,0.12)'},
-    {id:'kostet', icon:'\u{1F3AB}', name:'Kostet etwas', desc:'Kino, Konzerte, Kurse, Workshops', bg:'rgba(251,191,36,0.12)'},
-    {id:'zeitvertreib', icon:'\u{1F3AE}', name:'Zeitvertreib', desc:'Ideen gegen Langeweile', bg:'rgba(167,139,250,0.12)'},
-    {id:'nuetzlich', icon:'\u{1F527}', name:'Nuetzlich', desc:'Reparatur-Cafes, Tauschboersen', bg:'rgba(77,148,255,0.12)'},
-    {id:'sport', icon:'\u{26BD}', name:'Sport & Bewegung', desc:'Laufgruppen, Sportvereine', bg:'rgba(45,212,191,0.12)'},
-    {id:'kultur', icon:'\u{1F3AD}', name:'Kultur & Lernen', desc:'Museen, Bibliotheken, Lesungen', bg:'rgba(255,140,66,0.12)'},
-    {id:'natur', icon:'\u{1F333}', name:'Natur & Draussen', desc:'Wandern, Gaerten, Seen', bg:'rgba(61,220,151,0.12)'},
-    {id:'soziales', icon:'\u{1F91D}', name:'Soziales & Ehrenamt', desc:'Freiwilligenarbeit, Nachbarschaftshilfe', bg:'rgba(255,107,157,0.12)'}
-  ];
-
-  function renderAktCatsHtml() {
-    var el = $('aktCats');
+  function renderAktFilterGrid() {
+    var grid = $('aktFilterGrid');
+    if (!grid) return;
     var html = '';
-    aktCatDefs.forEach(function(cat) {
-      var count = aktItems[cat.id] ? aktItems[cat.id].length : 0;
-      html += '<div class="akt-cat" data-aktcat="' + cat.id + '">';
-      html += '<div class="akt-cat-icon" style="background:' + cat.bg + ';">' + cat.icon + '</div>';
-      html += '<div class="akt-cat-info"><h4>' + cat.name + '</h4>';
-      html += '<p>' + cat.desc + ' (' + count + ')</p></div>';
-      html += '<span class="akt-cat-arr">&#x203A;</span></div>';
+    aktPoiCats.forEach(function(cat) {
+      var isActive = aktActiveCats[cat.id];
+      var count = aktPOIData[cat.id] ? aktPOIData[cat.id].length : 0;
+      html += '<div class="akt-fp-item' + (isActive ? ' active' : '') + '" data-aktfcat="' + cat.id + '" '
+            + 'style="--cat-color:' + cat.color + ';--cat-bg:' + cat.color + '14;">'
+            + '<div class="akt-fp-dot"></div>'
+            + '<span class="akt-fp-label">' + cat.icon + ' ' + cat.name + '</span>'
+            + '<span class="akt-fp-count">' + (count > 0 ? count : '') + '</span>'
+            + '</div>';
     });
-    el.innerHTML = html;
+    grid.innerHTML = html;
+    updateFilterCount();
   }
 
-  function renderAktDetail(catId) {
-    var items = aktItems[catId];
-    if (!items) return;
-    var catDef = aktCatDefs.find(function(c){ return c.id === catId; });
-    var catName = catDef ? catDef.name : catId;
+  function updateFilterCount() {
+    var count = 0;
+    aktPoiCats.forEach(function(c) { if (aktActiveCats[c.id]) count++; });
+    var el = $('aktFilterCount');
+    if (el) el.textContent = count;
+  }
 
-    var html = '<button class="akt-back-btn" id="btnAktBack">&#x2190; Alle Kategorien</button>';
-    html += '<div style="font-size:0.95rem;font-weight:700;color:#f0f4ff;margin:12px 0;">' + (catDef ? catDef.icon + ' ' : '') + esc(catName) + '</div>';
-    html += '<div style="display:flex;flex-direction:column;gap:8px;">';
-    items.forEach(function(item) {
-      html += '<div class="akt-item">';
-      html += '<h4 style="font-size:0.82rem;font-weight:600;color:#dce4f2;margin-bottom:4px;">' + item.title + '</h4>';
-      html += '<p style="font-size:0.72rem;color:#8899bb;line-height:1.55;margin-bottom:8px;">' + item.desc + '</p>';
-      html += '<div style="display:flex;gap:4px;flex-wrap:wrap;">';
-      item.tags.forEach(function(t){ html += '<span class="ln-wcard-tag">' + t + '</span>'; });
-      var tagStyle = item.free ? 'background:rgba(61,220,151,0.1);color:#3ddc97' : 'background:rgba(255,140,66,0.1);color:#ff8c42';
-      html += '<span class="ln-wcard-tag" style="' + tagStyle + ';">' + (item.free ? 'Kostenlos' : 'Kostet') + '</span>';
-      html += '</div></div>';
-    });
-    html += '</div>';
-    $('aktContent').innerHTML = html;
-    $('aktContent').style.display = 'block';
-    $('aktCats').style.display = 'none';
-    window.scrollTo(0, 0);
+  function toggleAktFilter(catId) {
+    aktActiveCats[catId] = !aktActiveCats[catId];
+    // Toggle layer visibility
+    if (aktPOILayers[catId] && aktMap) {
+      if (aktActiveCats[catId]) {
+        aktMap.addLayer(aktPOILayers[catId]);
+      } else {
+        aktMap.removeLayer(aktPOILayers[catId]);
+      }
+    }
+    renderAktFilterGrid();
   }
 
   function loadLeaflet(cb) {
     if (leafletLoaded) { cb(); return; }
-    var link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-    document.head.appendChild(link);
     var s = document.createElement('script');
     s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
     s.onload = function() { leafletLoaded = true; cb(); };
     document.head.appendChild(s);
   }
 
+  function initAktMap(lat, lon) {
+    loadLeaflet(function() {
+      var mapEl = $('aktMap');
+      if (!mapEl) return;
+      mapEl.innerHTML = '';
+      if (aktMap) { aktMap.remove(); aktMap = null; }
+
+      aktMap = L.map('aktMap', { zoomControl: false }).setView([lat, lon], 14);
+      L.control.zoom({ position: 'bottomright' }).addTo(aktMap);
+
+      // Dark base
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19, opacity: 1
+      }).addTo(aktMap);
+      // Voyager overlay
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19, opacity: 0.2
+      }).addTo(aktMap);
+      // Labels
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19, opacity: 0.8
+      }).addTo(aktMap);
+
+      aktMap.attributionControl.setPrefix('');
+      aktMap.attributionControl.addAttribution('&copy; <a href="https://openstreetmap.org">OSM</a> &copy; <a href="https://carto.com">CARTO</a>');
+
+      // Location marker
+      L.circleMarker([lat, lon], {
+        radius: 8, fillColor: '#4d94ff', fillOpacity: 1,
+        color: '#fff', weight: 2, opacity: 0.9
+      }).addTo(aktMap).bindPopup('<div class="akt-popup"><div class="akt-popup-name">Dein Standort</div></div>');
+
+      // Pulsing effect
+      L.circleMarker([lat, lon], {
+        radius: 20, fillColor: '#4d94ff', fillOpacity: 0.15,
+        color: '#4d94ff', weight: 1, opacity: 0.3
+      }).addTo(aktMap);
+
+      aktMapReady = true;
+      setTimeout(function() { aktMap.invalidateSize(); }, 200);
+
+      // Load POIs
+      loadAllPOIs(lat, lon, aktRadius);
+    });
+  }
+
+  // Overpass API – load POIs for all categories
+  function loadAllPOIs(lat, lon, radius) {
+    // Clear existing
+    Object.keys(aktPOILayers).forEach(function(k) {
+      if (aktMap && aktPOILayers[k]) aktMap.removeLayer(aktPOILayers[k]);
+    });
+    aktPOILayers = {};
+    aktPOIData = {};
+
+    var loadingEl = $('aktLoading');
+    var loadingText = $('aktLoadingText');
+    if (loadingEl) { loadingEl.classList.add('show'); }
+
+    var total = aktPoiCats.length;
+    var done = 0;
+
+    aktPoiCats.forEach(function(cat) {
+      loadCategoryPOIs(cat, lat, lon, radius, function() {
+        done++;
+        if (loadingText) loadingText.textContent = 'Lade... ' + done + '/' + total;
+        if (done >= total) {
+          if (loadingEl) loadingEl.classList.remove('show');
+          renderAktFilterGrid();
+        }
+      });
+    });
+  }
+
+  function loadCategoryPOIs(cat, lat, lon, radius, cb) {
+    // Build Overpass query
+    var parts = cat.query.split(';');
+    var body = '';
+    parts.forEach(function(p) {
+      body += p.trim() + '(around:' + radius + ',' + lat + ',' + lon + ');\n';
+    });
+    var query = '[out:json][timeout:15];(\n' + body + ');\nout center 200;';
+
+    fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'data=' + encodeURIComponent(query)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var pois = [];
+      if (data && data.elements) {
+        data.elements.forEach(function(el) {
+          var elLat = el.lat || (el.center && el.center.lat);
+          var elLon = el.lon || (el.center && el.center.lon);
+          if (!elLat || !elLon) return;
+          var name = (el.tags && el.tags.name) || cat.name;
+          pois.push({ lat: elLat, lon: elLon, name: name, tags: el.tags || {} });
+        });
+      }
+      aktPOIData[cat.id] = pois;
+
+      // Create layer group with markers
+      var markers = [];
+      pois.forEach(function(poi) {
+        var marker = L.circleMarker([poi.lat, poi.lon], {
+          radius: 6, fillColor: cat.color, fillOpacity: 0.85,
+          color: cat.color, weight: 1.5, opacity: 0.5
+        });
+        var popupHtml = '<div class="akt-popup">'
+          + '<div class="akt-popup-name">' + esc(poi.name) + '</div>'
+          + '<div class="akt-popup-cat"><div class="dot" style="background:' + cat.color + ';"></div>' + cat.icon + ' ' + cat.name + '</div>';
+        if (poi.tags.opening_hours) popupHtml += '<div class="akt-popup-detail">\u{1F555} ' + esc(poi.tags.opening_hours) + '</div>';
+        if (poi.tags.website) popupHtml += '<div class="akt-popup-detail"><a href="' + esc(poi.tags.website) + '" target="_blank" style="color:#4d94ff;text-decoration:none;">\u{1F310} Website</a></div>';
+        if (poi.tags['addr:street']) popupHtml += '<div class="akt-popup-detail">\u{1F4CD} ' + esc(poi.tags['addr:street']) + (poi.tags['addr:housenumber'] ? ' ' + esc(poi.tags['addr:housenumber']) : '') + '</div>';
+        popupHtml += '</div>';
+        marker.bindPopup(popupHtml, { maxWidth: 220 });
+        markers.push(marker);
+      });
+
+      var lg = L.layerGroup(markers);
+      aktPOILayers[cat.id] = lg;
+      if (aktActiveCats[cat.id] && aktMap) {
+        aktMap.addLayer(lg);
+      }
+      cb();
+    })
+    .catch(function(err) {
+      console.warn('Overpass error for ' + cat.id + ':', err);
+      aktPOIData[cat.id] = [];
+      cb();
+    });
+  }
+
+  // Location search
   function plzToCoords(query, cb) {
-    // Detect if PLZ (5 digits) or city name
     var isPLZ = /^\d{5}$/.test(query.trim());
     var url;
     if (isPLZ) {
@@ -2134,32 +2359,33 @@
     } else {
       url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(query.trim()) + '&countrycodes=de&format=json&limit=1&addressdetails=1';
     }
-    fetch(url, {headers:{'Accept':'application/json'}})
-      .then(function(r){ return r.json(); })
+    fetch(url, { headers: { 'Accept': 'application/json' } })
+      .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data && data.length > 0) {
           var d = data[0];
           var addr = d.address || {};
           var name = addr.city || addr.town || addr.village || addr.municipality || addr.county || query;
           var plz = addr.postcode || '';
-          cb({lat: parseFloat(d.lat), lon: parseFloat(d.lon), name: name, plz: plz, display: d.display_name});
+          cb({ lat: parseFloat(d.lat), lon: parseFloat(d.lon), name: name, plz: plz });
         } else cb(null);
       }).catch(function() { cb(null); });
   }
 
-  // Autocomplete suggestions
+  // Autocomplete
   var aktSuggestTimer = null;
   function setupAktSuggest() {
     var input = $('aktPlz');
-    if (!input) return;
+    if (!input || input._aktBound) return;
+    input._aktBound = true;
     input.addEventListener('input', function() {
       clearTimeout(aktSuggestTimer);
       var q = input.value.trim();
       if (q.length < 2) { closeSuggest(); return; }
       aktSuggestTimer = setTimeout(function() {
         var url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&countrycodes=de&format=json&limit=5&addressdetails=1';
-        fetch(url, {headers:{'Accept':'application/json'}})
-          .then(function(r){ return r.json(); })
+        fetch(url, { headers: { 'Accept': 'application/json' } })
+          .then(function(r) { return r.json(); })
           .then(function(data) {
             var sg = $('aktSuggest');
             if (!data || data.length === 0) { closeSuggest(); return; }
@@ -2190,111 +2416,66 @@
     if (sg) { sg.classList.remove('open'); sg.innerHTML = ''; }
   }
 
-  var aktMarker = null;
-  var aktMapName = '';
+  function startAktSearch(query) {
+    var loadingEl = $('aktLoading');
+    var loadingText = $('aktLoadingText');
+    if (loadingEl) { loadingEl.classList.add('show'); }
+    if (loadingText) loadingText.textContent = 'Suche "' + query + '"...';
 
-  function showAktMap(query) {
-    var wrap = $('aktMapWrap');
-    wrap.style.display = 'block';
-    wrap.scrollIntoView({behavior:'smooth', block:'start'});
-    $('aktMap').innerHTML = '<div style="padding:40px;text-align:center;color:#3d4d6e;font-size:0.8rem;">Lade Karte fuer "' + esc(query) + '"...</div>';
-    loadLeaflet(function() {
-      plzToCoords(query, function(r) {
-        if (!r) { $('aktMap').innerHTML = '<div style="padding:40px;text-align:center;color:#f87171;font-size:0.8rem;">Ort nicht gefunden. Bitte pruefen.</div>'; return; }
-        initMap(r.lat, r.lon, r.name, r.plz);
-      });
-    });
-  }
-
-  function showAktMapDirect(lat, lon, name, plz) {
-    var wrap = $('aktMapWrap');
-    wrap.style.display = 'block';
-    wrap.scrollIntoView({behavior:'smooth', block:'start'});
-    $('aktMap').innerHTML = '';
-    loadLeaflet(function() {
-      initMap(lat, lon, name, plz);
-    });
-  }
-
-  function initMap(lat, lon, name, plz) {
-    $('aktMap').innerHTML = '';
-    if (aktMap) { aktMap.remove(); aktMap = null; }
-    aktMap = L.map('aktMap', {zoomControl:false}).setView([lat, lon], 13);
-    L.control.zoom({position:'bottomright'}).addTo(aktMap);
-
-    // Dark base layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-      maxZoom:19, opacity: 1
-    }).addTo(aktMap);
-
-    // Voyager overlay (populated areas brighter)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
-      maxZoom:19, opacity: 0.2
-    }).addTo(aktMap);
-
-    // Labels on top
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-      maxZoom:19, opacity: 0.8
-    }).addTo(aktMap);
-
-    aktMap.attributionControl.setPrefix('');
-    aktMap.attributionControl.addAttribution('&copy; <a href="https://openstreetmap.org">OSM</a> &copy; <a href="https://carto.com">CARTO</a>');
-
-    placeMarker(lat, lon, name, plz);
-
-    // Long-press to move pin
-    var pressTimer = null;
-    aktMap.on('mousedown', function(e) {
-      pressTimer = setTimeout(function() {
-        movePin(e.latlng.lat, e.latlng.lng);
-      }, 600);
-    });
-    aktMap.on('mouseup', function() { clearTimeout(pressTimer); });
-    aktMap.on('mousemove', function() { clearTimeout(pressTimer); });
-    aktMap.on('dragstart', function() { clearTimeout(pressTimer); });
-
-    // Touch long-press
-    var touchTimer = null;
-    var touchMoved = false;
-    aktMap.on('touchstart', function(e) {
-      touchMoved = false;
-      if (e.originalEvent.touches.length === 1) {
-        var ll = aktMap.mouseEventToLatLng(e.originalEvent.touches[0]);
-        touchTimer = setTimeout(function() {
-          if (!touchMoved) movePin(ll.lat, ll.lng);
-        }, 600);
+    plzToCoords(query, function(r) {
+      if (!r) {
+        if (loadingEl) loadingEl.classList.remove('show');
+        alert('Ort nicht gefunden. Bitte pruefen.');
+        return;
       }
+      aktLat = r.lat;
+      aktLon = r.lon;
+      $('aktPlz').value = r.name + (r.plz ? ' (' + r.plz + ')' : '');
+      $('aktWelcome').classList.add('hidden');
+      $('btnAktFilter').style.display = 'flex';
+      $('aktRadiusWrap').style.display = 'flex';
+      if (loadingEl) loadingEl.classList.remove('show');
+      initAktMap(r.lat, r.lon);
     });
-    aktMap.on('touchmove', function() { touchMoved = true; clearTimeout(touchTimer); });
-    aktMap.on('touchend', function() { clearTimeout(touchTimer); });
-
-    setTimeout(function(){ aktMap.invalidateSize(); }, 200);
   }
 
-  function placeMarker(lat, lon, name, plz) {
-    if (aktMarker) { aktMap.removeLayer(aktMarker); }
-    aktMapName = name;
-    var label = '<div style="font-family:Lexend;font-size:13px;font-weight:600;color:#0a0e1a;min-width:120px;">' + esc(name) + '</div>';
-    if (plz) label += '<div style="font-family:DM Mono;font-size:11px;color:#555;margin-top:2px;">PLZ ' + esc(plz) + '</div>';
-    aktMarker = L.marker([lat, lon]).addTo(aktMap);
-    aktMarker.bindPopup(label).openPopup();
+  function startAktDirect(lat, lon, name, plz) {
+    aktLat = lat;
+    aktLon = lon;
+    $('aktPlz').value = name + (plz ? ' (' + plz + ')' : '');
+    $('aktWelcome').classList.add('hidden');
+    $('btnAktFilter').style.display = 'flex';
+    $('aktRadiusWrap').style.display = 'flex';
+    initAktMap(lat, lon);
   }
 
-  function movePin(lat, lon) {
-    // Reverse geocode to find the new location name
-    fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lon + '&format=json&addressdetails=1&zoom=14', {headers:{'Accept':'application/json'}})
-      .then(function(r){ return r.json(); })
-      .then(function(d) {
-        var addr = d.address || {};
-        var name = addr.city || addr.town || addr.village || addr.municipality || addr.county || 'Unbekannt';
-        var plz = addr.postcode || '';
-        placeMarker(lat, lon, name, plz);
-        aktMap.panTo([lat, lon]);
-        $('aktPlz').value = name + (plz ? ' (' + plz + ')' : '');
-      }).catch(function() {
-        placeMarker(lat, lon, 'Position', '');
-        aktMap.panTo([lat, lon]);
-      });
+  function aktGeolocate() {
+    if (!navigator.geolocation) { alert('Standortbestimmung nicht verfuegbar.'); return; }
+    var loadingEl = $('aktLoading');
+    var loadingText = $('aktLoadingText');
+    if (loadingEl) { loadingEl.classList.add('show'); }
+    if (loadingText) loadingText.textContent = 'Standort wird ermittelt...';
+
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      var lat = pos.coords.latitude;
+      var lon = pos.coords.longitude;
+      // Reverse geocode for name
+      fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lon + '&format=json&addressdetails=1&zoom=14', { headers: { 'Accept': 'application/json' } })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          var addr = d.address || {};
+          var name = addr.city || addr.town || addr.village || addr.municipality || 'Mein Standort';
+          var plz = addr.postcode || '';
+          if (loadingEl) loadingEl.classList.remove('show');
+          startAktDirect(lat, lon, name, plz);
+        }).catch(function() {
+          if (loadingEl) loadingEl.classList.remove('show');
+          startAktDirect(lat, lon, 'Mein Standort', '');
+        });
+    }, function() {
+      if (loadingEl) loadingEl.classList.remove('show');
+      alert('Standort konnte nicht ermittelt werden.');
+    }, { enableHighAccuracy: true, timeout: 10000 });
   }
 
   // ═══════ EVENT DELEGATION ═══════
@@ -2418,52 +2599,72 @@
       return;
     }
 
-    // Aktivitaeten: Kategorie
-    var aktCat = t.closest('[data-aktcat]');
-    if (aktCat) {
-      var catId = aktCat.getAttribute('data-aktcat');
-      history.pushState({page:'aktivitaeten', aktCat:catId}, '');
-      renderAktDetail(catId);
+    // Aktivitaeten: Filter-Kategorie toggeln
+    var aktFCat = t.closest('[data-aktfcat]');
+    if (aktFCat) {
+      toggleAktFilter(aktFCat.getAttribute('data-aktfcat'));
       return;
     }
 
-    // Aktivitaeten: Zurueck zu Kategorien
-    if (t.closest('#btnAktBack')) {
-      $('aktContent').innerHTML = '';
-      $('aktContent').style.display = 'none';
-      $('aktCats').style.display = '';
-      renderAktCatsHtml();
+    // Aktivitaeten: Filter-Panel oeffnen
+    if (t.closest('#btnAktFilter')) {
+      $('aktFilterPanel').classList.add('open');
+      aktFilterOpen = true;
+      return;
+    }
+    // Aktivitaeten: Filter-Panel schliessen (X-Button oder Klick auf Karte)
+    if (t.closest('#btnAktFPClose') || (aktFilterOpen && t.closest('.akt-fullmap'))) {
+      $('aktFilterPanel').classList.remove('open');
+      aktFilterOpen = false;
+      return;
+    }
+    // Aktivitaeten: Alle an
+    if (t.closest('#btnAktAll')) {
+      aktPoiCats.forEach(function(c) {
+        aktActiveCats[c.id] = true;
+        if (aktPOILayers[c.id] && aktMap) aktMap.addLayer(aktPOILayers[c.id]);
+      });
+      renderAktFilterGrid();
+      return;
+    }
+    // Aktivitaeten: Alle aus
+    if (t.closest('#btnAktNone')) {
+      aktPoiCats.forEach(function(c) {
+        aktActiveCats[c.id] = false;
+        if (aktPOILayers[c.id] && aktMap) aktMap.removeLayer(aktPOILayers[c.id]);
+      });
+      renderAktFilterGrid();
       return;
     }
 
-    // Aktivitaeten: Karte anzeigen
-    if (t.closest('#btnAktSearch')) {
-      var q = $('aktPlz').value.trim();
-      if (q.length >= 2) {
-        closeSuggest();
-        showAktMap(q);
+    // Aktivitaeten: Standort-Button
+    if (t.closest('#btnAktLocate')) {
+      aktGeolocate();
+      return;
+    }
+
+    // Aktivitaeten: Radius-Button
+    var radBtn = t.closest('[data-radius]');
+    if (radBtn) {
+      var newRadius = parseInt(radBtn.getAttribute('data-radius'));
+      aktRadius = newRadius;
+      document.querySelectorAll('[data-radius]').forEach(function(b) { b.classList.remove('active'); });
+      radBtn.classList.add('active');
+      if (aktLat && aktLon) {
+        loadAllPOIs(aktLat, aktLon, aktRadius);
       }
       return;
     }
 
-    // Aktivitaeten: Suggest-Item klicken
+    // Aktivitaeten: Suche starten (Enter in Suchfeld oder Suggest-Click)
     var sg = t.closest('[data-aktsg]');
     if (sg) {
       var sgLat = parseFloat(sg.getAttribute('data-lat'));
       var sgLon = parseFloat(sg.getAttribute('data-lon'));
       var sgName = sg.getAttribute('data-name');
       var sgPlz = sg.getAttribute('data-plz');
-      $('aktPlz').value = sgName + (sgPlz ? ' (' + sgPlz + ')' : '');
       closeSuggest();
-      showAktMapDirect(sgLat, sgLon, sgName, sgPlz);
-      return;
-    }
-
-    // Aktivitaeten: Karte schliessen
-    if (t.closest('#btnAktMapClose')) {
-      $('aktMapWrap').style.display = 'none';
-      if (aktMap) { aktMap.remove(); aktMap = null; }
-      aktMarker = null;
+      startAktDirect(sgLat, sgLon, sgName, sgPlz);
       return;
     }
 
@@ -2514,6 +2715,7 @@
     if (e.key === 'Escape') {
       closeMo();
       if ($('sb').classList.contains('open')) togSb();
+      if (aktFilterOpen) { $('aktFilterPanel').classList.remove('open'); aktFilterOpen = false; }
     }
     if (e.key === 'Enter') {
       if (document.activeElement === $('si')) doSearch('si');
@@ -2522,7 +2724,7 @@
       var aktPlzEl = $('aktPlz');
       if (aktPlzEl && document.activeElement === aktPlzEl) {
         var plzVal = aktPlzEl.value.trim();
-        if (plzVal.length >= 2) { closeSuggest(); showAktMap(plzVal); }
+        if (plzVal.length >= 2) { closeSuggest(); startAktSearch(plzVal); }
       }
       var lnSrch = $('lnSearch');
       if (lnSrch && document.activeElement === lnSrch) searchCards(lnSrch.value.trim());
