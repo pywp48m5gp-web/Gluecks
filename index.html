@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0e1a">
 <title>Gluecks. — Super-App</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap');
 
@@ -76,6 +77,13 @@
   }
   .top-logo:hover { opacity: 0.8; }
   .top-logo .d { color: #3ddc97; }
+  .top-page {
+    font-size: 0.78rem; font-weight: 600;
+    color: #a78bfa; opacity: 0;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  .top-page.visible { opacity: 1; }
 
   .tb {
     height: 34px; padding: 0 12px;
@@ -654,6 +662,89 @@
   }
   .ln-link:hover { border-bottom-style: solid; color: #7eb8ff; }
 
+  /* ═══════ AKTIVITAETEN MODULE ═══════ */
+  .akt-body { padding: 16px 20px; max-width: 640px; }
+  .akt-hero { text-align: center; padding: 16px 0 20px; }
+  .akt-hero-icon { font-size: 2.8rem; margin-bottom: 8px; }
+  .akt-hero-title { font-size: 1.3rem; font-weight: 800; color: #f0f4ff; margin-bottom: 6px; }
+  .akt-hero-desc { font-size: 0.78rem; color: #3d4d6e; max-width: 320px; margin: 0 auto; line-height: 1.55; }
+
+  .akt-search-section { margin-bottom: 20px; }
+  .akt-plz-row { display: flex; gap: 8px; }
+  .akt-plz {
+    flex: 1; height: 48px;
+    background: #131a2e; border: 1px solid rgba(120,160,255,0.12);
+    border-radius: 12px; padding: 0 16px;
+    font-family: 'Lexend'; font-size: 16px; color: #f0f4ff;
+    outline: none; -webkit-appearance: none; transition: all 0.2s;
+  }
+  .akt-plz::placeholder { color: #3d4d6e; }
+  .akt-plz:focus { border-color: rgba(77,148,255,0.4); background: #1a2542; }
+  .akt-plz-btn {
+    height: 48px; padding: 0 18px; white-space: nowrap;
+    background: linear-gradient(135deg, #4d94ff, #3d7de6);
+    border: none; border-radius: 12px;
+    font-family: 'Lexend'; font-size: 0.75rem; font-weight: 600;
+    color: #fff; cursor: pointer; transition: all 0.2s;
+  }
+  .akt-plz-btn:hover { opacity: 0.9; }
+  .akt-plz-btn:active { transform: scale(0.97); }
+
+  .akt-map-wrap {
+    margin-bottom: 20px; border-radius: 14px; overflow: hidden;
+    border: 1px solid rgba(120,160,255,0.12); position: relative;
+  }
+  .akt-map { height: 280px; background: #0d1322; }
+  .akt-map-close {
+    position: absolute; top: 10px; right: 10px; z-index: 600;
+    background: rgba(10,14,26,0.85); border: 1px solid rgba(120,160,255,0.2);
+    border-radius: 8px; padding: 6px 14px;
+    font-family: 'Lexend'; font-size: 0.68rem; font-weight: 600;
+    color: #f0f4ff; cursor: pointer; backdrop-filter: blur(8px);
+  }
+
+  .akt-cat-label {
+    font-size: 0.6rem; font-weight: 700; color: #3d4d6e;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+  .akt-cats { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .akt-cat {
+    background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+    border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer; transition: all 0.2s;
+    min-height: 64px;
+  }
+  .akt-cat:hover { border-color: rgba(120,160,255,0.2); background: #1a2542; transform: translateX(3px); }
+  .akt-cat:active { transform: translateX(0); }
+  .akt-cat-icon {
+    width: 40px; height: 40px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+  }
+  .akt-cat-info { flex: 1; }
+  .akt-cat-info h4 { font-size: 0.82rem; font-weight: 600; color: #dce4f2; margin-bottom: 2px; }
+  .akt-cat-info p { font-size: 0.68rem; color: #3d4d6e; line-height: 1.4; margin: 0; }
+  .akt-cat-arr { color: #3d4d6e; font-size: 1.1rem; flex-shrink: 0; }
+
+  .akt-coming {
+    text-align: center; padding: 16px;
+    border-top: 1px solid rgba(120,160,255,0.06); margin-top: 10px;
+  }
+  .akt-item {
+    background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+    border-radius: 14px; padding: 16px 18px;
+    transition: all 0.2s;
+  }
+  .akt-back-btn {
+    background: transparent; border: 1px solid rgba(120,160,255,0.12);
+    border-radius: 9px; padding: 8px 14px;
+    font-family: 'Lexend'; font-size: 0.72rem; font-weight: 600;
+    color: #4d94ff; cursor: pointer; transition: all 0.2s;
+  }
+  .akt-back-btn:hover { background: rgba(77,148,255,0.08); }
+
   /* Suche im Lernen-Modul */
   .ln-search-w { max-width: 440px; position: relative; margin-bottom: 20px; }
   .ln-search {
@@ -721,6 +812,7 @@
       <svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>
     </button>
     <div class="top-logo" id="btnHome">Gluecks<span class="d">.</span></div>
+    <span class="top-page" id="topPageTitle"></span>
   </div>
   <div class="top-r">
     <button class="tb" id="btnAbout">Ueber uns</button>
@@ -748,7 +840,8 @@
   <div class="sb-sec">
     <div class="sb-lbl">System</div>
     <div class="sb-it" data-act="about"><div class="sb-ic sbi-b">&#x2139;</div>Ueber uns</div>
-    <div class="sb-it" data-act="updates"><div class="sb-ic sbi-o">&#x1F504;</div>Updates &amp; Roadmap</div>
+    <div class="sb-it" data-act="updates"><div class="sb-ic sbi-o">&#x1F504;</div>Updates</div>
+    <div class="sb-it" data-act="roadmap"><div class="sb-ic sbi-g">&#x1F5FA;</div>Roadmap</div>
     <div class="sb-it" data-act="filter"><div class="sb-ic sbi-t">&#x1F6E1;</div>Filter verwalten</div>
   </div>
 </div>
@@ -800,10 +893,6 @@
 
 <!-- PAGE: LERNEN -->
 <div class="page" id="pg-lernen" style="display:none;">
-  <div class="ln-top">
-    <div class="ln-logo" id="btnHomeLn">Gluecks<span class="d">.</span></div>
-    <div class="ln-title">&#x1F4DA; <span>Lernen</span></div>
-  </div>
   <div class="ln-bread" id="lnBread"></div>
   <div class="ln-body" id="lnBody"></div>
 </div>
@@ -814,16 +903,39 @@
   <div class="ph-badge">In Entwicklung</div>
   <div class="ph-title">Marktplatz</div>
   <div class="ph-desc">Biete und suche Waren und Dienstleistungen. Lokal, fair, ohne Mittelsmann. Community-kontrolliert per Voting.</div>
-  <button class="ph-back" onclick="navigate({page:'home'})">&#x2190; Zurueck zur Startseite</button>
+  <button class="ph-back" data-gohome>&#x2190; Zurueck zur Startseite</button>
 </div>
 
 <!-- PAGE: AKTIVITAETEN -->
-<div class="page ph-page" id="pg-aktivitaeten">
-  <div class="ph-icon">&#x1F3AF;</div>
-  <div class="ph-badge">In Entwicklung</div>
-  <div class="ph-title">Aktivitaeten</div>
-  <div class="ph-desc">Entdecke Veranstaltungen und Aktivitaeten in deiner Naehe. Oder lass dich inspirieren – mit PLZ-Eingabe und interaktiver Karte.</div>
-  <button class="ph-back" onclick="navigate({page:'home'})">&#x2190; Zurueck zur Startseite</button>
+<div class="page" id="pg-aktivitaeten" style="display:none;">
+  <div class="akt-body">
+    <div class="akt-hero">
+      <div class="akt-hero-icon">&#x1F3AF;</div>
+      <h2 class="akt-hero-title">Aktivitaeten</h2>
+      <p class="akt-hero-desc">Entdecke Veranstaltungen und Aktivitaeten in deiner Naehe. Oder lass dich inspirieren.</p>
+    </div>
+
+    <div class="akt-search-section">
+      <div class="akt-plz-row">
+        <input class="akt-plz" type="text" id="aktPlz" placeholder="PLZ eingeben..." maxlength="5" inputmode="numeric" autocomplete="off">
+        <button class="akt-plz-btn" id="btnAktSearch">Karte anzeigen</button>
+      </div>
+    </div>
+
+    <div class="akt-map-wrap" id="aktMapWrap" style="display:none;">
+      <div class="akt-map" id="aktMap"></div>
+      <button class="akt-map-close" id="btnAktMapClose">Karte schliessen</button>
+    </div>
+
+    <div class="akt-cat-label">Kategorien</div>
+    <div id="aktCats"></div>
+    <div id="aktContent"></div>
+
+    <div class="akt-coming">
+      <div class="ph-badge" style="margin-bottom:8px;">In Entwicklung</div>
+      <p style="font-size:0.72rem;color:#3d4d6e;line-height:1.6;">Inhalte werden bald von der Community gepflegt. Vorschlaege einreichen und per Voting abstimmen.</p>
+    </div>
+  </div>
 </div>
 
 <!-- PAGE: KARTEN -->
@@ -832,7 +944,7 @@
   <div class="ph-badge">In Entwicklung</div>
   <div class="ph-title">Karten-Tools</div>
   <div class="ph-desc">Finde Einrichtungen wie Krankenhaeuser, oeffentliche Toiletten, Rathaeuser und mehr auf einer interaktiven, datenschutzfreundlichen Karte.</div>
-  <button class="ph-back" onclick="navigate({page:'home'})">&#x2190; Zurueck zur Startseite</button>
+  <button class="ph-back" data-gohome>&#x2190; Zurueck zur Startseite</button>
 </div>
 
 <!-- PAGE: GESUNDHEIT -->
@@ -841,7 +953,84 @@
   <div class="ph-badge">In Entwicklung</div>
   <div class="ph-title">Gesundheit</div>
   <div class="ph-desc">Gesundheitsinfos, Notfallnummern und Hilfsangebote. Schnell und zuverlaessig — auch offline verfuegbar.</div>
-  <button class="ph-back" onclick="navigate({page:'home'})">&#x2190; Zurueck zur Startseite</button>
+  <button class="ph-back" data-gohome>&#x2190; Zurueck zur Startseite</button>
+</div>
+
+<!-- PAGE: ROADMAP -->
+<div class="page" id="pg-roadmap" style="display:none;">
+  <div style="padding:20px;max-width:640px;">
+    <div style="margin-bottom:20px;">
+      <div style="font-size:1.6rem;margin-bottom:6px;">&#x1F5FA;</div>
+      <h2 style="font-size:1.1rem;font-weight:800;color:#f0f4ff;margin-bottom:4px;">Roadmap</h2>
+      <p style="font-size:0.75rem;color:#3d4d6e;">Wo wir stehen und was als naechstes kommt.</p>
+    </div>
+    <div class="roadmap">
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot active"></div><div class="rm-line"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 1 &middot; Jetzt</div>
+          <div class="rm-title current">Fundament aufbauen</div>
+          <div class="rm-desc">Suchmaschine, Lernen-Modul, iOS-Navigation und Design. Zentral gesteuert, Open Source.</div>
+          <div class="rm-tags">
+            <span class="rm-tag done">&#x2713; Suchmaschine</span>
+            <span class="rm-tag done">&#x2713; Lernen</span>
+            <span class="rm-tag done">&#x2713; iOS-Navigation</span>
+            <span class="rm-tag done">&#x2713; Design</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot future"></div><div class="rm-line"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 2 &middot; Geplant</div>
+          <div class="rm-title">Anonymes Voting-System</div>
+          <div class="rm-desc">Kryptographisch gesichertes Voting. Kein Tracking, keine Manipulation.</div>
+          <div class="rm-tags">
+            <span class="rm-tag pend">Kryptografie</span>
+            <span class="rm-tag pend">Anon-Identitaet</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot future"></div><div class="rm-line"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 3 &middot; Geplant</div>
+          <div class="rm-title">Community-Kontrolle</div>
+          <div class="rm-desc">Voting auf alle Module anwenden. Suchergebnisse bewerten, Inhalte vorschlagen.</div>
+          <div class="rm-tags">
+            <span class="rm-tag pend">Voting auf Module</span>
+            <span class="rm-tag pend">Community-Inhalte</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot future"></div><div class="rm-line"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 4 &middot; Vision</div>
+          <div class="rm-title">Vollstaendige Module</div>
+          <div class="rm-desc">Interaktive Karten, lokale Aktivitaeten, Marktplatz, Gesundheitsmodul.</div>
+          <div class="rm-tags">
+            <span class="rm-tag fut">Karten</span>
+            <span class="rm-tag fut">Aktivitaeten</span>
+            <span class="rm-tag fut">Marktplatz</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot future"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 5 &middot; Vision</div>
+          <div class="rm-title">Vollstaendige Dezentralisierung</div>
+          <div class="rm-desc">P2P Kommunikation. Laeuft ohne Server, ohne Gruender, ohne zentrale Kontrolle.</div>
+          <div class="rm-tags">
+            <span class="rm-tag fut">P2P</span>
+            <span class="rm-tag fut">IPFS</span>
+            <span class="rm-tag fut">Dezentral</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL: ABOUT -->
@@ -913,103 +1102,14 @@
   </div>
 </div>
 
-<!-- MODAL: UPDATES + ROADMAP -->
+<!-- MODAL: UPDATES -->
 <div class="mo" id="mo-updates">
   <div class="mo-box" style="max-width:540px;">
     <div class="mo-x"><button class="xcl" data-close>&times;</button></div>
     <div class="mo-bd">
-      <h2>Updates &amp; Roadmap</h2>
-      <div class="sub">Entwicklungsplan und Community-Vorschlaege</div>
+      <h2>Updates</h2>
+      <div class="sub">Aktuelle Aenderungen und Community-Vorschlaege</div>
 
-      <h3>&#x1F5FA; Roadmap</h3>
-      <div class="roadmap">
-        <!-- Phase 1 -->
-        <div class="rm-step">
-          <div class="rm-left">
-            <div class="rm-dot active"></div>
-            <div class="rm-line"></div>
-          </div>
-          <div class="rm-content">
-            <div class="rm-phase">Phase 1 &middot; Jetzt</div>
-            <div class="rm-title current">Fundament aufbauen</div>
-            <div class="rm-desc">Suchmaschine, Lernen-Modul, iOS-Navigation und Design. Zentral gesteuert, Open Source. Alle Entscheidungen liegen beim Team.</div>
-            <div class="rm-tags">
-              <span class="rm-tag done">&#x2713; Suchmaschine</span>
-              <span class="rm-tag done">&#x2713; Lernen</span>
-              <span class="rm-tag done">&#x2713; iOS-Navigation</span>
-              <span class="rm-tag done">&#x2713; Design</span>
-            </div>
-          </div>
-        </div>
-        <!-- Phase 2 -->
-        <div class="rm-step">
-          <div class="rm-left">
-            <div class="rm-dot future"></div>
-            <div class="rm-line"></div>
-          </div>
-          <div class="rm-content">
-            <div class="rm-phase">Phase 2 &middot; Geplant</div>
-            <div class="rm-title">Anonymes Voting-System</div>
-            <div class="rm-desc">Kryptographisch gesichertes Voting. Kein Tracking, keine Manipulation. Identitaet ohne persoenliche Daten.</div>
-            <div class="rm-tags">
-              <span class="rm-tag pend">Kryptografie</span>
-              <span class="rm-tag pend">Anon-Identitaet</span>
-            </div>
-          </div>
-        </div>
-        <!-- Phase 3 -->
-        <div class="rm-step">
-          <div class="rm-left">
-            <div class="rm-dot future"></div>
-            <div class="rm-line"></div>
-          </div>
-          <div class="rm-content">
-            <div class="rm-phase">Phase 3 &middot; Geplant</div>
-            <div class="rm-title">Community-Kontrolle</div>
-            <div class="rm-desc">Voting auf alle Module anwenden. Suchergebnisse bewerten, Lerninhalte vorschlagen, Filter gemeinsam verwalten.</div>
-            <div class="rm-tags">
-              <span class="rm-tag pend">Voting auf Module</span>
-              <span class="rm-tag pend">Community-Inhalte</span>
-            </div>
-          </div>
-        </div>
-        <!-- Phase 4 -->
-        <div class="rm-step">
-          <div class="rm-left">
-            <div class="rm-dot future"></div>
-            <div class="rm-line"></div>
-          </div>
-          <div class="rm-content">
-            <div class="rm-phase">Phase 4 &middot; Vision</div>
-            <div class="rm-title">Vollstaendige Module</div>
-            <div class="rm-desc">Interaktive Karten (OpenStreetMap), lokale Aktivitaeten, Marktplatz mit Radius-Suche, Gesundheitsmodul.</div>
-            <div class="rm-tags">
-              <span class="rm-tag fut">Karten</span>
-              <span class="rm-tag fut">Aktivitaeten</span>
-              <span class="rm-tag fut">Marktplatz</span>
-            </div>
-          </div>
-        </div>
-        <!-- Phase 5 -->
-        <div class="rm-step">
-          <div class="rm-left">
-            <div class="rm-dot future"></div>
-          </div>
-          <div class="rm-content">
-            <div class="rm-phase">Phase 5 &middot; Vision</div>
-            <div class="rm-title">Vollstaendige Dezentralisierung</div>
-            <div class="rm-desc">Geraet-zu-Geraet Kommunikation via P2P. Laeuft ohne Server, ohne Gruender, ohne zentrale Kontrolle. Fuer immer.</div>
-            <div class="rm-tags">
-              <span class="rm-tag fut">P2P</span>
-              <span class="rm-tag fut">IPFS</span>
-              <span class="rm-tag fut">Dezentral</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="dv"></div>
-      <h3>Aktuelle Aenderungen</h3>
       <div class="ui">
         <div class="uh" data-toggle>
           <div><div class="ut">v0.2.0 — Marktplatz: Radius-Filter</div><div class="ud">12. Feb 2026 · community/alex · <span style="color:#3ddc97;">Modul</span></div></div>
@@ -1352,6 +1452,25 @@
       bb.classList.add('visible');
     }
 
+    // Modul-Name in Topbar
+    var tm = $('topPageTitle');
+    var moduleNames = {
+      lernen: '\u{1F4DA} Lernen',
+      marktplatz: '\u{1F91D} Marktplatz',
+      aktivitaeten: '\u{1F3AF} Aktivitaeten',
+      karten: '\u{1F5FA} Karten',
+      gesundheit: '\u2764 Gesundheit',
+      roadmap: '\u{1F5FA} Roadmap',
+      results: '\u{1F50D} Suche'
+    };
+    if (moduleNames[state.page]) {
+      tm.textContent = moduleNames[state.page];
+      tm.classList.add('visible');
+    } else {
+      tm.textContent = '';
+      tm.classList.remove('visible');
+    }
+
     // Alle Seiten verstecken
     hideAllPages();
 
@@ -1369,13 +1488,16 @@
         showPlaceholder('marktplatz');
         break;
       case 'aktivitaeten':
-        showPlaceholder('aktivitaeten');
+        showAktivitaeten(state);
         break;
       case 'karten':
         showPlaceholder('karten');
         break;
       case 'gesundheit':
         showPlaceholder('gesundheit');
+        break;
+      case 'roadmap':
+        showPlaceholder('roadmap');
         break;
     }
   }
@@ -1396,7 +1518,7 @@
     $('pg-home').style.display = 'none';
     $('pg-results').style.display = 'none';
     $('pg-lernen').style.display = 'none';
-    ['marktplatz','aktivitaeten','karten','gesundheit'].forEach(function(id) {
+    ['marktplatz','aktivitaeten','karten','gesundheit','roadmap'].forEach(function(id) {
       var el = $('pg-' + id);
       if (el) el.style.display = 'none';
     });
@@ -1780,6 +1902,185 @@
     el.innerHTML = html;
   }
 
+  // ═══════ AKTIVITAETEN MODULE ═══════
+  var aktCats = [
+    {id:'kostenlos', icon:'\u{1F389}', name:'Kostenlos', desc:'Gratis-Aktivitaeten', color:'#3ddc97'},
+    {id:'kostet',    icon:'\u{1F4B8}', name:'Kostet',    desc:'Lohnt sich trotzdem', color:'#ff8c42'},
+    {id:'zeitvertreib', icon:'\u{1F3AE}', name:'Zeitvertreib', desc:'Spass & Unterhaltung', color:'#a78bfa'},
+    {id:'nuetzlich', icon:'\u{1F4A1}', name:'Nuetzlich', desc:'Praktisch & lehrreich', color:'#4d94ff'},
+    {id:'draussen',  icon:'\u{1F333}', name:'Draussen',  desc:'Natur & Frischluft', color:'#2dd4bf'},
+    {id:'sozial',    icon:'\u{1F465}', name:'Sozial',    desc:'Mit anderen Leuten', color:'#f87171'}
+  ];
+
+  var aktItems = {
+    'kostenlos': [
+      {title:'Geocaching', desc:'Schatzsuche mit GPS. Weltweit Millionen versteckter Caches – die App ist kostenlos.', tags:['Draussen','Abenteuer'], free:true},
+      {title:'Bibliothek besuchen', desc:'Buecher, Filme, Musik, Veranstaltungen – alles kostenlos mit Bibliotheksausweis.', tags:['Drinnen','Wissen'], free:true},
+      {title:'Wandern in der Umgebung', desc:'Entdecke Wanderwege in deiner Naehe. Komoot oder Outdooractive zeigen kostenlose Routen.', tags:['Draussen','Sport'], free:true},
+      {title:'Museen am Sonntag', desc:'Viele Staedte bieten kostenlosen Museumseintritt an bestimmten Tagen.', tags:['Kultur','Wissen'], free:true},
+      {title:'Open-Air Kino / Konzerte', desc:'Im Sommer gibt es in vielen Staedten kostenlose Freiluft-Events.', tags:['Kultur','Sommer'], free:true},
+      {title:'Sprachtandem starten', desc:'Finde jemanden der deine Sprache lernen will, waehrend du seine lernst. Win-win.', tags:['Sozial','Lernen'], free:true}
+    ],
+    'kostet': [
+      {title:'Escape Room', desc:'Raetsel loesen unter Zeitdruck – als Gruppe ein tolles Erlebnis. Ca. 20-30 Euro/Person.', tags:['Gruppe','Spass'], free:false},
+      {title:'Kochkurs machen', desc:'Lerne neue Kueche kennen. Von Thai bis Pasta – viele VHS-Kurse sind guenstig.', tags:['Lernen','Essen'], free:false},
+      {title:'Kletterhalle', desc:'Bouldern oder Klettern – gutes Training fuer Koerper und Kopf. Meist ab 10 Euro.', tags:['Sport','Drinnen'], free:false},
+      {title:'Kino-Abend', desc:'Manche Kinos haben Sparpreise an bestimmten Wochentagen.', tags:['Kultur','Abend'], free:false},
+      {title:'Toepferkurs / Workshops', desc:'Kreativ werden mit Ton, Holz oder Farbe. VHS und private Anbieter.', tags:['Kreativ','Handwerk'], free:false}
+    ],
+    'zeitvertreib': [
+      {title:'Brettspiel-Abend', desc:'Klassiker wie Catan, Codenames oder neue Spiele. Am besten mit Freunden.', tags:['Sozial','Drinnen'], free:true},
+      {title:'Podcast-Marathon', desc:'Entdecke neue Podcasts zu deinen Interessen. Kostenlos und ueberall hoerbar.', tags:['Solo','Entspannung'], free:true},
+      {title:'Fotowalk in der Stadt', desc:'Nimm dein Handy und fotografiere deine Stadt aus neuen Blickwinkeln.', tags:['Kreativ','Draussen'], free:true},
+      {title:'Neues Rezept ausprobieren', desc:'Such dir was aus das du noch nie gekocht hast. YouTube hilft.', tags:['Kochen','Solo'], free:true},
+      {title:'Retro-Games Abend', desc:'Emulator oder alte Konsole anschliessen – Nostalgie pur.', tags:['Gaming','Abend'], free:true}
+    ],
+    'nuetzlich': [
+      {title:'Erste-Hilfe-Kurs auffrischen', desc:'Oft kostenlos oder guenstig beim DRK. Wissen das Leben rettet.', tags:['Wichtig','Lernen'], free:true},
+      {title:'Online-Kurse machen', desc:'Coursera, edX, Khan Academy – vieles kostenlos, manche mit Zertifikat.', tags:['Lernen','Karriere'], free:true},
+      {title:'Ehrenamt starten', desc:'Tafel, Tierheim, Lesepaten – engagier dich in deiner Gemeinde.', tags:['Sozial','Sinnvoll'], free:true},
+      {title:'Steuererklaerung machen', desc:'Ja, wirklich. Im Schnitt bekommt man 1.000 Euro zurueck.', tags:['Geld','Pflicht'], free:true},
+      {title:'Digital aufraeumen', desc:'Passwoerter pruefen, alte Accounts loeschen, Cloud sortieren.', tags:['Digital','Ordnung'], free:true}
+    ],
+    'draussen': [
+      {title:'Fahrradtour planen', desc:'Komoot oder Google Maps zeigen Radwege. Pack ein Picknick ein.', tags:['Sport','Natur'], free:true},
+      {title:'Park oder Botanischer Garten', desc:'Einfach spazieren, lesen oder picknicken. Gut fuer die Seele.', tags:['Entspannung','Natur'], free:true},
+      {title:'Flohmarkt besuchen', desc:'Stoebern, Schnaepper finden, Leute treffen. Meist am Wochenende.', tags:['Sozial','Shopping'], free:true},
+      {title:'Outdoor-Fitness', desc:'Calisthenics-Parks gibt es in vielen Staedten. Kostenlos trainieren.', tags:['Sport','Fitness'], free:true},
+      {title:'Nachtwanderung', desc:'Stirnlampe an, Wald rein. Am besten mit Freunden – ein Erlebnis.', tags:['Abenteuer','Abend'], free:true}
+    ],
+    'sozial': [
+      {title:'Stammtisch oder Meetup', desc:'Meetup.com zeigt Gruppen zu fast jedem Interesse. Einfach hingehen.', tags:['Neu','Leute'], free:true},
+      {title:'Spieleabend organisieren', desc:'Lade Freunde oder Nachbarn ein. Brettspiele, Kartenspiele, Quizzes.', tags:['Freunde','Spass'], free:true},
+      {title:'Gemeinsam kochen', desc:'Jeder bringt eine Zutat mit. Zusammen kochen und essen.', tags:['Essen','Freunde'], free:true},
+      {title:'Sport-Verein beitreten', desc:'Von Fussball bis Tischtennis – guenstiger als Fitnessstudio und sozialer.', tags:['Sport','Regelmaessig'], free:false},
+      {title:'Nachbarschafts-Treff', desc:'Viele Viertel haben offene Treffs. Gut gegen Einsamkeit.', tags:['Lokal','Offen'], free:true}
+    ]
+  };
+
+  var aktCurrentCat = null;
+  var leafletLoaded = false;
+  var aktMap = null;
+
+  function showAktivitaeten(state) {
+    var el = $('pg-aktivitaeten');
+    el.style.display = 'block';
+    animPage(el);
+    aktCurrentCat = state.aktCat || null;
+    renderAktCats();
+    if (aktCurrentCat) {
+      renderAktItems(aktCurrentCat);
+    } else {
+      $('aktContent').innerHTML = '';
+    }
+  }
+
+  function hexToRgba(hex, a) {
+    var r = parseInt(hex.slice(1,3),16);
+    var g = parseInt(hex.slice(3,5),16);
+    var b = parseInt(hex.slice(5,7),16);
+    return 'rgba('+r+','+g+','+b+','+a+')';
+  }
+
+  function renderAktCats() {
+    var el = $('aktCats');
+    var html = '';
+    aktCats.forEach(function(cat) {
+      var count = aktItems[cat.id] ? aktItems[cat.id].length : 0;
+      html += '<div class="akt-cat" data-aktcat="' + cat.id + '">';
+      html += '<div class="akt-cat-icon" style="background:' + hexToRgba(cat.color, 0.12) + ';">' + cat.icon + '</div>';
+      html += '<div class="akt-cat-info"><h4>' + cat.name + '</h4>';
+      html += '<p>' + cat.desc + ' (' + count + ')</p></div>';
+      html += '<span class="akt-cat-arr">&#x203A;</span>';
+      html += '</div>';
+    });
+    el.innerHTML = html;
+  }
+
+  function renderAktItems(catId) {
+    var cat = aktCats.find(function(c){ return c.id === catId; });
+    if (!cat) return;
+    var items = aktItems[catId] || [];
+    aktCurrentCat = catId;
+
+    var el = $('aktContent');
+    var html = '<div style="margin:16px 0 12px;">';
+    html += '<button class="akt-back-btn" id="btnAktBack">&#x2190; Alle Kategorien</button>';
+    html += '<div style="font-size:0.95rem;font-weight:700;color:#f0f4ff;margin-top:12px;">' + cat.icon + ' ' + cat.name + '</div>';
+    html += '</div>';
+    html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+    items.forEach(function(item) {
+      html += '<div class="akt-item">';
+      html += '<h4 style="font-size:0.82rem;font-weight:600;color:#dce4f2;margin-bottom:4px;">' + item.title + '</h4>';
+      html += '<p style="font-size:0.72rem;color:#8899bb;line-height:1.55;margin-bottom:8px;">' + item.desc + '</p>';
+      html += '<div style="display:flex;gap:4px;flex-wrap:wrap;">';
+      item.tags.forEach(function(t) {
+        html += '<span class="ln-wcard-tag">' + t + '</span>';
+      });
+      html += '<span class="ln-wcard-tag" style="background:' + (item.free ? 'rgba(61,220,151,0.1);color:#3ddc97' : 'rgba(255,140,66,0.1);color:#ff8c42') + ';">' + (item.free ? 'Kostenlos' : 'Kostet') + '</span>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+    window.scrollTo(0, 0);
+  }
+
+  function loadLeaflet(callback) {
+    if (leafletLoaded) { callback(); return; }
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
+    var script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.onload = function() { leafletLoaded = true; callback(); };
+    document.head.appendChild(script);
+  }
+
+  // PLZ -> Koordinaten (einfache Lookup-Tabelle fuer DE, oder Nominatim)
+  function plzToCoords(plz, callback) {
+    // Verwende Nominatim fuer PLZ Geocoding
+    var url = 'https://nominatim.openstreetmap.org/search?postalcode=' + encodeURIComponent(plz) + '&country=de&format=json&limit=1';
+    fetch(url, {headers:{'Accept':'application/json'}})
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        if (data && data.length > 0) {
+          callback({lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), name: data[0].display_name});
+        } else {
+          callback(null);
+        }
+      })
+      .catch(function() { callback(null); });
+  }
+
+  function showAktMap(plz) {
+    var wrap = $('aktMapWrap');
+    wrap.style.display = 'block';
+    wrap.scrollIntoView({behavior:'smooth', block:'start'});
+    $('aktMap').innerHTML = '<div style="padding:40px;text-align:center;color:#3d4d6e;font-size:0.8rem;">Lade Karte fuer PLZ ' + esc(plz) + '...</div>';
+
+    loadLeaflet(function() {
+      plzToCoords(plz, function(result) {
+        if (!result) {
+          $('aktMap').innerHTML = '<div style="padding:40px;text-align:center;color:#f87171;font-size:0.8rem;">PLZ nicht gefunden. Bitte pruefen.</div>';
+          return;
+        }
+        $('aktMap').innerHTML = '';
+        if (aktMap) { aktMap.remove(); aktMap = null; }
+        aktMap = L.map('aktMap', {zoomControl: false}).setView([result.lat, result.lon], 13);
+        L.control.zoom({position: 'bottomright'}).addTo(aktMap);
+        // Dark tile layer (CartoDB Dark Matter)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap, &copy; CartoDB',
+          maxZoom: 19
+        }).addTo(aktMap);
+        L.marker([result.lat, result.lon]).addTo(aktMap)
+          .bindPopup('<b>PLZ ' + esc(plz) + '</b>').openPopup();
+        setTimeout(function(){ aktMap.invalidateSize(); }, 200);
+      });
+    });
+  }
+
   // ═══════ EVENT DELEGATION ═══════
   document.addEventListener('click', function(e) {
     var t = e.target;
@@ -1790,8 +2091,11 @@
     // Zurueck-Button (iOS)
     if (t.closest('#btnBack')) { history.back(); return; }
 
+    // Placeholder Zurueck-Button
+    if (t.closest('[data-gohome]')) { navigate({page:'home'}); return; }
+
     // Home-Logo
-    if (t.closest('#btnHome') || t.closest('#btnHome2') || t.closest('#btnHomeLn')) {
+    if (t.closest('#btnHome') || t.closest('#btnHome2')) {
       navigate({page:'home'});
       return;
     }
@@ -1887,6 +2191,39 @@
       return;
     }
 
+    // Aktivitaeten: Kategorie
+    var aktCat = t.closest('[data-aktcat]');
+    if (aktCat) {
+      var catId = aktCat.getAttribute('data-aktcat');
+      history.pushState({page:'aktivitaeten', aktCat:catId}, '');
+      renderAktItems(catId);
+      return;
+    }
+
+    // Aktivitaeten: Zurueck zu Kategorien
+    if (t.closest('#btnAktBack')) {
+      aktCurrentCat = null;
+      $('aktContent').innerHTML = '';
+      renderAktCats();
+      return;
+    }
+
+    // Aktivitaeten: Karte anzeigen
+    if (t.closest('#btnAktSearch')) {
+      var plz = $('aktPlz').value.trim();
+      if (plz && /^\d{5}$/.test(plz)) {
+        showAktMap(plz);
+      }
+      return;
+    }
+
+    // Aktivitaeten: Karte schliessen
+    if (t.closest('#btnAktMapClose')) {
+      $('aktMapWrap').style.display = 'none';
+      if (aktMap) { aktMap.remove(); aktMap = null; }
+      return;
+    }
+
     // Lernen: Karte oeffnen (Liste, verwandte, Links)
     var lnOpen = t.closest('[data-lnopen]');
     if (lnOpen) {
@@ -1939,10 +2276,50 @@
       if (document.activeElement === $('si')) doSearch('si');
       if (document.activeElement === $('si2')) doSearch('si2');
       if (document.activeElement === $('filterInput')) addFilter();
+      var aktPlzEl = $('aktPlz');
+      if (aktPlzEl && document.activeElement === aktPlzEl) {
+        var plzVal = aktPlzEl.value.trim();
+        if (plzVal && /^\d{5}$/.test(plzVal)) showAktMap(plzVal);
+      }
       var lnSrch = $('lnSearch');
       if (lnSrch && document.activeElement === lnSrch) searchCards(lnSrch.value.trim());
     }
   });
+
+  // ═══════ SWIPE NAVIGATION ═══════
+  var swipeStartX = 0;
+  var swipeStartY = 0;
+  var swipeStartTime = 0;
+  var isSwiping = false;
+  var swipeEdge = 0.35;
+
+  document.addEventListener('touchstart', function(e) {
+    if (e.touches.length !== 1) return;
+    var x = e.touches[0].clientX;
+    var w = window.innerWidth;
+    if (x < w * swipeEdge || x > w * (1 - swipeEdge)) {
+      swipeStartX = x;
+      swipeStartY = e.touches[0].clientY;
+      swipeStartTime = Date.now();
+      isSwiping = true;
+    }
+  }, {passive: true});
+
+  document.addEventListener('touchend', function(e) {
+    if (!isSwiping) return;
+    isSwiping = false;
+    var touch = e.changedTouches[0];
+    var dx = touch.clientX - swipeStartX;
+    var dy = touch.clientY - swipeStartY;
+    var dt = Date.now() - swipeStartTime;
+    if (dt < 500 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx > 0 && swipeStartX < window.innerWidth * swipeEdge) {
+        history.back();
+      } else if (dx < 0 && swipeStartX > window.innerWidth * (1 - swipeEdge)) {
+        history.forward();
+      }
+    }
+  }, {passive: true});
 
   // Initiale History-State setzen
   history.replaceState({page:'home'}, '');
