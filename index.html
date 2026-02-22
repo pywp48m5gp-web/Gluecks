@@ -763,6 +763,79 @@
   .pd { font-size:0.58rem; color:#888; margin-top:2px; }
   .pd a { color:#4d94ff; text-decoration:none; }
 
+
+  /* ═══════ KARTEN MODULE ═══════ */
+  #pg-karten { overflow:hidden; }
+  .kt-wrap { display:flex; flex-direction:column; height:calc(100vh - 54px); overflow:hidden; }
+  .kt-top { padding:6px 14px 4px; flex-shrink:0; }
+  .kt-plz-row { display:flex; gap:6px; position:relative; }
+  .kt-plz { flex:1; height:36px; background:#1a2340; border:1px solid rgba(120,160,255,0.15); border-radius:10px; padding:0 12px; font-family:'Lexend'; font-size:14px; color:#f0f4ff; outline:none; -webkit-appearance:none; }
+  .kt-plz::placeholder { color:#506585; }
+  .kt-plz:focus { border-color:rgba(77,148,255,0.5); background:#223058; }
+  .kt-go { width:36px; height:36px; flex-shrink:0; background:linear-gradient(135deg,#4d94ff,#3d7de6); border:none; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .kt-go:active { transform:scale(0.94); }
+  .kt-go svg { width:16px; height:16px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+  .kt-suggest { display:none; position:absolute; left:0; right:44px; top:40px; z-index:500; background:#1a2340; border:1px solid rgba(120,160,255,0.18); border-radius:10px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.5); max-height:180px; overflow-y:auto; }
+  .kt-suggest.open { display:block; }
+  .kt-suggest-item { padding:9px 12px; cursor:pointer; font-size:0.7rem; color:#a0b0cc; border-bottom:1px solid rgba(120,160,255,0.06); }
+  .kt-suggest-item:last-child { border-bottom:none; }
+  .kt-suggest-item:active { background:rgba(77,148,255,0.08); }
+  .kt-suggest-item small { display:block; font-size:0.55rem; color:#506585; margin-top:1px; }
+  .kt-main { flex:1; min-height:0; position:relative; overflow:hidden; }
+  .kt-map-area { position:absolute; inset:0; margin:0 14px; border-radius:12px; overflow:hidden; border:1px solid rgba(120,160,255,0.1); background:#152035; display:none; }
+  .kt-map-area.vis { display:block; }
+  .kt-map-area .leaflet-container { z-index:1 !important; }
+  .kt-cats { position:absolute; inset:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:6px 14px 14px; }
+  .kt-cats.gone { display:none; }
+  .kt-grp { margin-bottom:10px; }
+  .kt-grp-hd { font-size:0.72rem; font-weight:700; color:#f0f4ff; padding:6px 0 4px; display:flex; align-items:center; gap:6px; }
+  .kt-grp-desc { font-size:0.55rem; color:#506585; margin-bottom:6px; line-height:1.4; }
+  .kt-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; }
+  .kt-card { display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 4px 8px; border-radius:10px; background:#1a2340; border:1px solid rgba(120,160,255,0.06); cursor:pointer; -webkit-tap-highlight-color:transparent; transition:all 0.15s; }
+  .kt-card:active { background:#223058; border-color:rgba(77,148,255,0.3); transform:scale(0.97); }
+  .kt-card-ic { font-size:1.1rem; }
+  .kt-card-nm { font-size:0.55rem; font-weight:600; color:#9aadcc; text-align:center; line-height:1.2; }
+  .kt-rad { position:absolute; top:6px; right:6px; z-index:10; display:flex; gap:2px; }
+  .kt-rad-b { height:24px; padding:0 8px; background:rgba(17,24,41,0.85); border:1px solid rgba(120,160,255,0.15); border-radius:6px; font-family:'Lexend'; font-size:0.55rem; font-weight:600; color:#6678a0; cursor:pointer; }
+  .kt-rad-b.on { color:#4d94ff; border-color:rgba(77,148,255,0.4); }
+  .kt-lp { position:absolute; top:6px; left:6px; z-index:10; background:rgba(17,24,41,0.9); border:1px solid rgba(120,160,255,0.15); border-radius:6px; padding:4px 8px; font-size:0.58rem; font-weight:600; color:#a0b0cc; display:none; align-items:center; gap:4px; }
+  .kt-lp.show { display:flex; }
+  .kt-back { position:absolute; top:6px; left:50%; transform:translateX(-50%); z-index:10; background:rgba(17,24,41,0.9); border:1px solid rgba(120,160,255,0.15); border-radius:6px; padding:4px 12px; font-family:'Lexend'; font-size:0.58rem; font-weight:600; color:#a0b0cc; cursor:pointer; display:none; }
+  .kt-back.show { display:block; }
+  .kt-back:active { background:rgba(77,148,255,0.15); }
+  .kt-bot { flex-shrink:0; padding:4px 14px 6px; }
+  .kt-filt-btn { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; height:34px; background:#1a2340; border:1px solid rgba(120,160,255,0.12); border-radius:10px; cursor:pointer; font-family:'Lexend'; font-size:0.68rem; font-weight:600; color:#a0b0cc; display:none; }
+  .kt-filt-btn.vis { display:flex; }
+  .kt-filt-btn:active { background:#223058; }
+  .kt-stats { display:flex; gap:6px; margin-top:2px; font-size:0.55rem; color:#506585; }
+  .kt-stats strong { color:#9aadcc; }
+  .kt-fpov { position:fixed; inset:0; z-index:9000; background:rgba(0,0,0,0.45); opacity:0; pointer-events:none; transition:opacity 0.25s; }
+  .kt-fpov.open { opacity:1; pointer-events:all; }
+  .kt-fpan { position:fixed; bottom:0; left:0; right:0; z-index:9001; background:#152035; border-top:1px solid rgba(120,160,255,0.12); border-radius:18px 18px 0 0; transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.16,1,0.3,1); max-height:65vh; display:flex; flex-direction:column; padding-bottom:env(safe-area-inset-bottom,16px); }
+  .kt-fpan.open { transform:translateY(0); }
+  .kt-fph { width:34px; height:4px; border-radius:2px; background:rgba(120,160,255,0.3); margin:8px auto 0; cursor:grab; }
+  .kt-fphd { display:flex; align-items:center; justify-content:space-between; padding:8px 16px 4px; flex-shrink:0; }
+  .kt-fpt { font-size:0.8rem; font-weight:700; color:#f0f4ff; }
+  .kt-fpx { width:30px; height:30px; border-radius:8px; background:rgba(120,160,255,0.06); border:1px solid rgba(120,160,255,0.12); color:#a0b0cc; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .kt-fpx:active { background:rgba(248,113,113,0.15); color:#f87171; }
+  .kt-fp-body { overflow-y:auto; flex:1; padding:0 14px 14px; -webkit-overflow-scrolling:touch; }
+  .kt-acc { margin-bottom:6px; }
+  .kt-acc-hd { display:flex; align-items:center; gap:6px; padding:8px 10px; background:#1a2340; border:1px solid rgba(120,160,255,0.08); border-radius:8px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .kt-acc-hd:active { background:#223058; }
+  .kt-acc-arr { font-size:0.6rem; color:#506585; transition:transform 0.2s; }
+  .kt-acc.open .kt-acc-arr { transform:rotate(90deg); }
+  .kt-acc-t { font-size:0.68rem; font-weight:600; color:#dce4f2; flex:1; }
+  .kt-acc-n { font-size:0.5rem; font-weight:600; color:#506585; font-family:'DM Mono'; }
+  .kt-acc-body { display:none; padding:4px 0; }
+  .kt-acc.open .kt-acc-body { display:block; }
+  .kt-acc-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px; padding:2px 4px; }
+  .kt-fpi { display:flex; align-items:center; gap:6px; padding:7px 8px; border-radius:8px; background:rgba(120,160,255,0.02); border:1px solid rgba(120,160,255,0.04); cursor:pointer; user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent; }
+  .kt-fpi.on { border-color:var(--cc,rgba(77,148,255,0.4)); background:var(--cb,rgba(77,148,255,0.06)); }
+  .kt-fpd { width:7px; height:7px; border-radius:50%; flex-shrink:0; background:var(--cc,#4d94ff); opacity:0.3; }
+  .kt-fpi.on .kt-fpd { opacity:1; }
+  .kt-fpl { font-size:0.58rem; font-weight:500; color:#6678a0; line-height:1.2; }
+  .kt-fpi.on .kt-fpl { color:#dce4f2; }
+
   /* Suche im Lernen-Modul */
   .ln-search-w { max-width: 440px; position: relative; margin-bottom: 20px; }
   .ln-search {
@@ -989,7 +1062,7 @@
     <div class="akt-map-area" id="aktMapArea">
       <div id="aktMap" style="width:100%;height:100%;"></div>
       <div class="akt-welcome" id="aktWel"><div style="font-size:1.6rem;margin-bottom:6px;">&#x1F5FA;</div><div style="font-size:0.7rem;color:#506585;max-width:200px;line-height:1.5;">Gib einen Ort ein um Spielplaetze, Parks, Seen und mehr zu entdecken.</div></div>
-      <div class="akt-rad" id="aktRadBar"><button class="akt-rad-b" data-rad="2000">2km</button><button class="akt-rad-b on" data-rad="5000">5km</button><button class="akt-rad-b" data-rad="10000">10km</button></div>
+      <div class="akt-rad" id="aktRadBar"><button class="akt-rad-b on" data-rad="2000">2km</button><button class="akt-rad-b" data-rad="5000">5km</button><button class="akt-rad-b" data-rad="10000">10km</button></div>
       <div class="akt-lp" id="aktLP"><div class="akt-spin"></div><span id="aktLT">Lade...</span></div>
     </div>
     <div class="akt-bot">
@@ -1008,12 +1081,47 @@
 </div>
 
 <!-- PAGE: KARTEN -->
-<div class="page ph-page" id="pg-karten">
-  <div class="ph-icon">&#x1F5FA;</div>
-  <div class="ph-badge">In Entwicklung</div>
-  <div class="ph-title">Karten-Tools</div>
-  <div class="ph-desc">Finde Einrichtungen wie Krankenhaeuser, oeffentliche Toiletten, Rathaeuser und mehr auf einer interaktiven, datenschutzfreundlichen Karte.</div>
-  <button class="ph-back" data-gohome>&#x2190; Zurueck zur Startseite</button>
+<!-- PAGE: KARTEN -->
+<div class="page" id="pg-karten" style="display:none;">
+  <div class="kt-wrap">
+    <div class="kt-top">
+      <div class="kt-plz-row">
+        <input class="kt-plz" type="text" id="ktPlz" placeholder="Ort oder PLZ..." autocomplete="off">
+        <button class="kt-go" id="btnKtGo"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+        <div class="kt-suggest" id="ktSuggest"></div>
+      </div>
+    </div>
+    <div class="kt-main">
+      <div class="kt-cats" id="ktCats">
+        <div class="kt-grp">
+          <div class="kt-grp-hd">&#x1F3AF; Aktivitaeten</div>
+          <div class="kt-grp-desc">Parks, Spielplaetze, Schwimmbaeder, Sport und mehr entdecken.</div>
+          <div class="kt-grid" id="ktGridAkt"></div>
+        </div>
+        <div class="kt-grp">
+          <div class="kt-grp-hd">&#x1F3DB; Einrichtungen</div>
+          <div class="kt-grp-desc">Toiletten, Krankenhaeuser, Automaten, Apotheken und oeffentliche Einrichtungen finden.</div>
+          <div class="kt-grid" id="ktGridEinr"></div>
+        </div>
+      </div>
+      <div class="kt-map-area" id="ktMapArea">
+        <div id="ktMap" style="width:100%;height:100%;"></div>
+        <div class="kt-rad" id="ktRadBar"><button class="kt-rad-b on" data-krad="2000">2km</button><button class="kt-rad-b" data-krad="5000">5km</button><button class="kt-rad-b" data-krad="10000">10km</button></div>
+        <div class="kt-lp" id="ktLP"><div class="akt-spin"></div><span id="ktLT">Lade...</span></div>
+        <button class="kt-back show" id="btnKtBack">&#x2190; Kategorien</button>
+      </div>
+    </div>
+    <div class="kt-bot">
+      <button class="kt-filt-btn" id="btnKtFilt">&#x1F5FA; Karten-Overlay <span class="akt-fc" id="ktFC">0</span></button>
+      <div class="kt-stats" id="ktSt"></div>
+    </div>
+  </div>
+</div>
+<div class="kt-fpov" id="ktFPOv"></div>
+<div class="kt-fpan" id="ktFPan">
+  <div class="kt-fph" id="ktFPH"></div>
+  <div class="kt-fphd"><span class="kt-fpt">&#x1F5FA; Karten-Overlay</span><button class="kt-fpx" id="btnKtFPX">&#x2715;</button></div>
+  <div class="kt-fp-body" id="ktFPBody"></div>
 </div>
 
 <!-- PAGE: GESUNDHEIT -->
@@ -1560,7 +1668,7 @@
         showAktivitaeten(state);
         break;
       case 'karten':
-        showPlaceholder('karten');
+        showKarten();
         break;
       case 'gesundheit':
         showPlaceholder('gesundheit');
@@ -1594,6 +1702,7 @@
     closeMo();
     closeMenus();
     if(typeof closeAktFP==='function')closeAktFP();
+    if(typeof closeKtFP==='function')closeKtFP();
   }
 
   function showHome() {
@@ -1974,7 +2083,7 @@
 
   // ═══════ AKTIVITAETEN MODULE ═══════
   // ═══════ AKTIVITAETEN MODULE v4 ═══════
-  var leafletLoaded=false, aktMap=null, aktLat=null, aktLon=null, aktRadius=5000;
+  var leafletLoaded=false, aktMap=null, aktLat=null, aktLon=null, aktRadius=2000;
   var aktLayers={}, aktData={}, aktFOpen=false;
   var CATS=[
     {id:'playground',ic:'\u{1F3A0}',nm:'Spielplaetze',co:'#3ddc97'},
@@ -2298,6 +2407,260 @@
     initAktMap(lat,lon);
   }
 
+
+  // ═══════ KARTEN MODULE ═══════
+  var ktMap=null,ktLat=null,ktLon=null,ktRadius=2000,ktFOpen=false;
+  var ktLayers={},ktData={},ktOn={};
+  // Activity categories (shared with Aktivitäten)
+  var KT_AKT=[
+    {id:'k_playground',ic:'\u{1F3A0}',nm:'Spielplaetze',co:'#3ddc97',q:['node["leisure"="playground"]','way["leisure"="playground"]']},
+    {id:'k_park',ic:'\u{1F333}',nm:'Parks',co:'#22c55e',q:['way["leisure"="park"]','way["leisure"="garden"]']},
+    {id:'k_lake',ic:'\u{1F30A}',nm:'Seen',co:'#38bdf8',q:['way["natural"="water"]["name"]']},
+    {id:'k_pool',ic:'\u{1F3CA}',nm:'Schwimmbad',co:'#06b6d4',q:['node["leisure"="swimming_pool"]','way["leisure"="swimming_pool"]','node["amenity"="public_bath"]']},
+    {id:'k_fitness',ic:'\u{1F4AA}',nm:'Fitness',co:'#f97316',q:['node["leisure"="fitness_centre"]','way["leisure"="fitness_centre"]']},
+    {id:'k_sports',ic:'\u26BD',nm:'Sportplatz',co:'#eab308',q:['way["leisure"="pitch"]["name"]','way["leisure"="sports_centre"]["name"]']},
+    {id:'k_tennis',ic:'\u{1F3BE}',nm:'Tennis',co:'#84cc16',q:['node["sport"="tennis"]','way["sport"="tennis"]']},
+    {id:'k_bowling',ic:'\u{1F3B3}',nm:'Bowling',co:'#d946ef',q:['node["sport"="bowling"]','node["sport"="9pin"]']},
+    {id:'k_climbing',ic:'\u26F0',nm:'Klettern',co:'#f43f5e',q:['node["sport"="climbing"]','way["sport"="climbing"]']},
+    {id:'k_museum',ic:'\u{1F3DB}',nm:'Museum',co:'#a78bfa',q:['node["tourism"="museum"]','way["tourism"="museum"]']},
+    {id:'k_cinema',ic:'\u{1F3AC}',nm:'Kino',co:'#f472b6',q:['node["amenity"="cinema"]']},
+    {id:'k_zoo',ic:'\u{1F981}',nm:'Zoo',co:'#a3e635',q:['node["tourism"="zoo"]','way["tourism"="zoo"]']},
+    {id:'k_biergarten',ic:'\u{1F37A}',nm:'Biergarten',co:'#ca8a04',q:['node["amenity"="biergarten"]']},
+    {id:'k_bbq',ic:'\u{1F525}',nm:'Grillen',co:'#dc2626',q:['node["amenity"="bbq"]','node["leisure"="firepit"]']},
+    {id:'k_viewpoint',ic:'\u{1F304}',nm:'Aussicht',co:'#fbbf24',q:['node["tourism"="viewpoint"]']}
+  ];
+  // Einrichtungen categories
+  var KT_EINR=[
+    {id:'k_toilet',ic:'\u{1F6BB}',nm:'Toiletten',co:'#94a3b8',q:['node["amenity"="toilets"]','way["amenity"="toilets"]']},
+    {id:'k_hospital',ic:'\u{1F3E5}',nm:'Krankenhaus',co:'#ef4444',q:['node["amenity"="hospital"]','way["amenity"="hospital"]']},
+    {id:'k_pharmacy',ic:'\u{1F48A}',nm:'Apotheke',co:'#22c55e',q:['node["amenity"="pharmacy"]']},
+    {id:'k_vending',ic:'\u{1F916}',nm:'Automaten',co:'#f97316',q:['node["amenity"="vending_machine"]']},
+    {id:'k_atm',ic:'\u{1F4B3}',nm:'Geldautomat',co:'#eab308',q:['node["amenity"="atm"]']},
+    {id:'k_fuel',ic:'\u26FD',nm:'Tankstelle',co:'#64748b',q:['node["amenity"="fuel"]','way["amenity"="fuel"]']},
+    {id:'k_police',ic:'\u{1F46E}',nm:'Polizei',co:'#3b82f6',q:['node["amenity"="police"]','way["amenity"="police"]']},
+    {id:'k_townhall',ic:'\u{1F3DB}',nm:'Rathaus',co:'#8b5cf6',q:['node["amenity"="townhall"]','way["amenity"="townhall"]']},
+    {id:'k_post',ic:'\u{1F4EE}',nm:'Post',co:'#f59e0b',q:['node["amenity"="post_office"]']},
+    {id:'k_water',ic:'\u{1F6B0}',nm:'Trinkwasser',co:'#06b6d4',q:['node["amenity"="drinking_water"]']},
+    {id:'k_defi',ic:'\u{1F49A}',nm:'Defibrillator',co:'#dc2626',q:['node["emergency"="defibrillator"]']},
+    {id:'k_recycling',ic:'\u267B',nm:'Recycling',co:'#16a34a',q:['node["amenity"="recycling"]']}
+  ];
+  var KT_ALL=KT_AKT.concat(KT_EINR);
+  var KT_MAP={};
+  KT_ALL.forEach(function(x){ktOn[x.id]=false;KT_MAP[x.id]=x;});
+
+  function classifyKT(tags){
+    if(!tags)return null;
+    var l=tags.leisure||'',s=tags.sport||'',a=tags.amenity||'',to=tags.tourism||'',n=tags.natural||'',em=tags.emergency||'';
+    if(l==='playground')return'k_playground';if(l==='park'||l==='garden')return'k_park';
+    if(n==='water'||tags.water==='lake')return'k_lake';
+    if(l==='swimming_pool'||a==='public_bath')return'k_pool';
+    if(l==='fitness_centre')return'k_fitness';
+    if(s==='tennis')return'k_tennis';if(s==='bowling'||s==='9pin')return'k_bowling';
+    if(s==='climbing')return'k_climbing';
+    if(l==='pitch'||l==='sports_centre')return'k_sports';
+    if(to==='museum')return'k_museum';if(a==='cinema')return'k_cinema';
+    if(to==='zoo')return'k_zoo';if(a==='biergarten'||tags.biergarten==='yes')return'k_biergarten';
+    if(a==='bbq'||l==='firepit')return'k_bbq';if(to==='viewpoint')return'k_viewpoint';
+    if(a==='toilets')return'k_toilet';if(a==='hospital')return'k_hospital';
+    if(a==='pharmacy')return'k_pharmacy';if(a==='vending_machine')return'k_vending';
+    if(a==='atm')return'k_atm';if(a==='fuel')return'k_fuel';
+    if(a==='police')return'k_police';if(a==='townhall')return'k_townhall';
+    if(a==='post_office')return'k_post';if(a==='drinking_water')return'k_water';
+    if(em==='defibrillator')return'k_defi';if(a==='recycling')return'k_recycling';
+    return null;
+  }
+
+  function showKarten(){
+    var el=$('pg-karten');el.style.display='flex';animPage(el);
+    renderKtCats();setTimeout(setupKtSuggest,100);
+    if(ktMap)setTimeout(function(){ktMap.invalidateSize();},200);
+  }
+  function renderKtCats(){
+    var g1=$('ktGridAkt'),g2=$('ktGridEinr');if(!g1||!g2)return;
+    g1.innerHTML=KT_AKT.map(function(c){return'<div class="kt-card" data-ktc="'+c.id+'"><div class="kt-card-ic">'+c.ic+'</div><div class="kt-card-nm">'+c.nm+'</div></div>';}).join('');
+    g2.innerHTML=KT_EINR.map(function(c){return'<div class="kt-card" data-ktc="'+c.id+'"><div class="kt-card-ic">'+c.ic+'</div><div class="kt-card-nm">'+c.nm+'</div></div>';}).join('');
+  }
+  function renderKtFP(){
+    var bd=$('ktFPBody');if(!bd)return;
+    function grp(title,ic,cats){
+      var h='<div class="kt-acc open"><div class="kt-acc-hd" data-ktacc><span class="kt-acc-arr">&#x25B6;</span><span class="kt-acc-t">'+ic+' '+title+'</span></div><div class="kt-acc-body"><div class="kt-acc-grid">';
+      cats.forEach(function(c){var on=ktOn[c.id],n=ktData[c.id]?ktData[c.id].length:0;
+        h+='<div class="kt-fpi'+(on?' on':'')+'" data-kfc="'+c.id+'" style="--cc:'+c.co+';--cb:'+c.co+'0d;"><div class="kt-fpd"></div><span class="kt-fpl">'+c.ic+' '+c.nm+'</span></div>';
+      });
+      return h+'</div></div></div>';
+    }
+    bd.innerHTML=grp('Aktivitaeten','\u{1F3AF}',KT_AKT)+grp('Einrichtungen','\u{1F3DB}',KT_EINR);
+    var cnt=0;KT_ALL.forEach(function(c){if(ktOn[c.id])cnt++;});
+    var fc=$('ktFC');if(fc)fc.textContent=cnt+'/'+KT_ALL.length;
+  }
+  function updateKtSt(){
+    var t=0;KT_ALL.forEach(function(c){t+=(ktData[c.id]||[]).length;});
+    var el=$('ktSt');if(el)el.innerHTML=t>0?'<span><strong>'+t+'</strong> Orte</span> &middot; <span>'+ktRadius/1000+'km</span>':'';
+  }
+  function toggleKF(id){
+    ktOn[id]=!ktOn[id];
+    if(ktLayers[id]&&ktMap){if(ktOn[id])ktMap.addLayer(ktLayers[id]);else ktMap.removeLayer(ktLayers[id]);}
+    renderKtFP();
+  }
+  function openKtFP(){$('ktFPOv').classList.add('open');$('ktFPan').classList.add('open');ktFOpen=true;}
+  function closeKtFP(){var p=$('ktFPan');if(p){p.classList.remove('open');p.removeAttribute('style');}$('ktFPOv').classList.remove('open');ktFOpen=false;}
+
+  function showKtMap(){$('ktCats').classList.add('gone');$('ktMapArea').classList.add('vis');$('btnKtFilt').classList.add('vis');$('btnKtBack').classList.add('show');}
+  function showKtCats(){$('ktCats').classList.remove('gone');$('ktMapArea').classList.remove('vis');$('btnKtFilt').classList.remove('vis');$('btnKtBack').classList.remove('show');}
+
+  function initKtMap(lat,lon){
+    loadLeaflet(function(){
+      var el=$('ktMap');if(!el)return;el.innerHTML='';
+      if(ktMap){try{ktMap.remove();}catch(e){}ktMap=null;}
+      ktMap=L.map('ktMap',{zoomControl:false,tap:true,tapTolerance:15}).setView([lat,lon],14);
+      L.control.zoom({position:'bottomright'}).addTo(ktMap);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(ktMap);
+      ktMap.attributionControl.setPrefix('');
+      L.circleMarker([lat,lon],{radius:7,fillColor:'#4d94ff',fillOpacity:1,color:'#fff',weight:2}).addTo(ktMap);
+      L.circleMarker([lat,lon],{radius:18,fillColor:'#4d94ff',fillOpacity:0.12,color:'#4d94ff',weight:1,opacity:0.25}).addTo(ktMap);
+      showKtMap();
+      setTimeout(function(){ktMap.invalidateSize();},300);
+      loadKtPOIs(lat,lon,ktRadius);
+    });
+  }
+  function loadKtPOIs(lat,lon,radius){
+    Object.keys(ktLayers).forEach(function(k){if(ktMap&&ktLayers[k])try{ktMap.removeLayer(ktLayers[k]);}catch(e){}});
+    ktLayers={};ktData={};KT_ALL.forEach(function(c){ktData[c.id]=[];});
+    var lp=$('ktLP'),lt=$('ktLT'),st=$('ktSt');
+    if(lp)lp.classList.add('show');if(lt)lt.textContent='Lade Orte...';if(st)st.innerHTML='';
+    var ar='around:'+radius+','+lat+','+lon;
+    // Build query from active categories only
+    var active=KT_ALL.filter(function(c){return ktOn[c.id];});
+    if(active.length===0){if(lp)lp.classList.remove('show');return;}
+    var qParts=[];
+    active.forEach(function(c){c.q.forEach(function(p){qParts.push(p+'('+ar+')');});});
+    var q='[out:json][timeout:45];('+qParts.join(';')+';);out center qt 300;';
+    console.log('[Kt] Query:',q.length,'chars,',active.length,'cats');
+    var servers=['https://overpass-api.de/api/interpreter','https://lz4.overpass-api.de/api/interpreter','https://z.overpass-api.de/api/interpreter'];
+    var attempt=0;
+    function tryServer(){
+      if(attempt>=servers.length){
+        if(lp)lp.classList.remove('show');
+        if(st)st.innerHTML='<span style="color:#f87171;cursor:pointer;" id="ktRetry">\u26A0 Fehler. <u>Erneut?</u></span>';
+        var rb=document.getElementById('ktRetry');if(rb)rb.addEventListener('click',function(){loadKtPOIs(lat,lon,radius);});
+        return;
+      }
+      if(lt)lt.textContent=attempt>0?'Server '+(attempt+1)+'/3...':'Lade Orte...';
+      fetch(servers[attempt],{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(q)})
+      .then(function(r){if(r.status===429||r.status===504){attempt++;tryServer();return null;}if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+      .then(function(data){
+        if(!data)return;
+        if(lp)lp.classList.remove('show');
+        if(!data.elements)return;
+        console.log('[Kt]',data.elements.length,'elements');
+        var seen={};
+        data.elements.forEach(function(el){
+          var la=el.lat||(el.center&&el.center.lat),lo=el.lon||(el.center&&el.center.lon);
+          if(!la||!lo)return;
+          var key=Math.round(la*1e4)+','+Math.round(lo*1e4);
+          if(seen[key])return;seen[key]=true;
+          var cid=classifyKT(el.tags);if(!cid||!ktData[cid])return;
+          var tg=el.tags||{};ktData[cid].push({la:la,lo:lo,nm:tg.name||KT_MAP[cid].nm,tg:tg});
+        });
+        KT_ALL.forEach(function(cat){
+          if(!ktOn[cat.id])return;
+          var ms=[];
+          (ktData[cat.id]||[]).forEach(function(p){
+            var m=L.circleMarker([p.la,p.lo],{radius:8,fillColor:cat.co,fillOpacity:0.85,color:'#fff',weight:1.5,opacity:0.5});
+            var h='<div class="pn">'+esc(p.nm)+'</div><div class="pc"><div class="dd" style="background:'+cat.co+'"></div>'+cat.ic+' '+cat.nm+'</div>';
+            if(p.tg.opening_hours)h+='<div class="pd">\u{1F555} '+esc(p.tg.opening_hours)+'</div>';
+            if(p.tg['addr:street'])h+='<div class="pd">\u{1F4CD} '+esc(p.tg['addr:street'])+(p.tg['addr:housenumber']?' '+esc(p.tg['addr:housenumber']):'')+'</div>';
+            if(p.tg.website)h+='<div class="pd"><a href="'+esc(p.tg.website)+'" target="_blank">\u{1F310} Web</a></div>';
+            if(p.tg.phone)h+='<div class="pd">\u{1F4DE} '+esc(p.tg.phone)+'</div>';
+            if(p.tg.fee)h+='<div class="pd">\u{1F4B0} '+esc(p.tg.fee)+'</div>';
+            m.bindPopup(h,{maxWidth:240,closeButton:true});ms.push(m);
+          });
+          var lg=L.layerGroup(ms);ktLayers[cat.id]=lg;
+          if(ktMap)ktMap.addLayer(lg);
+        });
+        renderKtFP();updateKtSt();
+      })
+      .catch(function(err){console.warn('[Kt] Server',attempt,'err:',err.message);attempt++;tryServer();});
+    }
+    tryServer();
+  }
+
+  // Suggest for Karten (reuses Nominatim)
+  var ktSTmr=null;
+  function setupKtSuggest(){
+    var inp=$('ktPlz');if(!inp||inp._kb)return;inp._kb=true;
+    inp.addEventListener('input',function(){clearTimeout(ktSTmr);var q=inp.value.trim();
+      if(q.length<2){closeKtSuggest();return;}
+      ktSTmr=setTimeout(function(){
+        fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&countrycodes=de&format=json&limit=5&addressdetails=1',{headers:{'Accept':'application/json'}})
+        .then(function(r){return r.json();}).then(function(data){
+          var sg=$('ktSuggest');if(!data||!data.length){closeKtSuggest();return;}var h='';
+          data.forEach(function(d,i){var a=d.address||{},nm=a.city||a.town||a.village||a.municipality||'',pz=a.postcode||'';
+            var lbl=nm||d.display_name.split(',')[0],sub=d.display_name.split(',').slice(1,3).join(',').trim();
+            h+='<div class="kt-suggest-item" data-ksg="'+i+'" data-lat="'+d.lat+'" data-lon="'+d.lon+'" data-nm="'+esc(lbl)+'" data-pz="'+esc(pz)+'">'
+              +esc(lbl)+(pz?' ('+pz+')':'')+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>';
+          });sg.innerHTML=h;sg.classList.add('open');
+        }).catch(function(){closeKtSuggest();});
+      },350);
+    });
+    inp.addEventListener('blur',function(){setTimeout(closeKtSuggest,200);});
+  }
+  function closeKtSuggest(){var s=$('ktSuggest');if(s){s.classList.remove('open');s.innerHTML='';}}
+
+  function ktGo(query){
+    var lp=$('ktLP'),lt=$('ktLT');
+    if(lp)lp.classList.add('show');if(lt)lt.textContent='Suche...';
+    plzToCoords(query,function(r){if(!r){if(lp)lp.classList.remove('show');return;}
+      ktLat=r.lat;ktLon=r.lon;$('ktPlz').value=r.name+(r.plz?' ('+r.plz+')':'');
+      if(lp)lp.classList.remove('show');initKtMap(r.lat,r.lon);
+    });
+  }
+  function ktGoDirect(lat,lon,nm,pz){
+    ktLat=lat;ktLon=lon;$('ktPlz').value=nm+(pz?' ('+pz+')':'');
+    initKtMap(lat,lon);
+  }
+  // Select a category card -> enable it, disable others, show map if PLZ is set
+  function ktSelectCat(catId){
+    KT_ALL.forEach(function(c){ktOn[c.id]=false;});
+    ktOn[catId]=true;
+    renderKtFP();
+    if(ktLat&&ktLon){showKtMap();loadKtPOIs(ktLat,ktLon,ktRadius);}
+    else{var inp=$('ktPlz');if(inp)inp.focus();}
+  }
+  // Search all active cats (or all if none active)
+  function ktSearchAll(){
+    var anyOn=false;KT_ALL.forEach(function(c){if(ktOn[c.id])anyOn=true;});
+    if(!anyOn)KT_ALL.forEach(function(c){ktOn[c.id]=true;});
+    renderKtFP();
+    var q=$('ktPlz').value.trim();
+    if(q.length>=2){closeKtSuggest();ktGo(q);}
+  }
+
+  // Direct event listeners for Karten filter panel
+  document.addEventListener('DOMContentLoaded',function(){
+    var xb=document.getElementById('btnKtFPX');
+    if(xb)xb.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();closeKtFP();});
+    var ov=document.getElementById('ktFPOv');
+    if(ov)ov.addEventListener('click',function(){closeKtFP();});
+    var fb=document.getElementById('btnKtFilt');
+    if(fb)fb.addEventListener('click',function(){renderKtFP();openKtFP();});
+    var gb=document.getElementById('btnKtGo');
+    if(gb)gb.addEventListener('click',function(){ktSearchAll();});
+    var bb=document.getElementById('btnKtBack');
+    if(bb)bb.addEventListener('click',function(){showKtCats();});
+    // Drag-to-close Karten filter
+    var sy2=0,dy2=0,dr2=false,pan2=document.getElementById('ktFPan');
+    function ds2(e){if(!pan2||!pan2.classList.contains('open'))return;sy2=(e.touches?e.touches[0]:e).clientY;dy2=0;dr2=true;pan2.style.transition='none';}
+    function dm2(e){if(!dr2)return;var cy=(e.touches?e.touches[0]:e).clientY;dy2=cy-sy2;if(dy2>0){pan2.style.transform='translateY('+dy2+'px)';if(e.cancelable)e.preventDefault();}}
+    function du2(){if(!dr2)return;dr2=false;if(dy2>60){pan2.removeAttribute('style');closeKtFP();}else{pan2.removeAttribute('style');}}
+    var hd2=document.getElementById('ktFPH');
+    if(hd2){hd2.addEventListener('touchstart',ds2,{passive:false});hd2.addEventListener('mousedown',ds2);}
+    var hdr2=document.querySelector('.kt-fphd');
+    if(hdr2){hdr2.addEventListener('touchstart',ds2,{passive:false});hdr2.addEventListener('mousedown',ds2);}
+    document.addEventListener('touchmove',dm2,{passive:false});document.addEventListener('mousemove',dm2);
+    document.addEventListener('touchend',du2);document.addEventListener('mouseup',du2);
+  });
+
   // ═══════ EVENT DELEGATION ═══════
   document.addEventListener('click', function(e) {
     var t = e.target;
@@ -2423,6 +2786,17 @@
     var fc=t.closest('[data-fc]');if(fc){toggleFC(fc.getAttribute('data-fc'));return;}
     // Aktivitaeten: Radius buttons
     var rb=t.closest('[data-rad]');if(rb){aktRadius=parseInt(rb.getAttribute('data-rad'));document.querySelectorAll('[data-rad]').forEach(function(b){b.classList.remove('on');});rb.classList.add('on');if(aktLat&&aktLon)loadPOIs(aktLat,aktLon,aktRadius);return;}
+    // Karten: Category card click
+    var ktc=t.closest('[data-ktc]');if(ktc){ktSelectCat(ktc.getAttribute('data-ktc'));return;}
+    // Karten: Filter item toggle
+    var kfc=t.closest('[data-kfc]');if(kfc){toggleKF(kfc.getAttribute('data-kfc'));return;}
+    // Karten: Accordion toggle
+    var kacc=t.closest('[data-ktacc]');if(kacc){var acc=kacc.closest('.kt-acc');if(acc)acc.classList.toggle('open');return;}
+    // Karten: Radius
+    var krb=t.closest('[data-krad]');if(krb){ktRadius=parseInt(krb.getAttribute('data-krad'));document.querySelectorAll('[data-krad]').forEach(function(b){b.classList.remove('on');});krb.classList.add('on');if(ktLat&&ktLon)loadKtPOIs(ktLat,ktLon,ktRadius);return;}
+    // Karten: Suggest items
+    var ksg=t.closest('[data-ksg]');if(ksg){closeKtSuggest();var anyOn=false;KT_ALL.forEach(function(c){if(ktOn[c.id])anyOn=true;});if(!anyOn)KT_ALL.forEach(function(c){ktOn[c.id]=true;});ktGoDirect(parseFloat(ksg.getAttribute('data-lat')),parseFloat(ksg.getAttribute('data-lon')),ksg.getAttribute('data-nm'),ksg.getAttribute('data-pz'));return;}
+
     // Aktivitaeten: Suggest item click
     var sg=t.closest('[data-sg]');if(sg){closeSuggest();aktGoDirect(parseFloat(sg.getAttribute('data-lat')),parseFloat(sg.getAttribute('data-lon')),sg.getAttribute('data-nm'),sg.getAttribute('data-pz'));return;}
 
@@ -2474,6 +2848,7 @@
       closeMo();
       if ($('sb').classList.contains('open')) togSb();
       if (aktFOpen) closeAktFP();
+      if (typeof ktFOpen!=='undefined'&&ktFOpen) closeKtFP();
     }
     if (e.key === 'Enter') {
       if (document.activeElement === $('si')) doSearch('si');
@@ -2484,6 +2859,8 @@
         var plzVal = aktPlzEl.value.trim();
         if (plzVal.length >= 2) { closeSuggest(); aktGo(plzVal); }
       }
+      var ktPlzEl=$('ktPlz');
+      if(ktPlzEl&&document.activeElement===ktPlzEl){ktSearchAll();}
       var lnSrch = $('lnSearch');
       if (lnSrch && document.activeElement === lnSrch) searchCards(lnSrch.value.trim());
     }
@@ -2498,7 +2875,7 @@
 
   document.addEventListener('touchstart', function(e) {
     if (e.touches.length !== 1) return;
-    if(e.target.closest&&(e.target.closest('.akt-map-area')||e.target.closest('.leaflet-container')||e.target.closest('.akt-fpan')))return;
+    if(e.target.closest&&(e.target.closest('.akt-map-area')||e.target.closest('.leaflet-container')||e.target.closest('.akt-fpan')||e.target.closest('.kt-map-area')||e.target.closest('.kt-fpan')))return;
     var x = e.touches[0].clientX;
     var w = window.innerWidth;
     if (x < w * swipeEdge || x > w * (1 - swipeEdge)) {
