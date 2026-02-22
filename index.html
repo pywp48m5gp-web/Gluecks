@@ -1,0 +1,2826 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0e1a">
+<title>Gluecks. — Super-App</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap');
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overflow-x: hidden; max-width: 100vw; }
+  body {
+  font-family: ‘Lexend’, sans-serif;
+  background: #0a0e1a;
+  color: #8899bb;
+  min-height: 100vh;
+  -webkit-text-size-adjust: 100%;
+  }
+
+/* ═══════ PAGE BASE ═══════ */
+.page {
+padding-top: 54px;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+}
+.page.anim { animation: pgIn 0.28s ease; }
+@keyframes pgIn {
+from { opacity: 0; transform: translateX(14px); }
+to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ═══════ TOPBAR ═══════ */
+.top {
+position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+height: 54px;
+background: rgba(10,14,26,0.92);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+border-bottom: 1px solid rgba(120,160,255,0.08);
+display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
+}
+.top-l { display: flex; align-items: center; gap: 8px; }
+.top-r { display: flex; align-items: center; gap: 6px; }
+
+/* Zurueck-Button (iOS-Stil) */
+.btn-back {
+display: none;
+width: 36px; height: 36px;
+border-radius: 10px;
+background: rgba(77,148,255,0.08);
+border: 1px solid rgba(120,160,255,0.15);
+color: #4d94ff;
+cursor: pointer;
+align-items: center; justify-content: center;
+transition: all 0.2s;
+flex-shrink: 0;
+}
+.btn-back.visible { display: flex; }
+.btn-back:hover { background: rgba(77,148,255,0.16); }
+.btn-back:active { transform: scale(0.94); }
+.btn-back svg {
+width: 18px; height: 18px;
+stroke: #4d94ff; fill: none;
+stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.top-logo {
+font-size: 1.05rem; font-weight: 800;
+color: #f0f4ff; letter-spacing: -0.5px;
+cursor: pointer; padding: 0 2px;
+transition: opacity 0.2s;
+}
+.top-logo:hover { opacity: 0.8; }
+.top-logo .d { color: #3ddc97; }
+.top-page {
+font-size: 0.78rem; font-weight: 600;
+color: #a78bfa; opacity: 0;
+transition: opacity 0.2s;
+white-space: nowrap;
+cursor: pointer;
+}
+.top-page.visible { opacity: 1; }
+.top-page:hover { color: #c4b5fd; }
+
+.tb {
+height: 34px; padding: 0 12px;
+background: transparent;
+border: 1px solid rgba(120,160,255,0.12);
+border-radius: 9px; cursor: pointer;
+font-family: ‘Lexend’; font-size: 0.7rem; font-weight: 600;
+color: #a0b0cc; transition: all 0.2s;
+display: flex; align-items: center; gap: 5px;
+min-height: 34px;
+}
+.tb:hover { background: rgba(80,140,255,0.1); border-color: rgba(77,148,255,0.3); color: #f0f4ff; }
+.notif {
+width: 16px; height: 16px; border-radius: 50%;
+background: #ff8c42; color: #fff;
+font-size: 0.5rem; font-weight: 700;
+display: flex; align-items: center; justify-content: center;
+}
+.menu-btn {
+width: 36px; height: 36px;
+background: transparent;
+border: 1px solid rgba(120,160,255,0.12);
+border-radius: 9px; cursor: pointer;
+display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+transition: all 0.2s;
+}
+.menu-btn:hover { background: rgba(80,140,255,0.1); border-color: rgba(77,148,255,0.3); }
+.menu-btn span { display: block; width: 15px; height: 1.5px; background: #a0b0cc; border-radius: 1px; }
+
+/* ═══════ SIDEBAR ═══════ */
+.sb-ov {
+position: fixed; inset: 0; z-index: 300;
+background: rgba(0,0,0,0.55);
+backdrop-filter: blur(3px);
+-webkit-backdrop-filter: blur(3px);
+opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.sb-ov.open { opacity: 1; pointer-events: all; }
+.sb {
+position: fixed; top: 0; right: -300px; bottom: 0; width: 278px;
+z-index: 301; background: #0d1322;
+border-left: 1px solid rgba(120,160,255,0.12);
+transition: right 0.35s cubic-bezier(0.16,1,0.3,1);
+display: flex; flex-direction: column; overflow-y: auto;
+}
+.sb.open { right: 0; }
+.sb-hd {
+padding: 20px 18px 16px;
+border-bottom: 1px solid rgba(120,160,255,0.08);
+display: flex; justify-content: space-between; align-items: center;
+}
+.sb-hd h2 { font-size: 1.1rem; font-weight: 800; color: #f0f4ff; }
+.sb-hd h2 .d { color: #3ddc97; }
+.sb-x {
+width: 32px; height: 32px; border-radius: 9px;
+background: transparent; border: 1px solid rgba(120,160,255,0.08);
+color: #3d4d6e; font-size: 1.1rem; cursor: pointer;
+display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.sb-x:hover { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); color: #f87171; }
+.sb-sec { padding: 12px 10px 4px; }
+.sb-lbl {
+font-size: 0.55rem; font-weight: 600;
+letter-spacing: 2px; text-transform: uppercase;
+color: #3d4d6e; padding: 0 10px; margin-bottom: 6px;
+}
+.sb-it {
+display: flex; align-items: center; gap: 12px;
+padding: 11px 12px; border-radius: 10px;
+cursor: pointer; transition: all 0.2s;
+font-size: 0.8rem; font-weight: 500; color: #a0b0cc;
+margin-bottom: 2px; min-height: 46px;
+}
+.sb-it:hover { background: rgba(80,140,255,0.1); color: #f0f4ff; }
+.sb-it:active { background: rgba(80,140,255,0.16); }
+.sb-ic {
+width: 32px; height: 32px; border-radius: 9px;
+display: flex; align-items: center; justify-content: center;
+font-size: 1rem; flex-shrink: 0;
+}
+.sbi-b { background: rgba(77,148,255,0.12); }
+.sbi-g { background: rgba(61,220,151,0.12); }
+.sbi-o { background: rgba(255,140,66,0.12); }
+.sbi-p { background: rgba(255,107,157,0.12); }
+.sbi-v { background: rgba(167,139,250,0.12); }
+.sbi-t { background: rgba(45,212,191,0.12); }
+
+/* ═══════ HOME ═══════ */
+#pg-home .hero {
+flex: 1;
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+padding: 40px 24px 30px; position: relative;
+}
+#pg-home .hero::before {
+content: ‘’;
+position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+width: 700px; height: 700px;
+background: radial-gradient(circle, rgba(77,148,255,0.04) 0%, transparent 65%);
+pointer-events: none;
+}
+.brand {
+font-size: clamp(3.2rem, 10vw, 5.5rem);
+font-weight: 900; color: #f0f4ff;
+letter-spacing: -3px; margin-bottom: 6px;
+}
+.brand .d { color: #3ddc97; }
+.tagline { font-size: 0.85rem; color: #3d4d6e; font-weight: 400; margin-bottom: 36px; }
+
+.srch-w { width: 100%; max-width: 560px; position: relative; }
+.srch {
+width: 100%; height: 54px;
+background: #131a2e;
+border: 1px solid rgba(120,160,255,0.12);
+border-radius: 16px; padding: 0 56px 0 20px;
+font-family: ‘Lexend’; font-size: 16px; color: #f0f4ff;
+outline: none; transition: all 0.3s; -webkit-appearance: none;
+box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.srch::placeholder { color: #3d4d6e; }
+.srch:focus {
+border-color: rgba(77,148,255,0.4);
+box-shadow: 0 0 0 3px rgba(77,148,255,0.08), 0 4px 20px rgba(0,0,0,0.3);
+background: #1a2542;
+}
+.srch-btn {
+position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+width: 40px; height: 40px; border-radius: 12px;
+background: linear-gradient(135deg, #4d94ff, #3d7de6);
+border: none; cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.25s; box-shadow: 0 2px 8px rgba(77,148,255,0.3);
+}
+.srch-btn:hover { transform: translateY(-50%) scale(1.06); box-shadow: 0 4px 16px rgba(77,148,255,0.4); }
+.srch-btn:active { transform: translateY(-50%) scale(0.97); }
+.srch-btn svg { width: 17px; height: 17px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.quick {
+display: flex; gap: 8px;
+margin-top: 24px; flex-wrap: wrap; justify-content: center;
+max-width: 480px;
+}
+.qb {
+padding: 10px 18px; min-height: 44px;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.1);
+border-radius: 12px; font-family: ‘Lexend’; font-size: 0.75rem; font-weight: 600;
+color: #8899bb; cursor: pointer; transition: all 0.25s;
+display: flex; align-items: center; gap: 6px;
+box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.qb:hover {
+border-color: rgba(120,160,255,0.2); background: #1a2542;
+color: #f0f4ff; transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.qb:active { transform: translateY(0); }
+
+.access-bar {
+background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+border-radius: 10px; padding: 10px 16px;
+margin: 0 20px 16px;
+display: flex; align-items: center; justify-content: space-between;
+font-size: 0.65rem;
+}
+.access-bar .sd {
+width: 7px; height: 7px; border-radius: 50%;
+background: #3ddc97; box-shadow: 0 0 6px #3ddc97;
+display: inline-block; margin-right: 6px;
+}
+.access-bar .lbl { color: #3d4d6e; }
+.access-bar .val { color: #a0b0cc; font-family: ‘DM Mono’; font-size: 0.6rem; }
+.access-bar .cp {
+background: transparent; border: 1px solid rgba(120,160,255,0.15);
+border-radius: 6px; padding: 3px 10px;
+font-family: ‘Lexend’; font-size: 0.58rem; font-weight: 600;
+color: #4d94ff; cursor: pointer; margin-left: 6px; transition: all 0.2s;
+}
+.access-bar .cp:hover { background: rgba(77,148,255,0.08); }
+.ftr {
+padding: 16px 24px; text-align: center;
+font-size: 0.62rem; color: #3d4d6e;
+border-top: 1px solid rgba(120,160,255,0.06);
+}
+.ftr a { color: #4d94ff; text-decoration: none; }
+
+/* Home Roadmap Mini */
+.home-roadmap {
+margin: 0 20px 10px; padding: 14px 16px;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+border-radius: 12px; cursor: pointer; transition: all 0.2s;
+}
+.home-roadmap:hover { border-color: rgba(120,160,255,0.18); }
+.home-rm-hd {
+display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.home-rm-steps {
+display: flex; align-items: center; gap: 0;
+overflow-x: auto; padding-bottom: 2px;
+}
+.home-rm-steps::-webkit-scrollbar { display: none; }
+.home-rm-step {
+display: flex; align-items: center; gap: 8px;
+flex-shrink: 0; padding: 0 4px;
+}
+.home-rm-dot {
+width: 10px; height: 10px; border-radius: 50%;
+border: 2px solid #3d4d6e; flex-shrink: 0;
+}
+.home-rm-dot.active { background: #4d94ff; border-color: #4d94ff; box-shadow: 0 0 8px rgba(77,148,255,0.4); }
+.home-rm-label { font-family: ‘DM Mono’; font-size: 0.48rem; color: #3d4d6e; text-transform: uppercase; letter-spacing: 1px; }
+.home-rm-name { font-size: 0.62rem; font-weight: 600; color: #a0b0cc; white-space: nowrap; }
+.home-rm-step.active .home-rm-name { color: #4d94ff; }
+.home-rm-line {
+width: 16px; height: 2px; background: rgba(120,160,255,0.1); flex-shrink: 0;
+}
+
+/* ═══════ RESULTS ═══════ */
+#pg-results { display: none; }
+.res-top {
+padding: 14px 20px;
+display: flex; align-items: center; gap: 12px;
+border-bottom: 1px solid rgba(120,160,255,0.08);
+}
+.res-logo { font-size: 0.9rem; font-weight: 800; color: #f0f4ff; cursor: pointer; flex-shrink: 0; }
+.res-logo .d { color: #3ddc97; }
+.res-srch-w { flex: 1; max-width: 520px; position: relative; }
+.res-srch {
+width: 100%; height: 40px;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.12);
+border-radius: 10px; padding: 0 42px 0 14px;
+font-family: ‘Lexend’; font-size: 16px; color: #f0f4ff;
+outline: none; -webkit-appearance: none; transition: all 0.2s;
+}
+.res-srch:focus { border-color: rgba(77,148,255,0.4); background: #1a2542; }
+.res-sbtn {
+position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+width: 32px; height: 32px; border-radius: 8px;
+background: linear-gradient(135deg, #4d94ff, #3d7de6);
+border: none; cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+}
+.res-sbtn svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.res-tools {
+padding: 10px 20px; display: flex; gap: 6px;
+border-bottom: 1px solid rgba(120,160,255,0.08);
+overflow-x: auto;
+}
+.res-tools::-webkit-scrollbar { display: none; }
+.res-tool {
+font-family: ‘Lexend’; font-size: 0.66rem; font-weight: 600;
+padding: 6px 14px; min-height: 34px;
+border-radius: 8px; border: 1px solid rgba(120,160,255,0.1);
+background: transparent; color: #3d4d6e; cursor: pointer;
+transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+}
+.res-tool:hover { border-color: rgba(120,160,255,0.2); color: #a0b0cc; }
+.res-tool.active { border-color: rgba(77,148,255,0.4); color: #4d94ff; background: rgba(77,148,255,0.06); }
+.res-body { max-width: 700px; padding: 20px; }
+.res-info { font-size: 0.68rem; color: #3d4d6e; margin-bottom: 18px; }
+
+.r-item { margin-bottom: 26px; position: relative; padding-right: 42px; }
+.r-url { font-size: 0.68rem; color: #3d4d6e; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+.r-fav {
+width: 18px; height: 18px; border-radius: 5px;
+background: #131a2e; display: flex; align-items: center; justify-content: center;
+font-size: 0.55rem; flex-shrink: 0; color: #a0b0cc;
+}
+.r-title {
+font-size: 0.92rem; font-weight: 600; color: #7eb8ff;
+cursor: pointer; margin-bottom: 4px; transition: color 0.2s;
+display: inline-block; text-decoration: none;
+}
+.r-title:hover { color: #4d94ff; text-decoration: underline; }
+.r-desc { font-size: 0.78rem; color: #8899bb; line-height: 1.65; }
+.r-desc b { color: #f0f4ff; font-weight: 600; }
+.r-dots {
+position: absolute; top: 0; right: 0;
+width: 32px; height: 32px; border-radius: 8px;
+background: transparent; border: none; cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+color: #3d4d6e; font-size: 1.1rem; transition: all 0.2s;
+}
+.r-dots:hover { background: #131a2e; color: #a0b0cc; }
+.r-menu {
+display: none; position: absolute; top: 34px; right: 0; z-index: 50;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.15);
+border-radius: 12px; padding: 6px; min-width: 200px;
+box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.r-menu.open { display: block; animation: fi 0.15s ease; }
+@keyframes fi { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.r-mi {
+display: flex; align-items: center; gap: 10px;
+padding: 10px 12px; border-radius: 8px;
+cursor: pointer; font-size: 0.75rem; font-weight: 500;
+color: #a0b0cc; transition: all 0.15s; min-height: 44px;
+}
+.r-mi:hover { background: rgba(80,140,255,0.1); color: #f0f4ff; }
+.r-mi.off { opacity: 0.3; pointer-events: none; }
+.r-mi .ic { width: 22px; text-align: center; font-size: 0.85rem; }
+.r-sep { height: 1px; background: rgba(120,160,255,0.08); margin: 4px 6px; }
+
+/* ═══════ MODALS ═══════ */
+.mo {
+position: fixed; inset: 0; z-index: 400;
+background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
+-webkit-backdrop-filter: blur(6px);
+opacity: 0; pointer-events: none; transition: opacity 0.3s;
+display: flex; align-items: flex-start; justify-content: center;
+padding: 20px; overflow-y: auto;
+}
+.mo.open { opacity: 1; pointer-events: all; }
+.mo-box {
+background: #0d1322; border: 1px solid rgba(120,160,255,0.15);
+border-radius: 20px; width: 100%; max-width: 620px;
+transform: translateY(20px) scale(0.97);
+transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+position: relative; margin: 40px 0;
+box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.mo.open .mo-box { transform: translateY(0) scale(1); }
+.mo-x { position: sticky; top: 0; z-index: 10; display: flex; justify-content: flex-end; padding: 14px 16px 0; }
+.xcl {
+width: 34px; height: 34px; border-radius: 10px;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.1);
+color: #3d4d6e; font-size: 1.1rem; cursor: pointer;
+display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.xcl:hover { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.3); color: #f87171; }
+.mo-bd { padding: 4px 26px 30px; }
+.mo-bd h2 { font-size: 1.2rem; font-weight: 800; color: #f0f4ff; margin-bottom: 4px; }
+.mo-bd .sub { font-size: 0.72rem; color: #3d4d6e; margin-bottom: 20px; }
+.mo-bd p { font-size: 0.8rem; line-height: 1.75; margin-bottom: 10px; }
+.mo-bd h3 { font-size: 0.88rem; font-weight: 700; color: #dce4f2; margin: 22px 0 10px; }
+.dv { height: 1px; background: rgba(120,160,255,0.08); margin: 20px 0; }
+
+.ac {
+background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+border-radius: 12px; padding: 16px 18px; margin: 10px 0;
+}
+.ac h4 { font-size: 0.8rem; font-weight: 700; color: #dce4f2; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+.ac p { font-size: 0.75rem; line-height: 1.7; margin-bottom: 0; }
+.tg { font-family: ‘DM Mono’; font-size: 0.52rem; font-weight: 500; padding: 2px 7px; border-radius: 4px; }
+.tg-r { background: rgba(248,113,113,0.12); color: #f87171; }
+.tg-y { background: rgba(251,191,36,0.12); color: #fbbf24; }
+.tg-g { background: rgba(61,220,151,0.12); color: #3ddc97; }
+
+.stp { display: flex; gap: 12px; margin: 8px 0; }
+.stp-n {
+width: 26px; height: 26px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 0.62rem; font-weight: 700; color: #fff;
+flex-shrink: 0; margin-top: 1px;
+}
+.stp-c { flex: 1; font-size: 0.77rem; line-height: 1.65; color: #a0b0cc; }
+.stp-c strong { color: #dce4f2; }
+
+.anav { display: flex; flex-wrap: wrap; gap: 5px; margin: 14px 0 10px; }
+.anav a {
+font-size: 0.66rem; font-weight: 600; color: #3d4d6e;
+text-decoration: none; padding: 5px 12px;
+border: 1px solid rgba(120,160,255,0.1); border-radius: 7px; transition: all 0.2s;
+}
+.anav a:hover { color: #4d94ff; border-color: rgba(77,148,255,0.3); }
+
+.amods { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 10px 0; }
+.amod {
+background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+border-radius: 10px; padding: 12px 10px; text-align: center;
+}
+.amod-i { font-size: 1.2rem; margin-bottom: 4px; }
+.amod h5 { font-size: 0.68rem; color: #dce4f2; font-weight: 700; margin-bottom: 2px; }
+.amod p { font-size: 0.58rem; color: #3d4d6e; line-height: 1.3; margin: 0; }
+.aarch {
+background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+border-radius: 12px; padding: 18px;
+font-family: ‘DM Mono’; font-size: 0.65rem; line-height: 2.2;
+text-align: center; color: #3d4d6e; margin: 12px 0;
+}
+
+/* Updates */
+.ui {
+border: 1px solid rgba(120,160,255,0.08); border-radius: 12px;
+margin-bottom: 10px; overflow: hidden; background: #131a2e;
+}
+.uh {
+padding: 14px 16px;
+display: flex; justify-content: space-between; align-items: center;
+cursor: pointer; transition: background 0.15s;
+}
+.uh:hover { background: rgba(77,148,255,0.04); }
+.ut { font-size: 0.8rem; font-weight: 600; color: #dce4f2; }
+.ud { font-size: 0.62rem; color: #3d4d6e; margin-top: 2px; }
+.us {
+font-family: ‘DM Mono’; font-size: 0.56rem; font-weight: 500;
+padding: 3px 8px; border-radius: 5px; flex-shrink: 0;
+}
+.usv { background: rgba(77,148,255,0.12); color: #4d94ff; }
+.ust { background: rgba(251,191,36,0.12); color: #fbbf24; }
+.usl { background: rgba(61,220,151,0.12); color: #3ddc97; }
+.ub { padding: 0 16px 16px; display: none; font-size: 0.75rem; }
+.ub.open { display: block; }
+.ur {
+display: flex; justify-content: space-between;
+padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.72rem;
+}
+.ur:last-of-type { border: none; }
+.ur span:first-child { color: #3d4d6e; } .ur span:last-child { color: #a0b0cc; }
+.ubar { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.05); overflow: hidden; margin: 6px 0 10px; }
+.ubar div { height: 100%; border-radius: 2px; background: #3ddc97; }
+.ubtn { display: flex; gap: 6px; }
+.ubt {
+font-family: ‘Lexend’; font-size: 0.67rem; font-weight: 600;
+padding: 6px 14px; border-radius: 8px; border: 1px solid;
+cursor: pointer; background: transparent; min-height: 36px; transition: all 0.2s;
+}
+.ubt-y { border-color: rgba(61,220,151,0.3); color: #3ddc97; }
+.ubt-y:hover { background: rgba(61,220,151,0.08); }
+.ubt-n { border-color: rgba(248,113,113,0.3); color: #f87171; }
+.ubt-n:hover { background: rgba(248,113,113,0.08); }
+.ubt-t { border-color: rgba(77,148,255,0.3); color: #4d94ff; }
+.ubt-t:hover { background: rgba(77,148,255,0.08); }
+
+/* Roadmap */
+.roadmap { margin: 4px 0 16px; }
+.rm-step { display: flex; gap: 0; }
+.rm-left {
+display: flex; flex-direction: column; align-items: center;
+width: 32px; flex-shrink: 0;
+}
+.rm-dot {
+width: 14px; height: 14px; border-radius: 50%; border: 2px solid;
+flex-shrink: 0; margin-top: 3px;
+}
+.rm-dot.done { background: #3ddc97; border-color: #3ddc97; }
+.rm-dot.active { background: #4d94ff; border-color: #4d94ff; box-shadow: 0 0 10px rgba(77,148,255,0.5); }
+.rm-dot.future { background: transparent; border-color: #3d4d6e; }
+.rm-line { flex: 1; width: 2px; background: rgba(120,160,255,0.08); margin: 4px 0; min-height: 28px; }
+.rm-content { flex: 1; padding: 0 0 26px 14px; }
+.rm-phase {
+font-family: ‘DM Mono’; font-size: 0.55rem;
+color: #3d4d6e; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 1.5px;
+}
+.rm-title { font-size: 0.82rem; font-weight: 700; color: #dce4f2; margin-bottom: 4px; }
+.rm-title.current { color: #4d94ff; }
+.rm-desc { font-size: 0.73rem; color: #8899bb; line-height: 1.6; }
+.rm-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 7px; }
+.rm-tag {
+font-family: ‘DM Mono’; font-size: 0.52rem;
+padding: 2px 8px; border-radius: 4px;
+}
+.rm-tag.done { background: rgba(61,220,151,0.1); color: #3ddc97; }
+.rm-tag.pend { background: rgba(77,148,255,0.1); color: #4d94ff; }
+.rm-tag.fut  { background: rgba(120,160,255,0.06); color: #3d4d6e; }
+
+/* Filter */
+.fl { margin: 12px 0; }
+.fli {
+display: flex; align-items: center; justify-content: space-between;
+padding: 10px 14px; background: #131a2e;
+border: 1px solid rgba(120,160,255,0.08);
+border-radius: 10px; margin-bottom: 6px; font-size: 0.75rem;
+}
+.fli-d { color: #a0b0cc; font-family: ‘DM Mono’; font-size: 0.7rem; }
+.fli-x {
+background: transparent; border: 1px solid rgba(248,113,113,0.25);
+border-radius: 6px; padding: 4px 10px;
+font-family: ‘Lexend’; font-size: 0.62rem; font-weight: 600;
+color: #f87171; cursor: pointer; transition: all 0.2s;
+}
+.fli-x:hover { background: rgba(248,113,113,0.1); }
+.fla { display: flex; gap: 8px; margin-top: 10px; }
+.fla input {
+flex: 1; height: 40px; background: #131a2e;
+border: 1px solid rgba(120,160,255,0.15);
+border-radius: 10px; padding: 0 12px;
+font-family: ‘Lexend’; font-size: 16px; color: #f0f4ff;
+outline: none; -webkit-appearance: none; transition: all 0.2s;
+}
+.fla input:focus { border-color: rgba(77,148,255,0.4); }
+.fla input::placeholder { color: #3d4d6e; }
+.fla button {
+height: 40px; padding: 0 16px;
+background: linear-gradient(135deg, #4d94ff, #3d7de6);
+border: none; border-radius: 10px;
+font-family: ‘Lexend’; font-size: 0.72rem; font-weight: 600;
+color: #fff; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+}
+.fla button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ═══════ LERNEN MODULE ═══════ */
+#pg-lernen { display: none; }
+.ln-top {
+padding: 14px 20px; border-bottom: 1px solid rgba(120,160,255,0.08);
+display: flex; align-items: center; gap: 12px;
+}
+.ln-logo { font-size: 0.9rem; font-weight: 800; color: #f0f4ff; cursor: pointer; }
+.ln-logo .d { color: #3ddc97; }
+.ln-title {
+font-size: 0.85rem; font-weight: 700; color: #f0f4ff;
+display: flex; align-items: center; gap: 6px;
+}
+.ln-title span { color: #a78bfa; }
+
+.ln-bread {
+padding: 8px 20px;
+display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+font-size: 0.68rem; border-bottom: 1px solid rgba(120,160,255,0.06);
+background: rgba(10,14,26,0.5); overflow-x: auto; min-height: 36px;
+}
+.ln-bread::-webkit-scrollbar { display: none; }
+.ln-bc {
+color: #4d94ff; cursor: pointer; font-weight: 500;
+white-space: nowrap; transition: color 0.15s; flex-shrink: 0;
+}
+.ln-bc:hover { color: #7eb8ff; text-decoration: underline; }
+.ln-bs { color: #3d4d6e; flex-shrink: 0; }
+.ln-bcur { color: #a0b0cc; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+
+.ln-body { padding: 24px 20px; max-width: 740px; }
+.ln-intro { font-size: 0.8rem; color: #3d4d6e; margin-bottom: 20px; line-height: 1.65; }
+
+/* Kategorie-Grid */
+.ln-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ln-card {
+background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+border-radius: 14px; padding: 18px 16px;
+cursor: pointer; transition: all 0.25s;
+position: relative; overflow: hidden;
+box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.ln-card:hover {
+border-color: rgba(120,160,255,0.2); background: #1a2542;
+transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+.ln-card:active { transform: translateY(0); }
+.ln-card-i { font-size: 1.6rem; margin-bottom: 8px; }
+.ln-card h4 { font-size: 0.82rem; font-weight: 700; color: #dce4f2; margin-bottom: 3px; }
+.ln-card p { font-size: 0.66rem; color: #3d4d6e; line-height: 1.45; margin: 0; }
+.ln-card .ln-cnt {
+position: absolute; top: 10px; right: 10px;
+font-size: 0.56rem; color: #3d4d6e;
+font-family: ‘DM Mono’; background: #0a0e1a; padding: 2px 7px; border-radius: 5px;
+}
+
+/* Artikel-Liste */
+.ln-list { display: flex; flex-direction: column; gap: 8px; }
+.ln-item {
+background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+border-radius: 12px; padding: 16px 18px;
+cursor: pointer; transition: all 0.2s;
+display: flex; align-items: center; gap: 14px;
+min-height: 64px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.ln-item:hover { border-color: rgba(120,160,255,0.2); background: #1a2542; transform: translateX(3px); }
+.ln-item:active { transform: translateX(0); }
+.ln-item-c { flex: 1; }
+.ln-item h4 { font-size: 0.82rem; font-weight: 600; color: #dce4f2; margin-bottom: 4px; }
+.ln-item p { font-size: 0.7rem; color: #8899bb; line-height: 1.5; margin: 0; }
+.ln-item-arr { color: #3d4d6e; font-size: 0.75rem; flex-shrink: 0; }
+
+/* Wissens-Karte */
+.ln-wcard {
+background: #131a2e; border: 1px solid rgba(120,160,255,0.1);
+border-radius: 16px; overflow: hidden; margin-bottom: 16px;
+box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.ln-wcard-bd { padding: 22px; }
+.ln-wcard-bd h3 { font-size: 1rem; font-weight: 800; color: #f0f4ff; margin-bottom: 8px; }
+.ln-wcard-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.ln-wcard-tag {
+font-family: ‘DM Mono’; font-size: 0.56rem;
+padding: 3px 9px; border-radius: 5px;
+background: rgba(77,148,255,0.1); color: #4d94ff;
+}
+.ln-wcard-tag.yr { background: rgba(167,139,250,0.1); color: #a78bfa; }
+.ln-wcard-tag.loc { background: rgba(61,220,151,0.1); color: #3ddc97; }
+.ln-wcard-tag.warn { background: rgba(248,113,113,0.1); color: #f87171; }
+.ln-wcard-txt {
+font-size: 0.8rem; color: #a0b0cc; line-height: 1.82; margin-bottom: 16px;
+}
+.ln-wcard-facts {
+background: rgba(77,148,255,0.04); border: 1px solid rgba(77,148,255,0.1);
+border-radius: 10px; padding: 14px 16px;
+display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;
+}
+.ln-wcard-fact { display: flex; align-items: flex-start; gap: 10px; font-size: 0.74rem; color: #8899bb; line-height: 1.55; }
+.ln-wcard-fact span { color: #4d94ff; flex-shrink: 0; margin-top: 1px; }
+.ln-wcard-sources { border-top: 1px solid rgba(120,160,255,0.08); padding-top: 14px; }
+.ln-wcard-sources h4 {
+font-size: 0.62rem; font-weight: 700; color: #3d4d6e;
+text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.ln-src-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.ln-src-link {
+font-size: 0.68rem; font-weight: 600; color: #4d94ff;
+text-decoration: none; padding: 5px 12px;
+border: 1px solid rgba(77,148,255,0.2); border-radius: 7px;
+transition: all 0.2s;
+}
+.ln-src-link:hover { background: rgba(77,148,255,0.08); border-color: rgba(77,148,255,0.35); }
+.ln-src-link::after { content: ’ \2197’; font-size: 0.6rem; opacity: 0.7; }
+
+.ln-link {
+color: #4d94ff; text-decoration: none;
+border-bottom: 1px dashed rgba(77,148,255,0.35);
+cursor: pointer; transition: all 0.15s;
+}
+.ln-link:hover { border-bottom-style: solid; color: #7eb8ff; }
+
+/* ═══════ AKTIVITAETEN MODULE ═══════ */
+/* ═══════ AKTIVITAETEN — MAP MODULE ═══════ */
+.akt-body { padding: 16px 16px 20px; max-width: 640px; }
+.akt-hero { text-align: center; padding: 10px 0 16px; }
+.akt-hero-icon { font-size: 2.4rem; margin-bottom: 6px; }
+.akt-hero-title { font-size: 1.15rem; font-weight: 800; color: #f0f4ff; margin-bottom: 4px; }
+.akt-hero-desc { font-size: 0.75rem; color: #3d4d6e; max-width: 320px; margin: 0 auto; line-height: 1.5; }
+
+.akt-search-section { margin-bottom: 14px; }
+.akt-plz-row { display: flex; gap: 8px; }
+.akt-plz {
+flex: 1; height: 46px;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.12);
+border-radius: 12px; padding: 0 16px;
+font-family: ‘Lexend’; font-size: 16px; color: #f0f4ff;
+outline: none; -webkit-appearance: none; transition: all 0.2s;
+}
+.akt-plz::placeholder { color: #3d4d6e; }
+.akt-plz:focus { border-color: rgba(77,148,255,0.4); background: #1a2542; }
+.akt-suggest {
+display: none; position: absolute; left: 0; right: 0; top: 50px; z-index: 500;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.15);
+border-radius: 12px; overflow: hidden;
+box-shadow: 0 8px 32px rgba(0,0,0,0.5); max-height: 220px; overflow-y: auto;
+}
+.akt-suggest.open { display: block; }
+.akt-suggest-item {
+padding: 12px 16px; cursor: pointer;
+font-size: 0.75rem; color: #a0b0cc;
+border-bottom: 1px solid rgba(120,160,255,0.06);
+transition: background 0.15s;
+}
+.akt-suggest-item:last-child { border-bottom: none; }
+.akt-suggest-item:hover { background: rgba(77,148,255,0.08); color: #f0f4ff; }
+.akt-suggest-item small { display: block; font-size: 0.62rem; color: #3d4d6e; margin-top: 2px; }
+.akt-locate-btn {
+width: 46px; height: 46px; flex-shrink: 0;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.12);
+border-radius: 12px; cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.2s; color: #4d94ff;
+}
+.akt-locate-btn:hover { background: #1a2542; border-color: rgba(77,148,255,0.4); }
+.akt-locate-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Map container – not fullscreen */
+.akt-map-section { position: relative; margin-bottom: 14px; }
+.akt-map-area {
+height: 52vh; min-height: 280px; max-height: 480px;
+border-radius: 16px; overflow: hidden;
+border: 1px solid rgba(120,160,255,0.12);
+background: #0d1322;
+touch-action: none;
+}
+
+/* Radius pills overlaying map */
+.akt-radius-bar {
+position: absolute; top: 10px; right: 10px; z-index: 500;
+display: flex; gap: 4px;
+}
+.akt-radius-btn {
+height: 30px; padding: 0 10px;
+background: rgba(10,14,26,0.88); border: 1px solid rgba(120,160,255,0.15);
+border-radius: 8px; font-family: ‘Lexend’; font-size: 0.62rem; font-weight: 600;
+color: #6678a0; cursor: pointer; transition: all 0.2s;
+backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.akt-radius-btn.active { color: #4d94ff; border-color: rgba(77,148,255,0.4); }
+.akt-radius-btn:hover { color: #a0b0cc; }
+
+/* Loading indicator */
+.akt-loading-bar {
+position: absolute; top: 10px; left: 10px; z-index: 500;
+background: rgba(10,14,26,0.88); border: 1px solid rgba(120,160,255,0.15);
+border-radius: 8px; padding: 7px 14px;
+font-size: 0.68rem; font-weight: 600; color: #a0b0cc;
+backdrop-filter: blur(12px); display: none; align-items: center; gap: 8px;
+}
+.akt-loading-bar.show { display: flex; }
+.akt-spinner {
+width: 14px; height: 14px; border-radius: 50%;
+border: 2px solid rgba(77,148,255,0.2); border-top-color: #4d94ff;
+animation: aktSpin 0.7s linear infinite;
+}
+@keyframes aktSpin { to { transform: rotate(360deg); } }
+
+/* Filter toggle button */
+.akt-filter-toggle {
+display: flex; align-items: center; justify-content: center; gap: 8px;
+width: 100%; height: 44px;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.12);
+border-radius: 12px; cursor: pointer;
+font-family: ‘Lexend’; font-size: 0.78rem; font-weight: 600;
+color: #a0b0cc; transition: all 0.2s; margin-bottom: 14px;
+}
+.akt-filter-toggle:hover { background: #1a2542; border-color: rgba(120,160,255,0.2); color: #f0f4ff; }
+.akt-ft-count {
+background: #4d94ff; color: #fff; font-size: 0.58rem; font-weight: 700;
+min-width: 20px; height: 20px; border-radius: 10px; padding: 0 6px;
+display: flex; align-items: center; justify-content: center;
+}
+
+/* Filter panel — slide up */
+.akt-filter-ov {
+position: fixed; inset: 0; z-index: 800;
+background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.akt-filter-ov.open { opacity: 1; pointer-events: all; }
+.akt-filter-panel {
+position: fixed; bottom: 0; left: 0; right: 0; z-index: 801;
+background: #0d1322;
+border-top: 1px solid rgba(120,160,255,0.12);
+border-radius: 20px 20px 0 0;
+transform: translateY(100%);
+transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+max-height: 70vh; display: flex; flex-direction: column;
+box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+touch-action: none;
+}
+.akt-filter-panel.open { transform: translateY(0); }
+.akt-fp-handle {
+width: 36px; height: 4px; border-radius: 2px;
+background: rgba(120,160,255,0.25); margin: 10px auto 0;
+cursor: grab;
+}
+.akt-fp-header {
+display: flex; align-items: center; justify-content: space-between;
+padding: 12px 20px 6px; flex-shrink: 0;
+}
+.akt-fp-title { font-size: 0.85rem; font-weight: 700; color: #f0f4ff; }
+.akt-fp-close {
+width: 32px; height: 32px; border-radius: 9px;
+background: transparent; border: 1px solid rgba(120,160,255,0.08);
+color: #4d5d7e; font-size: 1rem; cursor: pointer;
+display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.akt-fp-close:hover { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); color: #f87171; }
+.akt-fp-actions {
+display: flex; gap: 8px; padding: 4px 20px 10px; flex-shrink: 0;
+}
+.akt-fp-act {
+padding: 6px 14px; border-radius: 8px;
+background: transparent; border: 1px solid rgba(120,160,255,0.1);
+font-family: ‘Lexend’; font-size: 0.65rem; font-weight: 600;
+color: #4d5d7e; cursor: pointer; transition: all 0.2s;
+}
+.akt-fp-act:hover { color: #a0b0cc; border-color: rgba(120,160,255,0.25); }
+.akt-fp-grid {
+display: grid; grid-template-columns: 1fr 1fr;
+gap: 8px; padding: 0 16px 24px; overflow-y: auto; flex: 1;
+}
+.akt-fp-item {
+display: flex; align-items: center; gap: 10px;
+padding: 11px 12px; border-radius: 12px;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.06);
+cursor: pointer; transition: all 0.2s; min-height: 48px;
+user-select: none; -webkit-user-select: none;
+}
+.akt-fp-item:hover { border-color: rgba(120,160,255,0.15); }
+.akt-fp-item.active { border-color: var(–cat-color, rgba(77,148,255,0.4)); background: var(–cat-bg, rgba(77,148,255,0.08)); }
+.akt-fp-dot {
+width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+background: var(–cat-color, #4d94ff);
+opacity: 0.3; transition: opacity 0.2s;
+}
+.akt-fp-item.active .akt-fp-dot { opacity: 1; box-shadow: 0 0 6px var(–cat-color, #4d94ff); }
+.akt-fp-label { font-size: 0.7rem; font-weight: 500; color: #6678a0; transition: color 0.2s; line-height: 1.2; }
+.akt-fp-item.active .akt-fp-label { color: #dce4f2; }
+.akt-fp-count {
+margin-left: auto; font-size: 0.58rem; font-weight: 600;
+color: #3d4d6e; font-family: ‘DM Mono’;
+}
+.akt-fp-item.active .akt-fp-count { color: var(–cat-color, #4d94ff); }
+
+/* POI popup */
+.leaflet-popup-content { font-family: ‘Lexend’; }
+.akt-popup-name { font-size: 0.8rem; font-weight: 700; color: #0a0e1a; margin-bottom: 2px; }
+.akt-popup-cat { font-size: 0.64rem; font-weight: 500; color: #666; display: flex; align-items: center; gap: 4px; }
+.akt-popup-cat .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.akt-popup-detail { font-size: 0.64rem; color: #888; margin-top: 3px; }
+
+/* Stats row */
+.akt-stats {
+display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.akt-stat {
+background: #131a2e; border: 1px solid rgba(120,160,255,0.08);
+border-radius: 10px; padding: 8px 14px;
+font-size: 0.68rem; color: #6678a0; display: flex; align-items: center; gap: 6px;
+}
+.akt-stat strong { color: #dce4f2; font-weight: 700; }
+
+.akt-coming {
+text-align: center; padding: 14px;
+border-top: 1px solid rgba(120,160,255,0.06); margin-top: 8px;
+}
+
+/* Suche im Lernen-Modul */
+.ln-search-w { max-width: 440px; position: relative; margin-bottom: 20px; }
+.ln-search {
+width: 100%; height: 44px;
+background: #131a2e; border: 1px solid rgba(120,160,255,0.12);
+border-radius: 12px; padding: 0 16px;
+font-family: ‘Lexend’; font-size: 16px; color: #f0f4ff;
+outline: none; -webkit-appearance: none; transition: all 0.2s;
+}
+.ln-search::placeholder { color: #3d4d6e; }
+.ln-search:focus { border-color: rgba(77,148,255,0.4); background: #1a2542; }
+
+/* ═══════ PLATZHALTER-SEITEN ═══════ */
+.ph-page {
+display: none; flex-direction: column; align-items: center; justify-content: center;
+min-height: calc(100vh - 54px); padding: 40px 28px; text-align: center;
+}
+.ph-icon { font-size: 4rem; margin-bottom: 18px; }
+.ph-badge {
+font-family: ‘DM Mono’; font-size: 0.6rem; font-weight: 500;
+padding: 4px 12px; border-radius: 6px;
+background: rgba(251,191,36,0.1); color: #fbbf24;
+border: 1px solid rgba(251,191,36,0.2);
+margin-bottom: 16px; display: inline-block;
+text-transform: uppercase; letter-spacing: 1.5px;
+}
+.ph-title { font-size: 1.6rem; font-weight: 800; color: #f0f4ff; margin-bottom: 12px; letter-spacing: -0.5px; }
+.ph-desc {
+font-size: 0.85rem; color: #8899bb; line-height: 1.72;
+max-width: 360px; margin-bottom: 32px;
+}
+.ph-back {
+display: inline-flex; align-items: center; gap: 8px;
+padding: 12px 24px; min-height: 48px;
+background: rgba(77,148,255,0.08); border: 1px solid rgba(77,148,255,0.2);
+border-radius: 12px; font-family: ‘Lexend’; font-size: 0.8rem; font-weight: 600;
+color: #4d94ff; cursor: pointer; transition: all 0.25s;
+}
+.ph-back:hover { background: rgba(77,148,255,0.14); }
+
+/* ═══════ RESPONSIVE ═══════ */
+@media (max-width: 640px) {
+.brand { font-size: 3.2rem; }
+.amods { grid-template-columns: 1fr 1fr; }
+.res-body { padding: 14px; }
+.top { padding: 0 12px; }
+.sb-it { min-height: 48px; }
+.qb { padding: 10px 14px; }
+.ln-body { padding: 16px; }
+.ln-wcard-bd { padding: 16px; }
+.mo-bd { padding: 4px 18px 24px; }
+.tb:first-of-type { display: none; }
+}
+@media (max-width: 380px) {
+.ln-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- TOPBAR -->
+
+<div class="top">
+  <div class="top-l">
+    <button class="btn-back" id="btnBack" aria-label="Zurueck">
+      <svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>
+    </button>
+    <div class="top-logo" id="btnHome">Gluecks<span class="d">.</span></div>
+    <span class="top-page" id="topPageTitle"></span>
+  </div>
+  <div class="top-r">
+    <button class="tb" id="btnAbout">Ueber uns</button>
+    <button class="tb" id="btnUpdates">Updates <span class="notif">3</span></button>
+    <button class="menu-btn" id="btnMenu"><span></span><span></span><span></span></button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+
+<div class="sb-ov" id="sbOv"></div>
+<div class="sb" id="sb">
+  <div class="sb-hd">
+    <h2>Gluecks<span class="d">.</span></h2>
+    <button class="sb-x" id="sbClose">&times;</button>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Aktiv</div>
+    <div class="sb-it" data-act="home"><div class="sb-ic sbi-b">&#x1F50D;</div>Suchmaschine</div>
+    <div class="sb-it" data-act="lernen"><div class="sb-ic sbi-v">&#x1F4DA;</div>Lernen</div>
+    <div class="sb-it" data-act="aktivitaeten"><div class="sb-ic sbi-o">&#x1F3AF;</div>Aktivitaeten</div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Geplant</div>
+    <div class="sb-it" data-act="marktplatz"><div class="sb-ic sbi-g">&#x1F91D;</div>Marktplatz</div>
+    <div class="sb-it" data-act="karten"><div class="sb-ic sbi-t">&#x1F5FA;</div>Karten-Tools</div>
+    <div class="sb-it" data-act="gesundheit"><div class="sb-ic sbi-p">&#x2764;</div>Gesundheit</div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">System</div>
+    <div class="sb-it" data-act="roadmap"><div class="sb-ic sbi-g">&#x1F5FA;</div>Roadmap</div>
+    <div class="sb-it" data-act="about"><div class="sb-ic sbi-b">&#x2139;</div>Ueber uns</div>
+    <div class="sb-it" data-act="updates"><div class="sb-ic sbi-o">&#x1F504;</div>Updates</div>
+    <div class="sb-it" data-act="filter"><div class="sb-ic sbi-t">&#x1F6E1;</div>Filter verwalten</div>
+  </div>
+</div>
+
+<!-- PAGE: HOME -->
+
+<div class="page" id="pg-home">
+  <div class="hero">
+    <div class="brand">Gluecks<span class="d">.</span></div>
+    <div class="tagline">Fuer Menschen, nicht fuer Konzerne.</div>
+    <div class="srch-w">
+      <input class="srch" type="text" placeholder="Was suchst du?" id="si" autocomplete="off">
+      <button class="srch-btn" id="btnSearch">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <div class="quick">
+      <button class="qb" data-act="lernen">&#x1F4DA; Lernen</button>
+      <button class="qb" data-act="aktivitaeten">&#x1F3AF; Aktivitaeten</button>
+      <button class="qb" data-act="marktplatz">&#x1F91D; Marktplatz</button>
+      <button class="qb" data-act="karten">&#x1F5FA; Karten</button>
+      <button class="qb" data-act="gesundheit">&#x2764; Gesundheit</button>
+    </div>
+  </div>
+  <div class="home-roadmap" data-act-roadmap>
+    <div class="home-rm-hd">
+      <span style="font-size:0.9rem;">&#x1F5FA;</span>
+      <span style="font-size:0.68rem;font-weight:700;color:#dce4f2;">Roadmap</span>
+      <span style="font-size:0.55rem;color:#3d4d6e;margin-left:auto;">Alles anzeigen &#x203A;</span>
+    </div>
+    <div class="home-rm-steps">
+      <div class="home-rm-step active">
+        <div class="home-rm-dot active"></div>
+        <div>
+          <div class="home-rm-label">Phase 1</div>
+          <div class="home-rm-name">Fundament</div>
+        </div>
+      </div>
+      <div class="home-rm-line"></div>
+      <div class="home-rm-step">
+        <div class="home-rm-dot"></div>
+        <div>
+          <div class="home-rm-label">Phase 2</div>
+          <div class="home-rm-name">Voting</div>
+        </div>
+      </div>
+      <div class="home-rm-line"></div>
+      <div class="home-rm-step">
+        <div class="home-rm-dot"></div>
+        <div>
+          <div class="home-rm-label">Phase 3</div>
+          <div class="home-rm-name">Community</div>
+        </div>
+      </div>
+      <div class="home-rm-line"></div>
+      <div class="home-rm-step">
+        <div class="home-rm-dot"></div>
+        <div>
+          <div class="home-rm-label">Phase 4-5</div>
+          <div class="home-rm-name">Dezentral</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="access-bar">
+    <span><span class="sd"></span><span class="lbl">Einstiegstor</span></span>
+    <span><span class="val">ipfs://bafybei...x4f</span><button class="cp" id="btnCopy">Kopieren</button></span>
+  </div>
+  <div class="ftr">Dezentral &middot; Open Source &middot; Keine Nutzerdaten &middot; <a href="#" id="btnLearn">Mehr erfahren</a></div>
+</div>
+
+<!-- PAGE: RESULTS -->
+
+<div class="page" id="pg-results" style="display:none;">
+  <div class="res-top">
+    <div class="res-logo" id="btnHome2">Gluecks<span class="d">.</span></div>
+    <div class="res-srch-w">
+      <input class="res-srch" type="text" id="si2" autocomplete="off">
+      <button class="res-sbtn" id="btnSearch2">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="res-tools">
+    <button class="res-tool active">Alle</button>
+    <button class="res-tool" id="btnResFilter">&#x1F6E1; Filter</button>
+    <button class="res-tool" style="opacity:0.35;cursor:default;">&#x2B06; Voting (bald)</button>
+  </div>
+  <div class="res-body" id="results"></div>
+</div>
+
+<!-- PAGE: LERNEN -->
+
+<div class="page" id="pg-lernen" style="display:none;">
+  <div class="ln-bread" id="lnBread"></div>
+  <div class="ln-body" id="lnBody"></div>
+</div>
+
+<!-- PAGE: MARKTPLATZ -->
+
+<div class="page ph-page" id="pg-marktplatz">
+  <div class="ph-icon">&#x1F91D;</div>
+  <div class="ph-badge">In Entwicklung</div>
+  <div class="ph-title">Marktplatz</div>
+  <div class="ph-desc">Biete und suche Waren und Dienstleistungen. Lokal, fair, ohne Mittelsmann. Community-kontrolliert per Voting.</div>
+  <button class="ph-back" data-gohome>&#x2190; Zurueck zur Startseite</button>
+</div>
+
+<!-- PAGE: AKTIVITAETEN -->
+
+<div class="page" id="pg-aktivitaeten" style="display:none;">
+  <div class="akt-body">
+    <div class="akt-hero">
+      <div class="akt-hero-icon">&#x1F3AF;</div>
+      <h2 class="akt-hero-title">Aktivitaeten</h2>
+      <p class="akt-hero-desc">Entdecke Spielplaetze, Parks, Seen und mehr in deiner Naehe.</p>
+    </div>
+
+```
+<div class="akt-search-section">
+  <div class="akt-plz-row">
+    <div style="flex:1;position:relative;">
+      <input class="akt-plz" type="text" id="aktPlz" placeholder="Ort oder PLZ eingeben..." autocomplete="off" style="width:100%;">
+      <div class="akt-suggest" id="aktSuggest"></div>
+    </div>
+    <button class="akt-locate-btn" id="btnAktLocate" title="Mein Standort">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Map section -->
+<div class="akt-map-section" id="aktMapSection" style="display:none;">
+  <div class="akt-map-area" id="aktMap"></div>
+  <div class="akt-radius-bar">
+    <button class="akt-radius-btn" data-radius="2000">2km</button>
+    <button class="akt-radius-btn active" data-radius="5000">5km</button>
+    <button class="akt-radius-btn" data-radius="10000">10km</button>
+  </div>
+  <div class="akt-loading-bar" id="aktLoading">
+    <div class="akt-spinner"></div>
+    <span id="aktLoadingText">Lade...</span>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="akt-stats" id="aktStats" style="display:none;"></div>
+
+<!-- Filter button -->
+<button class="akt-filter-toggle" id="btnAktFilter" style="display:none;">
+  &#x1F3AE; Karten-Overlay (Diablo-Style)
+  <span class="akt-ft-count" id="aktFilterCount">0</span>
+</button>
+
+<div class="akt-coming">
+  <div class="ph-badge" style="margin-bottom:8px;">Community-Daten ab Phase 3</div>
+  <p style="font-size:0.72rem;color:#3d4d6e;line-height:1.6;">Aktuell zeigen wir OpenStreetMap-Daten. Bald werden Orte von der Community gepflegt, bewertet und ergaenzt.</p>
+</div>
+```
+
+  </div>
+
+  <!-- Filter overlay -->
+
+  <div class="akt-filter-ov" id="aktFilterOv"></div>
+  <div class="akt-filter-panel" id="aktFilterPanel">
+    <div class="akt-fp-handle" id="aktFPHandle"></div>
+    <div class="akt-fp-header">
+      <span class="akt-fp-title">&#x1F3AE; Karten-Overlay</span>
+      <button class="akt-fp-close" id="btnAktFPClose">&#x2715;</button>
+    </div>
+    <div class="akt-fp-actions">
+      <button class="akt-fp-act" id="btnAktAll">Alle an</button>
+      <button class="akt-fp-act" id="btnAktNone">Alle aus</button>
+    </div>
+    <div class="akt-fp-grid" id="aktFilterGrid"></div>
+  </div>
+</div>
+
+<!-- PAGE: KARTEN -->
+
+<div class="page ph-page" id="pg-karten">
+  <div class="ph-icon">&#x1F5FA;</div>
+  <div class="ph-badge">In Entwicklung</div>
+  <div class="ph-title">Karten-Tools</div>
+  <div class="ph-desc">Finde Einrichtungen wie Krankenhaeuser, oeffentliche Toiletten, Rathaeuser und mehr auf einer interaktiven, datenschutzfreundlichen Karte.</div>
+  <button class="ph-back" data-gohome>&#x2190; Zurueck zur Startseite</button>
+</div>
+
+<!-- PAGE: GESUNDHEIT -->
+
+<div class="page ph-page" id="pg-gesundheit">
+  <div class="ph-icon">&#x2764;</div>
+  <div class="ph-badge">In Entwicklung</div>
+  <div class="ph-title">Gesundheit</div>
+  <div class="ph-desc">Gesundheitsinfos, Notfallnummern und Hilfsangebote. Schnell und zuverlaessig — auch offline verfuegbar.</div>
+  <button class="ph-back" data-gohome>&#x2190; Zurueck zur Startseite</button>
+</div>
+
+<!-- PAGE: ROADMAP -->
+
+<div class="page" id="pg-roadmap" style="display:none;">
+  <div style="padding:20px;max-width:640px;">
+    <div style="margin-bottom:20px;">
+      <div style="font-size:1.6rem;margin-bottom:6px;">&#x1F5FA;</div>
+      <h2 style="font-size:1.1rem;font-weight:800;color:#f0f4ff;margin-bottom:4px;">Roadmap</h2>
+      <p style="font-size:0.75rem;color:#3d4d6e;">Wo wir stehen und was als naechstes kommt.</p>
+    </div>
+    <div class="roadmap">
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot active"></div><div class="rm-line"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 1 &middot; Jetzt</div>
+          <div class="rm-title current">Fundament aufbauen</div>
+          <div class="rm-desc">Suchmaschine, Lernen-Modul, iOS-Navigation und Design. Zentral gesteuert, Open Source.</div>
+          <div class="rm-tags">
+            <span class="rm-tag done">&#x2713; Suchmaschine</span>
+            <span class="rm-tag done">&#x2713; Lernen</span>
+            <span class="rm-tag done">&#x2713; iOS-Navigation</span>
+            <span class="rm-tag done">&#x2713; Design</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot future"></div><div class="rm-line"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 2 &middot; Geplant</div>
+          <div class="rm-title">Anonymes Voting-System</div>
+          <div class="rm-desc">Kryptographisch gesichertes Voting. Kein Tracking, keine Manipulation.</div>
+          <div class="rm-tags">
+            <span class="rm-tag pend">Kryptografie</span>
+            <span class="rm-tag pend">Anon-Identitaet</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot future"></div><div class="rm-line"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 3 &middot; Geplant</div>
+          <div class="rm-title">Community-Kontrolle</div>
+          <div class="rm-desc">Voting auf alle Module anwenden. Suchergebnisse bewerten, Inhalte vorschlagen.</div>
+          <div class="rm-tags">
+            <span class="rm-tag pend">Voting auf Module</span>
+            <span class="rm-tag pend">Community-Inhalte</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot future"></div><div class="rm-line"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 4 &middot; Vision</div>
+          <div class="rm-title">Vollstaendige Module</div>
+          <div class="rm-desc">Interaktive Karten, lokale Aktivitaeten, Marktplatz, Gesundheitsmodul.</div>
+          <div class="rm-tags">
+            <span class="rm-tag fut">Karten</span>
+            <span class="rm-tag fut">Aktivitaeten</span>
+            <span class="rm-tag fut">Marktplatz</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-step">
+        <div class="rm-left"><div class="rm-dot future"></div></div>
+        <div class="rm-content">
+          <div class="rm-phase">Phase 5 &middot; Vision</div>
+          <div class="rm-title">Vollstaendige Dezentralisierung</div>
+          <div class="rm-desc">P2P Kommunikation. Laeuft ohne Server, ohne Gruender, ohne zentrale Kontrolle.</div>
+          <div class="rm-tags">
+            <span class="rm-tag fut">P2P</span>
+            <span class="rm-tag fut">IPFS</span>
+            <span class="rm-tag fut">Dezentral</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ABOUT -->
+
+<div class="mo" id="mo-about">
+  <div class="mo-box" style="max-width:620px;">
+    <div class="mo-x"><button class="xcl" data-close>&times;</button></div>
+    <div class="mo-bd">
+      <h2>Gluecks<span style="color:#3ddc97">.</span></h2>
+      <div class="sub">Eine App. Kein Tracking. Keine Konzerne. Laeuft ohne Gruender weiter.</div>
+      <p>Statt 20 Apps fuer 20 Dinge: <strong style="color:#dce4f2">eine App mit Modulen</strong>. Unter der Haube laeuft ein anonymes Voting-System, das niemand manipulieren kann.</p>
+      <div class="anav">
+        <a href="#ab-mod">Module</a><a href="#ab-how">Wie es funktioniert</a><a href="#ab-blocks">Bausteine</a><a href="#ab-access">Zugang</a><a href="#ab-safe">Sicherheit</a>
+      </div>
+      <div class="dv" id="ab-mod"></div>
+      <h3>Was steckt drin</h3>
+      <div class="amods">
+        <div class="amod"><div class="amod-i">&#x1F50D;</div><h5>Suche</h5><p>Community-Index</p></div>
+        <div class="amod"><div class="amod-i">&#x1F91D;</div><h5>Marktplatz</h5><p>Lokal kaufen/bieten</p></div>
+        <div class="amod"><div class="amod-i">&#x1F4DA;</div><h5>Lernen</h5><p>Wissen teilen</p></div>
+        <div class="amod"><div class="amod-i">&#x2764;</div><h5>Gesundheit</h5><p>Hilfe &amp; Ressourcen</p></div>
+        <div class="amod"><div class="amod-i">&#x1F3AF;</div><h5>Aktivitaeten</h5><p>Was geht hier?</p></div>
+        <div class="amod"><div class="amod-i">&#x1F5FA;</div><h5>Karten</h5><p>Finden &amp; melden</p></div>
+      </div>
+      <div class="dv" id="ab-how"></div>
+      <h3>Wie es funktioniert</h3>
+      <div class="stp"><div class="stp-n" style="background:#4d94ff;">1</div><div class="stp-c"><strong>Du machst etwas.</strong> Bewertest ein Ergebnis, meldest etwas, empfiehlst einen Haendler.</div></div>
+      <div class="stp"><div class="stp-n" style="background:#a78bfa;">2</div><div class="stp-c"><strong>Anonymer Beweis.</strong> Unsichtbar. Beweist dass du darfst — nicht wer du bist.</div></div>
+      <div class="stp"><div class="stp-n" style="background:#3ddc97;">3</div><div class="stp-c"><strong>Direkt an andere Nutzer.</strong> Kein Server. Geraet zu Geraet.</div></div>
+      <div class="stp"><div class="stp-n" style="background:#2dd4bf;">4</div><div class="stp-c"><strong>Alle sehen das Ergebnis, niemand sieht wer.</strong> Pruefbar, aber anonym.</div></div>
+      <div class="dv" id="ab-blocks"></div>
+      <h3>Bausteine</h3>
+      <div class="aarch">
+        <span style="color:#3ddc97;">Module (frei aenderbar)</span><br>
+        Suche · Marktplatz · Lernen · Gesundheit · Karten<br>↓<br>
+        <span style="color:#fbbf24;">Governance · Identitaet · Netzwerk (geschuetzt)</span><br>↓<br>
+        <span style="color:#f87171;">Kern · Zugang (gesperrt — fuer immer)</span>
+      </div>
+      <div class="ac"><h4>&#x1F534; Kern <span class="tg tg-r">GESPERRT</span></h4><p>Voting-Regeln, Verschluesselung, Anonymitaet. Kann nie geaendert werden.</p></div>
+      <div class="ac"><h4>&#x1F7E1; System <span class="tg tg-y">GESCHUETZT</span></h4><p>Aenderbar — aber nur nach Test, Audit, Abstimmung und stufenweisem Rollout.</p></div>
+      <div class="ac"><h4>&#x1F7E2; Module <span class="tg tg-g">OFFEN</span></h4><p>Frei hinzufuegbar per Community-Vote.</p></div>
+      <div class="dv" id="ab-access"></div>
+      <h3>Zugang</h3>
+      <div class="ac"><h4>&#x1F310; Drei Wege rein</h4><p><strong style="color:#dce4f2">Domain</strong> — bequem, aber sperrbar.<br><strong style="color:#dce4f2">IPFS</strong> — dezentral, nicht loeschbar.<br><strong style="color:#dce4f2">P2P</strong> — bestehende Nutzer brauchen keinen Einstieg.</p></div>
+      <div class="ac" style="border-color:rgba(61,220,151,0.15);"><h4>&#x1F504; Selbstheilung</h4><p>Faellt der Einstieg aus, kann jeder Nutzer einen neuen erstellen — ein Klick. Hash-Verifizierung verhindert Manipulation.</p></div>
+      <div class="dv" id="ab-safe"></div>
+      <h3>Sicherheit</h3>
+      <div class="ac"><h4>&#x1F4E6; Deine Daten</h4><p><strong style="color:#f0f4ff">Null persoenliche Daten.</strong> Kein Name, Email, Telefon, Standort.</p></div>
+      <div class="ac"><h4>&#x1F916; Gegen Bots</h4><p>Alle 12h zufaellige Auswahl wer voten darf. Tausende Fakes? Keiner wird ausgewaehlt.</p></div>
+      <div class="ac"><h4>&#x1F513; Faelschungssicher</h4><p>Jeder Vote als Kette gespeichert. Aenderung bricht die Kette sichtbar.</p></div>
+      <div class="ac"><h4>&#x1F464; Ohne Gruender</h4><p>Open Source. Regeln im Code. Laeuft weiter, egal was passiert.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: FILTER -->
+
+<div class="mo" id="mo-filter">
+  <div class="mo-box" style="max-width:520px;">
+    <div class="mo-x"><button class="xcl" data-close>&times;</button></div>
+    <div class="mo-bd">
+      <h2>&#x1F6E1; Filter</h2>
+      <div class="sub">Blockierte Domains — spaeter per Community-Voting gesteuert.</div>
+      <div class="fl" id="filterList"></div>
+      <div class="fla">
+        <input type="text" id="filterInput" placeholder="domain.de hinzufuegen...">
+        <button id="btnAddFilter">Hinzufuegen</button>
+      </div>
+      <p style="font-size:0.68rem;color:#3d4d6e;margin-top:12px;">&#x1F512; Aktuell zentral verwaltet. Spaeter entscheidet die Community per Voting.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: UPDATES -->
+
+<div class="mo" id="mo-updates">
+  <div class="mo-box" style="max-width:540px;">
+    <div class="mo-x"><button class="xcl" data-close>&times;</button></div>
+    <div class="mo-bd">
+      <h2>Updates</h2>
+      <div class="sub">Aktuelle Aenderungen und Community-Vorschlaege</div>
+
+```
+  <div class="ui">
+    <div class="uh" data-toggle>
+      <div><div class="ut">v0.2.0 — Marktplatz: Radius-Filter</div><div class="ud">12. Feb 2026 · community/alex · <span style="color:#3ddc97;">Modul</span></div></div>
+      <span class="us usv">Abstimmung</span>
+    </div>
+    <div class="ub">
+      <div class="ur"><span>Aenderung</span><span>Ergebnisse nach Entfernung filtern</span></div>
+      <div class="ur"><span>Audit</span><span style="color:#3ddc97;">3/3 sicher</span></div>
+      <div class="ur"><span>Stimmen</span><span>847 ja · 23 nein</span></div>
+      <div class="ubar"><div style="width:97%;"></div></div>
+      <div class="ubtn"><button class="ubt ubt-y">Zustimmen</button><button class="ubt ubt-n">Ablehnen</button><button class="ubt ubt-t">Testen</button></div>
+    </div>
+  </div>
+  <div class="ui">
+    <div class="uh" data-toggle>
+      <div><div class="ut">v0.1.4 — Sync Performance</div><div class="ud">8. Feb 2026 · core/mike · <span style="color:#fbbf24;">Netzwerk</span></div></div>
+      <span class="us usl">Live</span>
+    </div>
+    <div class="ub">
+      <div class="ur"><span>Aenderung</span><span>Gossip 40% schneller</span></div>
+      <div class="ur"><span>Rollout</span><span style="color:#3ddc97;">100%</span></div>
+    </div>
+  </div>
+  <div class="ui">
+    <div class="uh" data-toggle>
+      <div><div class="ut">v0.3.0 — Lernplattform</div><div class="ud">14. Feb 2026 · community/sara · <span style="color:#3ddc97;">Modul</span></div></div>
+      <span class="us ust">Test (5%)</span>
+    </div>
+    <div class="ub">
+      <div class="ur"><span>Aenderung</span><span>Kurse teilen &amp; bewerten</span></div>
+      <div class="ur"><span>Rollout</span><span style="color:#fbbf24;">5%</span></div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<script>
+(function(){
+  // ═══════ DATEN ═══════
+  var blacklist = ['facebook.com','instagram.com','tiktok.com','twitter.com','x.com','amazon.de','ebay.de','wish.com','temu.com','shein.com','aliexpress.com','pinterest.com','reddit.com'];
+
+  var mockDB = {
+    'default': [
+      {u:'de.wikipedia.org', t:'Wikipedia — Die freie Enzyklopaedie', d:'Willkommen bei Wikipedia, dem freien Nachschlagewerk.'},
+      {u:'openstreetmap.org', t:'OpenStreetMap — Freie Weltkarte', d:'OpenStreetMap ist eine freie, editierbare Karte der gesamten Welt. Von Menschen fuer Menschen.'},
+      {u:'duckduckgo.com', t:'DuckDuckGo — Datenschutz, vereinfacht.', d:'Die Suchmaschine die dich nicht verfolgt. Keine persoenlichen Daten, kein Tracking.'}
+    ],
+    'kochen': [
+      {u:'chefkoch.de/rezepte', t:'Chefkoch — 350.000 Rezepte', d:'Deutschlands groesste Rezepte-Community. <b>Kochen</b> mit Schritt-fuer-Schritt Anleitungen.'},
+      {u:'eatsmarter.de', t:'EAT SMARTER — Gesunde Rezepte', d:'Gesund <b>kochen</b> leicht gemacht. Ernaehrungsplaene und saisonale Rezepte.'},
+      {u:'de.wikipedia.org/wiki/Kochen', t:'Kochen — Wikipedia', d:'<b>Kochen</b> bezeichnet die Zubereitung von Lebensmitteln. Geschichte, Techniken und Bedeutung.'}
+    ],
+    'nachrichten': [
+      {u:'tagesschau.de', t:'tagesschau.de — Aktuelle Nachrichten', d:'Die <b>Nachrichten</b> der ARD. Inland, Ausland, Wirtschaft — oeffentlich-rechtlich.'},
+      {u:'deutschlandfunk.de', t:'Deutschlandfunk — Nachrichten', d:'Oeffentlich-rechtlich. Podcasts, Interviews und ausfuehrliche Berichterstattung.'}
+    ]
+  };
+
+  // ═══════ LERNEN-KATEGORIEN ═══════
+  var lnCats = [
+    {id:'geld',    icon:'\u{1F4B0}', name:'Geld & Finanzen',    desc:'Steuern, Sparen, Investieren'},
+    {id:'rechte',  icon:'\u{2696}',  name:'Rechte & Gesetze',   desc:'Miete, Arbeit, Alltag'},
+    {id:'gesund',  icon:'\u{1F49A}', name:'Gesundheit',         desc:'Erste Hilfe, Ernaehrung, Mental'},
+    {id:'digital', icon:'\u{1F510}', name:'Digital & Sicherheit',desc:'Passwoerter, Scams, Datenschutz'},
+    {id:'alltag',  icon:'\u{1F3E0}', name:'Haushalt & Alltag',  desc:'Kochen, Reparieren, Organisieren'},
+    {id:'beruf',   icon:'\u{1F4BC}', name:'Beruf & Karriere',   desc:'Bewerbung, Gehalt, Kuendigung'},
+    {id:'komm',    icon:'\u{1F4AC}', name:'Kommunikation',      desc:'Konflikte, Nein sagen, Zuhoeren'},
+    {id:'wissen',  icon:'\u{1F4DA}', name:'Allgemeinwissen',    desc:'Geschichte, Wissenschaft, Welt'}
+  ];
+
+  // ═══════ WISSENS-KARTEN ═══════
+  var lnCards = {
+    'geld': [
+      {
+        id:'etf', title:'Was ist ein ETF?', tags:['Investieren','Einsteiger'],
+        text:'Ein ETF (Exchange Traded [[fonds]], auf Deutsch: boersengehandelter Indexfonds) ist eine der einfachsten und guenstigsten Moeglichkeiten zu investieren. Im Gegensatz zu einzelnen [[aktie]]n kaufst du mit einem ETF-Anteil gleichzeitig einen kleinen Teil von hunderten oder sogar tausenden Firmen. Der ETF bildet dabei automatisch einen [[index]] nach – zum Beispiel den MSCI World, der ca. 1.500 Unternehmen aus 23 Laendern enthaelt. Steigt der Index, steigt dein ETF; faellt er, faellt er mit. Die jaehrlichen Kosten (TER – Total Expense Ratio) liegen meist zwischen 0,1 und 0,5 Prozent – deutlich guenstiger als aktiv verwaltete [[fonds]]. Du kannst ETFs ueber jede normale Bank oder einen Online-Broker kaufen und monatliche Sparplaene ab 25 Euro einrichten. ETFs eignen sich besonders fuer den langfristigen Vermoegenaufbau: Wer ueber 15 bis 20 Jahre regelmaessig investiert, hat historisch gesehen attraktive Renditen erzielt. Wichtig zu wissen: ETFs unterliegen Kursschwankungen – kurzfristig kann der Wert deutlich fallen. Langfristig hat sich der Aktienmarkt bisher immer erholt. Fuer Einsteiger empfehlen sich einfache, breit gestreute Welt-ETFs wie der MSCI World oder FTSE All-World als Basis-Investment.',
+        facts:['Kosten (TER): ca. 0,1–0,5% pro Jahr','Sparplan: ab 25 Euro/Monat bei vielen Brokern','Breite Streuung: MSCI World = 1.500 Firmen in 23 Laendern'],
+        sources:[
+          {name:'Finanzfluss – ETF erklaert', url:'https://www.finanzfluss.de/etf/'},
+          {name:'Finanztip – Indexfonds & ETF', url:'https://www.finanztip.de/indexfonds-etf/'}
+        ]
+      },
+      {
+        id:'fonds', title:'Was ist ein Fonds?', tags:['Grundlagen'],
+        text:'Ein Fonds ist ein Topf, in den viele Anleger ihr Geld einzahlen, um es gemeinsam zu investieren. Ein professioneller Fondsmanager entscheidet, in welche [[aktie]]n, Anleihen oder andere Wertpapiere das Geld fliesst. Der Vorteil gegenueber dem Direktkauf einzelner Aktien liegt in der automatischen Streuung und dem Fachwissen des Managers. Fonds gibt es in vielen Formen: Aktienfonds, Rentenfonds, Immobilienfonds und gemischte Fonds. Ein [[etf]] ist eine besondere Art von Fonds, der nicht aktiv verwaltet wird, sondern automatisch einen [[index]] nachbildet. Aktiv verwaltete Fonds kosten ueblicherweise 1 bis 2 Prozent Jahresgebuehr plus oft noch einen Ausgabeaufschlag von 3 bis 5 Prozent beim Kauf. [[etf]]s hingegen kosten oft nur 0,1 bis 0,5 Prozent jaehrlich ohne Ausgabeaufschlag. Studien zeigen, dass die meisten aktiv verwalteten Fonds ueber lange Zeitraeume schlechter abschneiden als ein einfacher Index-[[etf]]. Fuer Einsteiger sind daher kostenguenstige ETFs meist die bessere Wahl.',
+        facts:['Aktiv verwaltet: 1–2% Gebuehren + Ausgabeaufschlag','Passiv (ETF): 0,1–0,5% jaehrlich, kein Aufschlag','Statistik: 80% aktiver Fonds schlagen Index langfristig nicht'],
+        sources:[
+          {name:'BaFin – Investmentfonds', url:'https://www.bafin.de/DE/Verbraucher/Finanzwissen/Anlageprodukte/Investmentfonds/investmentfonds_artikel.html'}
+        ]
+      },
+      {
+        id:'index', title:'Was ist ein Index?', tags:['Grundlagen'],
+        text:'Ein Index ist eine Liste von Wertpapieren, die nach bestimmten Regeln zusammengestellt wird – meistens nach Marktgroesse (sogenannte Marktkapitalisierung). Der [[dax]] zum Beispiel enthaelt die 40 groessten deutschen boersennotierten Unternehmen: Siemens, SAP, Allianz, BMW und andere. Ein Index selbst kann nicht direkt gekauft werden – er ist nur ein Massstab. Um in einen Index zu investieren, kaufst du einen [[etf]], der diesen Index nachbildet. Es gibt tausende von Indizes weltweit: nationale Indizes wie der [[dax]] oder S&P 500, regionale Indizes wie MSCI Europe, und globale Indizes wie MSCI World oder FTSE All-World. Der MSCI World enthaelt ca. 1.500 Unternehmen aus 23 Industrielaendern; der FTSE All-World sogar ca. 4.000 Firmen inklusive Schwellenlaender. Indizes werden kontinuierlich neu berechnet – steigen die enthaltenen [[aktie]]n, steigt auch der Index. ETF-Anbieter passen ihre Produkte automatisch an Indexaenderungen an.',
+        facts:['DAX = 40 groesste deutsche Boersenfirmen','S&P 500 = 500 groesste US-Firmen','MSCI World = ca. 1.500 Firmen aus 23 Laendern'],
+        sources:[
+          {name:'Finanzfluss – Was ist ein Aktienindex?', url:'https://www.finanzfluss.de/geldanlage/aktienindex/'}
+        ]
+      },
+      {
+        id:'dax', title:'Was ist der DAX?', tags:['Deutschland','Boerse'],
+        text:'Der DAX ist Deutschlands wichtigster Aktien-[[index]] und steht fuer "Deutscher Aktienindex". Er zeigt, wie es den 40 groessten boersennotierten Unternehmen in Deutschland geht: SAP, Siemens, Allianz, BMW, Mercedes, BASF und andere Konzerne sind enthalten. Wenn du einen DAX-[[etf]] kaufst, investierst du mit einem einzigen Kauf in alle 40 Unternehmen gleichzeitig. Der DAX wird in Echtzeit berechnet und ist ein Kursindex mit Dividenden-Reinvestition (Performance-Index), was ihn zum Vergleich besonders gut geeignet macht. Gegenueber dem MSCI World ist der DAX sehr konzentriert: nur eine Branche oder Region, was das Risiko erhoehen kann. Fuer eine breite Streuung empfehlen Experten eher globale [[index]]-ETFs. Der DAX wurde 1988 gegruendet und hatte urspruenglich 30 Mitglieder – seit September 2021 sind es 40.',
+        facts:['Gegruendet: 1988','40 Unternehmen (seit 2021, vorher 30)','Performance-Index: Dividenden werden eingerechnet'],
+        sources:[
+          {name:'Deutsche Boerse – DAX', url:'https://www.deutsche-boerse.com/dbg-de/'}
+        ]
+      },
+      {
+        id:'aktie', title:'Was ist eine Aktie?', tags:['Grundlagen'],
+        text:'Eine Aktie ist ein kleines Stueck einer Firma – ein Eigentumsanteil am Unternehmen. Kaufst du eine Aktie von SAP, gehoerst du zu den Eigentueumern von SAP, wenn auch mit einem winzigen Anteil. Steigt der Wert der Firma, steigt auch der Kurs deiner Aktie. Schreibt das Unternehmen Gewinne, kann es einen Teil davon als Dividende an die Aktionaere ausschuetten. Das Risiko: faellt das Unternehmen, faellt auch deine Aktie – im schlimmsten Fall auf null. Deshalb ist es gefaehrlich, alles in eine einzelne Aktie zu investieren. Statt einzelne Aktien zu kaufen, kannst du mit einem [[etf]] in hunderte oder tausende Firmen gleichzeitig investieren – das reduziert das Risiko erheblich. Aktien werden an Boersen gehandelt, z.B. an der Frankfurter Boerse oder New York Stock Exchange.',
+        facts:['Dividende: jaehrliche Gewinnausschuettung (optional)','Kursgewinn: Aktie wird im Wert mehr wert','Risiko: einzelne Aktien koennen stark oder komplett fallen'],
+        sources:[
+          {name:'Verbraucherzentrale – Aktien', url:'https://www.verbraucherzentrale.de/wissen/geld-versicherungen/sparen-und-anlegen/aktien-das-muessen-sie-wissen-6121'}
+        ]
+      },
+      {
+        id:'steuer', title:'Steuererklaerung einfach erklaert', tags:['Pflicht','Jaehrlich'],
+        text:'Viele Menschen bekommen durch die Steuererklaerung Geld zurueck – im Schnitt ca. 1.000 Euro pro Jahr. Du kannst viele Ausgaben steuerlich absetzen: Fahrtkosten zur Arbeit, Homeoffice-Pauschale, Fortbildungen, Arbeitsmittel, Versicherungsbeitraege und Handwerkerleistungen. Die Abgabefrist ist der 31. Juli des Folgejahres; mit Steuerberater hast du bis Ende Februar des uebernaeuchsten Jahres Zeit. Apps wie WISO Steuer, Taxfix oder das kostenlose Elster-Programm der Finanzverwaltung machen die Erklaerung einfacher. Als Arbeitnehmer wird dir automatisch eine Arbeitnehmer-Pauschale von 1.230 Euro angerechnet. Die Homeoffice-Pauschale betraegt 6 Euro pro Tag, maximal 1.260 Euro jaehrlich. Fahrtkosten werden mit 0,30 Euro pro Kilometer (ab 21. km: 0,38 Euro) als Werbungskosten anerkannt. Je mehr absetzbare Ausgaben du nachweisen kannst, desto hoeher deine Rueckerstattung.',
+        facts:['Durchschnittliche Rueckerstattung: ca. 1.000 Euro','Homeoffice: 6 Euro/Tag, max. 1.260 Euro/Jahr','Fahrtkosten: 0,30 Euro/km (ab 21. km: 0,38 Euro)'],
+        sources:[
+          {name:'Finanztip – Steuererklaerung', url:'https://www.finanztip.de/steuererklaerung/'},
+          {name:'ELSTER – Kostenlose Steuer-Software', url:'https://www.elster.de'}
+        ]
+      },
+      {
+        id:'sparen', title:'Richtig sparen – so geht es', tags:['Einsteiger','Wichtig'],
+        text:'Die bekannteste Sparregel ist die 50-30-20-Formel: 50% deines Nettoeinkommens fuer Notwendiges (Miete, Lebensmittel, Versicherungen), 30% fuer Persoenliches (Freizeit, Restaurantbesuche, Hobbys) und 20% zum Sparen und Investieren. Starte mit einem Notgroschen: 3 Monatsgehaelter auf einem Tagesgeldkonto – dieses Geld ist sofort verfuegbar und sollte nicht investiert werden. Danach kannst du ueber langfristige Geldanlage nachdenken, zum Beispiel [[etf]]-Sparplaene. Automatisiere das Sparen: Lass den Betrag direkt nach Gehaltseingang abbuchen, bevor du ihn ausgibst. Vermeide teure Kleinkredite und Dispozinsen – die fressen jeden Sparerfolg auf. Prueffe regelmaessig deine Vertraege: Handy, Strom, Versicherungen – oft gibt es guenstigere Alternativen. Sparen bedeutet nicht Verzicht, sondern Kontrolle ueber dein Geld.',
+        facts:['50-30-20-Regel: guter Einstieg','Notgroschen: 3 Monatsgehaelter auf Tagesgeld','ETF-Sparplan: Marktrendite langfristig nutzen'],
+        sources:[
+          {name:'Finanztip – Geld sparen', url:'https://www.finanztip.de/sparrechner/'},
+          {name:'Verbraucherzentrale – Haushaltsplan', url:'https://www.verbraucherzentrale.de/wissen/geld-versicherungen/sparen-und-anlegen'}
+        ]
+      }
+    ],
+    'rechte': [
+      {
+        id:'mieter', title:'Deine Rechte als Mieter', tags:['Wohnen','Wichtig'],
+        text:'Als Mieter in Deutschland bist du durch das Mietrecht sehr gut geschuetzt. Dein Vermieter darf die Miete nicht einfach erhoehen – die Miete darf innerhalb von drei Jahren maximal um 20 Prozent steigen (Mietpreisbremse in vielen Staedten: max. 10%). Er darf die Wohnung nur nach vorheriger Ankuendigung (mind. 24 Stunden vorher) und mit deiner Zustimmung betreten. Eine Kuendigung ist nur mit einem anerkannten Grund moeglich, z.B. Eigenbedarf, und muss eine gesetzliche Frist einhalten (3 bis 9 Monate, je nach Mietdauer). Maengel in der Wohnung muessen vom Vermieter behoben werden – schreibe sie immer schriftlich an. Bei nicht behobenen Maengeln kannst du die Miete mindern, aber kuendige das ebenfalls schriftlich an. Die Mietkaution betraegt maximal drei Kaltmieten und muss auf einem separaten Konto angelegt werden. Nach dem Auszug hast du Anspruch auf Rueckgabe der Kaution (mit Zinsen) innerhalb von 3 bis 6 Monaten, solange keine berechtigten Forderungen bestehen.',
+        facts:['Miethoehung: max. 20% in 3 Jahren (Mietpreisbremse: 10%)','Kaution: max. 3 Kaltmieten, verzinst zurueckgeben','Maengel: schriftlich melden, sonst schwer durchsetzbar'],
+        sources:[
+          {name:'Mieterbund Deutschland', url:'https://www.mieterbund.de/'},
+          {name:'Verbraucherzentrale – Mietrecht', url:'https://www.verbraucherzentrale.de/wissen/vertraege-reklamation/wohnen'}
+        ]
+      },
+      {
+        id:'kuendigung', title:'Was tun bei Kuendigung?', tags:['Arbeit','Notfall'],
+        text:'Eine Kuendigung trifft viele unvorbereitet. Das Wichtigste zuerst: Ruhe bewahren und schnell handeln. Eine Kuendigung muss zwingend schriftlich und unterschrieben sein – muendliche Kuendigungen sind unwirksam. Melde dich unmittelbar (innerhalb von 3 Tagen nach Bekanntwerden) bei der Arbeitsagentur arbeitssuchend, sonst droht eine Sperrzeit beim [[arbeitsrecht]]lichen Anspruch auf Arbeitslosengeld. Pruefe die Kuendigungsfrist in deinem Vertrag und ob sie der gesetzlichen Mindestfrist entspricht. Bei Zweifeln an der Rechtmaessigkeit: Klage auf Kuendigungsschutz – aber Achtung, die Frist betraegt nur 3 Wochen! Ein kostenloses Erstgespraech beim Anwalt fuer [[arbeitsrecht]] oder beim Betriebsrat klaert die Optionen. Eine Abfindung ist kein gesetzlicher Anspruch, aber oft verhandelbar – besonders wenn du bereit bist, keine Klage einzureichen.',
+        facts:['Arbeitsagentur: innerhalb von 3 Tagen melden (wichtig!)','Kuendigungsschutzklage: 3 Wochen Frist ab Erhalt','Abfindung: kein Anspruch, aber oft verhandelbar'],
+        sources:[
+          {name:'Bundesagentur fuer Arbeit – Kuendigung', url:'https://www.arbeitsagentur.de/'},
+          {name:'Arbeitnehmer.org – Kuendigungsschutz', url:'https://www.arbeitnehmer.org/kuendigungsschutz/'}
+        ]
+      },
+      {
+        id:'arbeitsrecht', title:'Arbeitsrecht Basics', tags:['Arbeit'],
+        text:'Das deutsche Arbeitsrecht gibt Arbeitnehmern wichtige Grundrechte. Der gesetzliche Mindestlohn (aktuell pruefe die aktuelle Hoehe) muss fuer jede geleistete Arbeitsstunde gezahlt werden. Mindestens 20 Urlaubstage pro Jahr stehen dir zu (bei einer 5-Tage-Woche), viele Tarifvertraege sehen mehr vor. Ueberstunden muessen erfasst werden – ohne Dokumentation kannst du sie schwer einfordern. Die Probezeit darf maximal 6 Monate dauern. Krankschreibung (AU) ist nach dem 3. Krankheitstag Pflicht, manche Arbeitgeber verlangen sie ab Tag 1 – pruefe deinen Vertrag. Bei [[kuendigung]] gelten gesetzliche Mindestkuendigungsfristen, die mit der Betriebszugehoerigkeit steigen. Ein Betriebsrat, falls vorhanden, ist ein wichtiger Verbundeter bei Konflikten mit dem Arbeitgeber.',
+        facts:['Mindesturlaub: 20 Tage/Jahr (5-Tage-Woche)','Probezeit: max. 6 Monate','Ueberstunden: immer schriftlich dokumentieren lassen'],
+        sources:[
+          {name:'BMAS – Arbeitsrecht', url:'https://www.bmas.de/DE/Arbeit/Arbeitsrecht/arbeitsrecht.html'},
+          {name:'Arbeitnehmer.org', url:'https://www.arbeitnehmer.org/'}
+        ]
+      },
+      {
+        id:'polizei', title:'Rechte bei Polizeikontrolle', tags:['Alltag'],
+        text:'Bei einer Polizeikontrolle hast du Rechte, auch wenn es sich seltsam anfuehlt, sie einzufordern. Du bist verpflichtet, deinen Personalausweis oder Reisepass vorzuzeigen (Ausweispflicht). Du bist jedoch nicht verpflichtet, Aussagen zur Sache zu machen – du kannst und solltest schweigen und einen Anwalt verlangen. Das Recht zu schweigen gilt ohne Ausnahme, egal was die Beamten sagen. Du darfst Polizeihandlungen filmen, solange du die Arbeit nicht behinderst – aber sei vorsichtig mit dem Ton und bleib ruhig. Eine Wohnungsdurchsuchung ist nur mit richterlichem Beschluss erlaubt, ausser es liegt Gefahr im Verzug. Wenn du festgehalten wirst: Nenne deinen Namen, weise auf dein Recht auf einen Anwalt hin, mache keine weiteren Aussagen. Sprich Beleidigungen oder Widerstand nie aus – das kann strafrechtlich relevant werden.',
+        facts:['Ausweisplicht: Dokument vorzeigen Pflicht','Aussage: vollstaendiges Schweige-Recht, immer','Durchsuchung: Beschluss verlangen, Datum notieren'],
+        sources:[
+          {name:'GFF – Rechte bei Kontrollen', url:'https://freiheitsrechte.org/'},
+          {name:'Anwalt.de – Polizeikontrolle', url:'https://www.anwalt.de/rechtstipps/polizeikontrolle-rechte.html'}
+        ]
+      }
+    ],
+    'gesund': [
+      {
+        id:'erstehilfe', title:'Erste Hilfe Basics', tags:['Notfall','Lebenswichtig'],
+        text:'Erste Hilfe retten Leben – und jeder kann sie leisten. Bei einem Notfall: Ruhe bewahren, Gefahr pruefen, Notruf 112 anrufen. Bei Bewusstlosigkeit pruefe zuerst die Atmung: Kopf ueberstrecken, Kinn anheben, 10 Sekunden auf Atemgeraeusche und Brustbewegung achten. Atmet die Person normal? Stabile Seitenlage. Atmet sie nicht oder nicht normal? Sofort [[reanimation]] beginnen. Ruf laut um Hilfe und fordere andere auf, die Notaufnahme anzurufen und einen Defibrillator zu holen. Erste Hilfe auch bei Blutungen: direkten Druck auf die Wunde ausueben mit sauberem Tuch oder Kleidung. Bei Verbrennungen: 10 bis 15 Minuten mit kuehlem (nicht kaltem) Wasser kuehlen. Kenne die Notrufnummern: 112 (Rettungsdienst & Feuerwehr), 110 (Polizei), 116 117 (aerztlicher Bereitschaftsdienst).',
+        facts:['Notruf: 112 (EU-weit, kostenlos)','Bewusstlos + atmet nicht: sofort [[reanimation]]','Blutung: direkten Druck ausueben, nicht loslassen'],
+        sources:[
+          {name:'Deutsches Rotes Kreuz – Erste Hilfe', url:'https://www.drk.de/hilfe-in-deutschland/erste-hilfe/'},
+          {name:'Notruf 112 – So geht es richtig', url:'https://www.notruf-112.de/'}
+        ]
+      },
+      {
+        id:'reanimation', title:'Herz-Lungen-Wiederbelebung', tags:['Notfall','Lebenswichtig'],
+        text:'Wenn eine Person bewusstlos ist und nicht normal atmet, musst du sofort mit der Reanimation beginnen – jede Minute zaehlt. Lege die Person auf den Ruecken auf eine harte Flaeche. Platziere beide Haende uebereinander in der Mitte des Brustkorbs. Druecke schnell und fest 5 bis 6 cm tief – Tempo: 100 bis 120 Mal pro Minute, aehnlich dem Lied "Stayin Alive" von den Bee Gees. Nach 30 Kompressionen: Kopf ueberstrecken, Kinn anheben, 2 Mal beatmen (Mund zu Mund). Fahre dann mit 30:2 fort. Wenn du keine Beatmung moechtest oder kannst, reicht auch nur die Herzdruckmassage – das ist immer noch viel besser als nichts. Hoere nicht auf, bis der Rettungsdienst uebernimmt. Ein Defibrillator (AED) kann zusaetzlich eingesetzt werden – folge den Sprachanweisungen des Geraets.',
+        facts:['30 Kompressionen : 2 Beatmungen','Tempo: 100–120 x/Minute (wie "Stayin Alive")','Nur Kompressionen ohne Beatmung: auch lebensrettend'],
+        sources:[
+          {name:'DRK – Reanimation', url:'https://www.drk.de/hilfe-in-deutschland/erste-hilfe/herz-lungen-wiederbelebung/'},
+          {name:'ERC – Reanimation Guidelines', url:'https://www.erc.edu/'}
+        ]
+      },
+      {
+        id:'mental', title:'Psychische Gesundheit', tags:['Wichtig','Alltag'],
+        text:'Jeder dritte Mensch erlebt in seinem Leben eine psychische Erkrankung. Das ist keine Schwaeche, sondern eine Erkrankung wie jede andere. Warnsignale: anhaltendes Antriebslosigkeit, kein Interesse mehr an Dingen die frueher Spass machten, Schlafprobleme, sozialer Rueckzug, gesteigerte Reizbarkeit oder Hoffnungslosigkeit. Der erste Ansprechpartner ist immer der Hausarzt – er kann ueberweisen oder eine erste Einschaetzung geben. Therapieplaetze sind rar, aber es gibt schnelle Wege: die Terminservicestelle 116 117 hat das Recht, dir innerhalb von 4 Wochen einen Erstgespraechstermin zu besorgen. Bei akuter Krise: die Telefonseelsorge ist rund um die Uhr erreichbar, anonym und kostenlos. Psychische Gesundheit braucht genauso viel Aufmerksamkeit wie koerperliche Gesundheit – Selbstfuersorge ist keine Seltenheit.',
+        facts:['Telefonseelsorge: 0800 111 0 111 (24/7, kostenlos, anonym)','Erstgespraeche: Terminservicestelle 116 117','Krankenkasse zahlt: Psychotherapie (mit Ueberweisung)'],
+        sources:[
+          {name:'Deutsche Depressionshilfe', url:'https://www.deutsche-depressionshilfe.de/'},
+          {name:'Telefonseelsorge', url:'https://www.telefonseelsorge.de/'}
+        ]
+      }
+    ],
+    'digital': [
+      {
+        id:'passwort', title:'Sichere Passwoerter erstellen', tags:['Sicherheit','Wichtig'],
+        text:'Passwoerter sind der erste Schutzwall fuer deine digitale Identitaet. Ein sicheres Passwort hat mindestens 12 Zeichen und enthaelt Gross- und Kleinbuchstaben, Zahlen und Sonderzeichen. Vermeide echte Woerter, Namen, Geburtstage oder einfache Muster wie "123456" oder "Passwort". Das Groesste Problem: viele Menschen nutzen dasselbe Passwort fuer mehrere Dienste. Wenn eines gehackt wird, sind alle anderen angreifbar. Die Loesung: ein Passwort-Manager wie Bitwarden (kostenlos, Open Source) generiert und speichert einzigartige Passwoerter fuer jeden Dienst. Du musst dir nur ein einziges starkes Master-Passwort merken. Aktiviere ausserdem [[2fa]] (Zwei-Faktor-Authentifizierung) wo es geht – besonders fuer E-Mail, Bank und Social Media. Gib niemals Passwoerter per E-Mail, Telefon oder Chat weiter – kein serioeser Dienst fragt danach.',
+        facts:['Bitwarden: kostenloser Open-Source Passwort-Manager','Mindestlaenge: 12 Zeichen, besser 16+','Jeder Dienst: eigenes, einzigartiges Passwort'],
+        sources:[
+          {name:'BSI – Sichere Passwoerter', url:'https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Informationen-und-Empfehlungen/Sichere-Passwoerter-erstellen/sichere-passwoerter-erstellen_node.html'},
+          {name:'Bitwarden – Passwort-Manager', url:'https://bitwarden.com/de-de/'}
+        ]
+      },
+      {
+        id:'2fa', title:'Zwei-Faktor-Authentifizierung', tags:['Sicherheit'],
+        text:'Zwei-Faktor-Authentifizierung (2FA) ist eine der effektivsten Sicherheitsmassnahmen die du sofort umsetzen kannst. Sie kombiniert etwas das du weisst (dein [[passwort]]) mit etwas das du hast (dein Handy oder ein Hardware-Token). Selbst wenn jemand dein [[passwort]] stiehlt, kommt er ohne den zweiten Faktor nicht in dein Konto. SMS-basierte 2FA ist besser als keine 2FA – aber Authenticator-Apps (z.B. Aegis, Google Authenticator, Microsoft Authenticator) sind sicherer, da SMS abgefangen werden koennen. Aktiviere 2FA zuerst fuer: E-Mail-Konto (hoechtste Prioritaet, da Passwort-Resets darueber laufen), Online-Banking, Social Media, Cloud-Speicher. Speichere die Backup-Codes an einem sicheren Ort ausserhalb des Geraets – falls du dein Handy verlierst, kommst du sonst nicht mehr rein. Hardware-Token (z.B. YubiKey) sind fuer sehr Sicherheitsbewusste die beste Option.',
+        facts:['Authenticator-App > SMS (sicherer)','E-Mail-Konto: hoechtste Prioritaet fuer 2FA','Backup-Codes: ausdrucken und sicher aufbewahren'],
+        sources:[
+          {name:'BSI – Zwei-Faktor-Authentifizierung', url:'https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Informationen-und-Empfehlungen/Zwei-Faktor-Authentisierung/zwei-faktor-authentisierung_node.html'}
+        ]
+      },
+      {
+        id:'scam', title:'Scams & Betrug erkennen', tags:['Sicherheit','Alltag'],
+        text:'Online-Betrug wird immer raffinierter – aber es gibt klare Muster, die du erkennen kannst. Das haeufigste Warnsignal: kuenstlich erzeugte Dringlichkeit. "Dein Konto wird gesperrt!", "Sofort handeln!" – serioeser Unternehmen drohen so nicht. Phishing-E-Mails sehen oft taeuschend echt aus, haben aber kleine Fehler in der Absenderadresse (z.B. support@amaz0n.de statt amazon.de). Klicke niemals auf Links in unerwarteten Nachrichten – oeffne die Webseite direkt im Browser. Kein Unternehmen, keine Bank und keine Behoerde wird dich per E-Mail oder Telefon nach deinem [[passwort]] fragen. Beim Telefonbetrug: lege sofort auf und ruf die echte Nummer des angeblichen Absenders an. "Too good to be true" gilt auch online: Gewinne fuer die du nie mitgespielt hast, Liebe auf den ersten Klick, Jobs mit riesigem Gehalt ohne Qualifikation.',
+        facts:['Dringlichkeit + Drohung = fast immer Betrug','Absenderadresse genau pruefen (oft leichte Tippfehler)','Passwort wird NIE per E-Mail/Telefon gefragt'],
+        sources:[
+          {name:'BSI – Phishing', url:'https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Cyber-Sicherheitslage/Methoden-der-Cyber-Kriminalitaet/Phishing/phishing_node.html'},
+          {name:'Watchlist Internet – aktuelle Warnungen', url:'https://www.watchlist-internet.at/'}
+        ]
+      }
+    ],
+    'alltag': [
+      {
+        id:'kochen', title:'Kochen fuer Anfaenger', tags:['Grundlagen','Taeglich'],
+        text:'Kochen muss nicht kompliziert sein. Fuenf Basis-Rezepte reichen fuer den Alltag: Nudeln mit Tomatensosse, Reis mit gebratenem Gemuese, Ruehreiueber-Omelett, einfache Suppe und ein frischer Salat. Mit diesen fuenf Gerichten kommst du durch die Woche. Das Wichtigste beim Wuerzen: Salz, Pfeffer, Knoblauch und Paprikapulver decken 80% aller Gerichte ab. Wuerzmengen: wenig anfangen, abschmecken, anpassen – das ist die entscheidende Grundregel. Schlechtes Messer ist gefaehrlicher als ein scharfes: mit einem einzigen guten Koch-Messer (nicht teuer!) bist du gut ausgestattet. Restekochen spart Geld und vermeidet Lebensmittelverschwendung: gestern gekochter Reis wird heute Gebratener Reis. Meal Prep (Vorbereitung am Wochenende) spart Wochentags enorm Zeit. Probieren waehrend des Kochens ist kein Fehler, sondern die wichtigste Technik.',
+        facts:['5 Grundrezepte richten: reichen fuer den Alltag','Wuerzen: wenig anfangen, regelmaessig abschmecken','Restekochen: spart Geld, vermindert Verschwendung'],
+        sources:[
+          {name:'Chefkoch – Grundrezepte', url:'https://www.chefkoch.de/'},
+          {name:'EAT SMARTER – Kochanfaenger', url:'https://www.eatsmarter.de/ernaehrung/gesund-ernaehren/kochen-lernen'}
+        ]
+      },
+      {
+        id:'waschen', title:'Waesche richtig waschen', tags:['Grundlagen'],
+        text:'Waesche waschen klingt trivial, aber falsch gemacht schrumpfen Lieblingsteile oder werden schnell grau. Sortiere zuerst nach Farben: Weiss, Helles und Buntes/Dunkles getrennt waschen. Schaue immer auf das Pflegeetikett – die Symbole sind international standardisiert. Alltagskleidung wie T-Shirts und Hosen: 30 bis 40 Grad genuegen und sparen erheblich Energie. Handtuecher, Bettzeug und Unterwaesche: 60 Grad fuer hygienische Reinheit. Wolle, Seide und Feines: Schonwaschprogramm oder Handwaesche mit kaltem Wasser. Wichtig: Waschmaschine nicht zu voll laden – eine Handbreit Platz oben lassen, sonst wird die Waesche nicht sauber. Waschmittelmenge: weniger als empfohlen reicht oft, besonders bei Fluessigwaschmittel. Den Weichspueler kannst du haeufig weglassen – er reduziert die Saugfaehigkeit von Handtuechern.',
+        facts:['30 Grad: spart 60% Energie vs. 60 Grad','Nicht ueberladen: eine Handbreit Platz lassen','Pflegeetikett: immer pruefen bevor du waehlst'],
+        sources:[
+          {name:'Verbraucherzentrale – Waesche richtig waschen', url:'https://www.verbraucherzentrale.de/wissen/energie/strom-sparen/waesche-waschen-so-sparen-sie-strom-und-wasser-13952'}
+        ]
+      },
+      {
+        id:'umzug', title:'Umzug planen & durchfuehren', tags:['Organisation'],
+        text:'Ein Umzug gelingt mit guter Planung. Beginne 3 Monate vorher: kuendige die alte Wohnung (Kuendigungsfrist beachten – meist 3 Monate), suche die neue Wohnung und reserviere Helfer oder Transporter. 6 Wochen vorher: Nachsendeauftrag bei der Post beantragen (ca. 25 Euro/Jahr), Adressaenderungen bei Bank, Arbeitgeber, Versicherungen ankuendigen, Internet kuendigen und neu beantragen. 2 Wochen vorher: Kartons besorgen, Packen beginnen, dabei Etikettieren was in welchem Zimmer landet. Am Umzugstag: Zaehlerstande (Strom, Gas, Wasser) fotografieren und dokumentieren. Innerhalb von 14 Tagen nach Einzug: Ummeldung beim Einwohnermeldeamt – das ist Pflicht und ein Bussgeld droht bei Versaeumnis. Fahrzeugschein und Fuehrerschein nach der Ummeldung anpassen.',
+        facts:['Kuendigungsfrist: meist 3 Monate vor Monatsende','Ummeldung: innerhalb 14 Tage nach Einzug (Pflicht!)','Nachsendeauftrag Post: ca. 25 Euro/Jahr'],
+        sources:[
+          {name:'Verbraucherzentrale – Umzug', url:'https://www.verbraucherzentrale.de/wissen/vertraege-reklamation/wohnen/umzug-checkliste-20264'}
+        ]
+      }
+    ],
+    'beruf': [
+      {
+        id:'bewerbung', title:'Gute Bewerbung schreiben', tags:['Karriere','Wichtig'],
+        text:'Eine gute Bewerbung ist individuell und klar strukturiert. Der Lebenslauf: maximal eine bis zwei Seiten, chronologisch rueckwaerts (aktuellstes zuerst), ohne Luecken – jede Stelle und Ausbildung kurz erklaeren. Das Anschreiben: Nicht "Hiermit bewerbe ich mich..." – das weiss der Personaler. Starte direkt mit dem Mehrwert: warum DU zu DIESER Firma passt. Konkrete Beispiele statt leere Phrasen: "Ich bin teamfaehig" sagt nichts. "Im Projekt X habe ich mit 5 Kollegen X umgesetzt" sagt alles. Foto: Bewerbungsfoto (nicht Urlaubs-Selfie), freundlich, professionell gekleidet, neutraler Hintergrund. Schicke immer als PDF, nie als Word-Datei. Pruefe auf Rechtschreibfehler – ein Fehler kann entscheidend sein. Passe Anschreiben und ggf. Lebenslauf fuer jede Bewerbung individuell an. Recherchiere das Unternehmen und beziehe dich konkret darauf.',
+        facts:['Lebenslauf: max. 2 Seiten, chronologisch rueckwaerts','Anschreiben: individuell pro Stelle, kein Standardtext','Immer als PDF verschicken, auf Fehler pruefen'],
+        sources:[
+          {name:'Karriere.de – Bewerbung schreiben', url:'https://www.karriere.de/bewerbung/'},
+          {name:'Stepstone – Bewerbungsratgeber', url:'https://www.stepstone.de/Karriere-Ratgeber/bewerbung/'}
+        ]
+      },
+      {
+        id:'gehalt', title:'Gehaltsverhandlung erfolgreich fuehren', tags:['Karriere','Geld'],
+        text:'Eine Gehaltsverhandlung ist keine Konfrontation, sondern ein Gespraech zwischen zwei Parteien mit gemeinsamen Interessen. Recherchiere vorab deinen Marktwert: Portale wie Glassdoor, Gehalt.de oder Kununu zeigen Gehaltsspannen fuer aehnliche Stellen. Nenne immer eine konkrete Zahl, keine Spanne – eine Spanne signalisiert Unsicherheit. Fordere 10 bis 15 Prozent mehr als dein tatsaechliches Ziel, um Verhandlungsspielraum zu haben. Der beste Zeitpunkt: nach einem Projekterfolg oder im jaehrlichen Mitarbeitergespraech – nicht wenn das Unternehmen gerade schlechte Zeiten hat. Argumentiere immer mit deinem Mehrwert fuer das Unternehmen, nicht mit deinen Ausgaben. "Ich brauche mehr fuer meine Miete" ist kein Argument. "Ich habe in diesem Jahr X erreicht und verantworte Y" schon. Auch Nicht-Gehaelt liesse sich verhandeln: Homeoffice, Weiterbildungsbudget, mehr Urlaub.',
+        facts:['Recherche: Glassdoor, Gehalt.de, Kununu','10–15% ueber Ziel fordern als Verhandlungsspielraum','Argumente: dein Mehrwert, nicht deine Beduerfnisse'],
+        sources:[
+          {name:'Glassdoor – Gehaelter', url:'https://www.glassdoor.de/Gehaltsvergleiche/'},
+          {name:'Gehalt.de', url:'https://www.gehalt.de/'}
+        ]
+      }
+    ],
+    'komm': [
+      {
+        id:'neinsagen', title:'Nein sagen lernen', tags:['Selbstschutz','Wichtig'],
+        text:'"Nein" ist ein vollstaendiger Satz. Wer immer Ja sagt, brennt langfristig aus und verliert sich selbst. Das Nein-Sagen faellt schwer, weil wir Angst vor Ablehnung, Konflikt oder Schuldgefuehlen haben. Aber ein klar kommuniziertes Nein ist ehrlicher und respektvoller als ein Ja, das man nicht halten kann oder will. Tricks fuer den Einstieg: "Ich muss das erst ueberdenken" kauft Zeit ohne direktes Nein. "Das passt gerade nicht" ist freundlich und klar, ohne Erklaerung. "Ich habe schon anderes geplant" braucht keine Details. Uebe mit kleinen, risikoarmen Situationen: Lehne das naechste unerwuenschte Angebot ab. Du musst dich nicht rechtfertigen oder entschuldigen. Je klarer und ruhiger das Nein, desto leichter wird es akzeptiert. Wer dich nicht respektiert wenn du Nein sagst, respektiert dein Ja auch nicht wirklich.',
+        facts:['"Ich ueberlege es mir": kauft Zeit ohne Konflikt','Kein Nein braucht eine Erklaerung','Je klarer das Nein, desto weniger Diskussion'],
+        sources:[
+          {name:'Psychologie Heute – Nein sagen', url:'https://www.psychologie-heute.de/'},
+          {name:'Verbraucherzentrale – Umgang mit Druck', url:'https://www.verbraucherzentrale.de/'}
+        ]
+      },
+      {
+        id:'konflikt', title:'Konflikte konstruktiv loesen', tags:['Beziehungen'],
+        text:'Konflikte sind normal und unvermeidlich – entscheidend ist, wie wir sie angehen. Das Geheimnis liegt in Ich-Botschaften statt Du-Vorwuerfen: "Ich fuehle mich uebergangen" statt "Du ignorierst mich immer". Du-Vorwuerfe erzeugen Abwehr; Ich-Botschaften eroeffnen Gespraech. Zuhoeren ist die wichtigste Konfliktloese-Kompetenz: aktiv zuhoeren ohne zu unterbrechen, ohne zu planen was du als naechstes sagst. Erst vollstaendig zuhoeren, dann antworten. Trenne Person von Problem: nicht "Du bist das Problem", sondern "Das Verhalten in Situation X ist das Problem". Das Ziel im Konfliktgespraech sollte eine Loesung sein, kein Gewinn. Wenn es eskaliert: kurze Auszeit nehmen (mindestens 20 Minuten), dann weiter reden – in der Auszeit sinkt der Adrenalinspiegel. Externe Hilfe (Mediator, Paartherapie) ist keine Schwaeche, sondern Staerke.',
+        facts:['"Ich fuehle..." statt "Du machst immer..."','Erst zuhoeren, dann antworten (aktiv)','Ziel: gemeinsame Loesung, nicht Sieg'],
+        sources:[
+          {name:'BZgA – Kommunikation in Beziehungen', url:'https://www.bzga.de/'},
+          {name:'Psychologie Heute – Konflikte loesen', url:'https://www.psychologie-heute.de/'}
+        ]
+      }
+    ],
+    'wissen': [
+      {
+        id:'klima', title:'Klimawandel verstehen', tags:['Wissenschaft','Welt'],
+        text:'Der Klimawandel ist die groesste Herausforderung unserer Zeit – und er ist menschengemacht. CO2 und andere Treibhausgase, die durch das Verbrennen fossiler Brennstoffe (Kohle, Oel, Gas) freigesetzt werden, haelt Waerme in der Atmosphaere zurueck wie in einem Treibhaus. Seit der Industrialisierung ist die globale Durchschnittstemperatur bereits um ca. 1,1 Grad Celsius gestiegen. Das klingt wenig, hat aber dramatische Folgen: haeufigere Extremwetterereignisse (Hitzewellen, Ueberschwemmungen, Duerre), steigende Meeresspiegel durch schmelzende Gletscher und Polkappen, Artensterben und Verschiebung von Oekosystemen. Das Pariser Abkommen (2015) setzt das Ziel, die Erderwaermung auf 1,5 Grad zu begrenzen. Jeder kann etwas beitragen: Energie sparen und erneuerbare Energie nutzen, weniger Fleisch essen (besonders Rind), weniger Fliegen und Autofahren, bewusster Konsum. Kleine Beitraege, multipliziert mit Milliarden Menschen, machen einen Unterschied.',
+        facts:['Erderwaermung bereits: +1,1 Grad seit 1850','Pariser Ziel: max. +1,5 Grad bis 2100','Groesste CO2-Quellen: Energie, Transport, Landwirtschaft'],
+        sources:[
+          {name:'IPCC – Klimawandel Berichte', url:'https://www.ipcc.ch/'},
+          {name:'Umweltbundesamt – Klimawandel', url:'https://www.umweltbundesamt.de/themen/klima-energie/klimawandel'}
+        ]
+      },
+      {
+        id:'demokratie', title:'Wie funktioniert Demokratie?', tags:['Politik','Grundlagen'],
+        text:'Demokratie bedeutet "Volksherrschaft" – das Volk bestimmt, wer regiert und welche Regeln gelten. In Deutschland leben wir in einer repraesentativen Demokratie: wir waehlen Vertreter (Abgeordnete), die dann Gesetze machen und die Regierung kontrollieren. Das Grundprinzip: Gewaltenteilung. Die Legislative (Bundestag, Bundesrat) macht Gesetze. Die Exekutive (Regierung, Ministerien) fuehrt sie aus. Die Judikative (Gerichte, Bundesverfassungsgericht) prueft ob sie mit dem Grundgesetz vereinbar sind. Das Grundgesetz (GG) ist die Verfassung Deutschlands – Artikel 1 bis 19 enthalten die Grundrechte, die jeden Menschen schuetzen und unveraenderbar sind. Demokratie braucht aktive Buerger: Waehlen gehen, Petitionen starten, demonstrieren, sich informieren und engagieren. Ohne aktive Beteiligung funktioniert sie nicht. Bedrohungen der Demokratie erkennen: wenn die Gewaltenteilung ausgehebelt wird, Presse zensiert oder Minderheiten ausgegrenzt werden.',
+        facts:['Bundestagswahl: alle 4 Jahre, ab 18 Jahren','Grundgesetz Art. 1-19: unveraenderbare Grundrechte','3 Gewalten: Legislative, Exekutive, Judikative'],
+        sources:[
+          {name:'Bundeszentrale fuer politische Bildung', url:'https://www.bpb.de/themen/demokratie/'},
+          {name:'Bundesregierung – Demokratie', url:'https://www.bundesregierung.de/'}
+        ]
+      }
+    ]
+  };
+
+  // ═══════ ZUSTAND ═══════
+  var lnPath = [];
+  var currentPage = 'home';
+
+  // ═══════ HELPERS ═══════
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  function animPage(el){ el.classList.remove('anim'); void el.offsetWidth; el.classList.add('anim'); }
+
+  // ═══════ NAVIGATION (History API) ═══════
+  function navigate(state, push) {
+    if (push !== false) {
+      history.pushState(state, '');
+    }
+    currentPage = state.page;
+
+    // Zurueck-Button
+    var bb = $('btnBack');
+    if (state.page === 'home') {
+      bb.classList.remove('visible');
+    } else {
+      bb.classList.add('visible');
+    }
+
+    // Modul-Name in Topbar
+    var tm = $('topPageTitle');
+    var moduleNames = {
+      lernen: '\u{1F4DA} Lernen',
+      marktplatz: '\u{1F91D} Marktplatz',
+      aktivitaeten: '\u{1F3AF} Aktivitaeten',
+      karten: '\u{1F5FA} Karten',
+      gesundheit: '\u2764 Gesundheit',
+      roadmap: '\u{1F5FA} Roadmap',
+      results: '\u{1F50D} Suche'
+    };
+    if (moduleNames[state.page]) {
+      tm.textContent = moduleNames[state.page];
+      tm.classList.add('visible');
+    } else {
+      tm.textContent = '';
+      tm.classList.remove('visible');
+    }
+
+    // Alle Seiten verstecken
+    hideAllPages();
+
+    switch(state.page) {
+      case 'home':
+        showHome();
+        break;
+      case 'results':
+        showResultsPage(state.q);
+        break;
+      case 'lernen':
+        showLernenState(state);
+        break;
+      case 'marktplatz':
+        showPlaceholder('marktplatz');
+        break;
+      case 'aktivitaeten':
+        showAktivitaeten(state);
+        break;
+      case 'karten':
+        showPlaceholder('karten');
+        break;
+      case 'gesundheit':
+        showPlaceholder('gesundheit');
+        break;
+      case 'roadmap':
+        showPlaceholder('roadmap');
+        break;
+    }
+  }
+
+  window.addEventListener('popstate', function(e) {
+    if (e.state) {
+      // Zustand aus History wiederherstellen
+      if (e.state.page === 'lernen' && e.state.lnPath) {
+        lnPath = e.state.lnPath.slice();
+      }
+      navigate(e.state, false);
+    } else {
+      navigate({page:'home'}, false);
+    }
+  });
+
+  function hideAllPages() {
+    $('pg-home').style.display = 'none';
+    $('pg-results').style.display = 'none';
+    $('pg-lernen').style.display = 'none';
+    ['marktplatz','aktivitaeten','karten','gesundheit','roadmap'].forEach(function(id) {
+      var el = $('pg-' + id);
+      if (el) el.style.display = 'none';
+    });
+    closeMo();
+    closeMenus();
+    if (typeof closeAktFilter === 'function') closeAktFilter();
+  }
+
+  function showHome() {
+    $('pg-home').style.display = 'flex';
+    animPage($('pg-home'));
+  }
+
+  function showPlaceholder(name) {
+    var el = $('pg-' + name);
+    if (el) { el.style.display = 'flex'; animPage(el); }
+  }
+
+  // Suchmaschine
+  function showResultsPage(q) {
+    $('pg-results').style.display = 'flex';
+    animPage($('pg-results'));
+    $('si2').value = q || '';
+    if (q) {
+      showLoading(q);
+      fetch('/api/search?q=' + encodeURIComponent(q))
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          if(data.results && data.results.length > 0){
+            var results = data.results.slice(0,15).map(function(r){
+              var domain = '';
+              try { domain = new URL(r.url).hostname.replace('www.',''); } catch(e){ domain = r.url; }
+              return {
+                u: domain + (r.url.split(domain)[1]||'').substring(0,60),
+                t: r.title || 'Kein Titel',
+                d: r.content || '',
+                link: r.url
+              };
+            });
+            showResults(q, results, false);
+          } else {
+            showResults(q, getMockResults(q), true);
+          }
+        })
+        .catch(function(){
+          showResults(q, getMockResults(q), true);
+        });
+    }
+  }
+
+  // ═══════ SIDEBAR ═══════
+  function togSb() {
+    $('sb').classList.toggle('open');
+    $('sbOv').classList.toggle('open');
+  }
+
+  // ═══════ MODALS ═══════
+  function openMo(id) {
+    closeMo();
+    setTimeout(function(){
+      $('mo-' + id).classList.add('open');
+      if(id === 'filter') renderFilter();
+    }, 60);
+  }
+  function closeMo() {
+    document.querySelectorAll('.mo').forEach(function(m){ m.classList.remove('open'); });
+    closeMenus();
+  }
+
+  // ═══════ SUCHE ═══════
+  function doSearch(inputId) {
+    var q = $(inputId).value.trim();
+    if (!q) return;
+    navigate({page:'results', q:q});
+  }
+
+  function showLoading(query) {
+    $('results').innerHTML =
+      '<div class="res-info">Suche nach <strong style="color:#f0f4ff;">"' + esc(query) + '"</strong> ...</div>' +
+      '<div style="text-align:center;padding:40px 0;color:#3d4d6e;font-size:0.8rem;">Lade Ergebnisse...</div>';
+  }
+
+  function getMockResults(query) {
+    var ql = query.toLowerCase();
+    var data = mockDB[ql] || mockDB['default'];
+    return data.map(function(r){ return {u:r.u, t:r.t, d:r.d, link:'https://'+r.u}; });
+  }
+
+  function showResults(query, data, isMock) {
+    data = data.filter(function(r){
+      return !blacklist.some(function(b){ return r.u.indexOf(b)!==-1 || (r.link&&r.link.indexOf(b)!==-1); });
+    });
+    var el = $('results');
+    el.innerHTML = '';
+    var info = document.createElement('div');
+    info.className = 'res-info';
+    var src = isMock
+      ? ' &middot; <span style="color:#fbbf24;">Beispieldaten (API nicht erreichbar)</span>'
+      : ' &middot; via Mojeek/SearXNG (anonym)';
+    info.innerHTML = data.length + ' Ergebnisse fuer <strong style="color:#f0f4ff;">"' + esc(query) + '"</strong>' + src;
+    el.appendChild(info);
+
+    if (data.length === 0) {
+      el.innerHTML += '<div style="text-align:center;padding:30px 0;color:#3d4d6e;font-size:0.8rem;">Keine Ergebnisse gefunden.</div>';
+      return;
+    }
+
+    data.forEach(function(r, i) {
+      var item = document.createElement('div');
+      item.className = 'r-item';
+      var domain = r.u.split('/')[0];
+      var href = r.link || ('https://' + r.u);
+      item.innerHTML =
+        '<div class="r-url"><span class="r-fav">' + domain.charAt(0).toUpperCase() + '</span>' + esc(r.u) + '</div>' +
+        '<a class="r-title" href="' + esc(href) + '" target="_blank" rel="noopener">' + esc(r.t) + '</a>' +
+        '<div class="r-desc">' + r.d + '</div>' +
+        '<button class="r-dots" data-idx="' + i + '">&#x22EE;</button>' +
+        '<div class="r-menu" id="rm-' + i + '">' +
+          '<div class="r-mi off"><span class="ic">&#x2B06;</span>Vote: Gut (bald)</div>' +
+          '<div class="r-mi off"><span class="ic">&#x2B07;</span>Vote: Schlecht (bald)</div>' +
+          '<div class="r-sep"></div>' +
+          '<div class="r-mi" data-block="' + esc(domain) + '"><span class="ic">&#x1F6AB;</span>Domain blockieren</div>' +
+          '<div class="r-mi" data-copy="' + esc(href) + '"><span class="ic">&#x1F517;</span>Link kopieren</div>' +
+        '</div>';
+      el.appendChild(item);
+    });
+  }
+
+  function closeMenus() {
+    document.querySelectorAll('.r-menu').forEach(function(m){ m.classList.remove('open'); });
+  }
+
+  // ═══════ FILTER ═══════
+  function renderFilter() {
+    var el = $('filterList');
+    el.innerHTML = '';
+    blacklist.forEach(function(d, i) {
+      var row = document.createElement('div');
+      row.className = 'fli';
+      row.innerHTML = '<span class="fli-d">' + esc(d) + '</span><button class="fli-x" data-rmf="' + i + '">Entfernen</button>';
+      el.appendChild(row);
+    });
+  }
+
+  function addFilter() {
+    var inp = $('filterInput');
+    var v = inp.value.trim().toLowerCase().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
+    if (v && blacklist.indexOf(v) === -1) {
+      blacklist.push(v);
+      inp.value = '';
+      renderFilter();
+    }
+  }
+
+  // ═══════ LERNEN MODULE ═══════
+  function showLernen() {
+    lnPath = [];
+    navigate({page:'lernen', sub:'main', lnPath:[]});
+  }
+
+  function showLernenState(state) {
+    $('pg-lernen').style.display = 'flex';
+    animPage($('pg-lernen'));
+    if (state.lnPath) lnPath = state.lnPath.slice();
+    switch(state.sub) {
+      case 'cat':
+        renderLnSubs(state.catId, false);
+        break;
+      case 'card':
+        renderCard(state.cardId, false);
+        break;
+      default:
+        renderLnMain(false);
+    }
+  }
+
+  function findCard(cardId) {
+    for (var cat in lnCards) {
+      var found = lnCards[cat].find(function(c){ return c.id === cardId; });
+      if (found) return {card: found, catId: cat};
+    }
+    return null;
+  }
+
+  function pushBreadcrumb(entry) {
+    // Pruefen ob schon vorhanden
+    var idx = lnPath.findIndex(function(p){ return p.id === entry.id; });
+    if (idx !== -1) {
+      // Bereits vorhanden: bis dorthin zurueckschneiden
+      lnPath = lnPath.slice(0, idx + 1);
+    } else {
+      lnPath.push(entry);
+      if (lnPath.length > 10) {
+        lnPath.shift(); // aeltesten entfernen
+      }
+    }
+  }
+
+  function renderLnBread() {
+    var el = $('lnBread');
+    var html = '<span class="ln-bc" data-lnhome>Lernen</span>';
+    lnPath.forEach(function(p, i) {
+      html += '<span class="ln-bs"> / </span>';
+      if (i < lnPath.length - 1) {
+        html += '<span class="ln-bc" data-lnnav="' + i + '">' + p.name + '</span>';
+      } else {
+        html += '<span class="ln-bcur">' + p.name + '</span>';
+      }
+    });
+    el.innerHTML = html;
+  }
+
+  function linkify(text) {
+    return text.replace(/\[\[(\w+)\]\]/g, function(m, id) {
+      var result = findCard(id);
+      var title = result ? result.card.title : id;
+      return '<a href="#" class="ln-link" data-lnopen="' + id + '">' + title + '</a>';
+    });
+  }
+
+  function renderLnMain(addHistory) {
+    if (addHistory !== false) {
+      lnPath = [];
+      history.pushState({page:'lernen', sub:'main', lnPath:[]}, '');
+      $('btnBack').classList.add('visible');
+    }
+    renderLnBread();
+    var el = $('lnBody');
+    var html = '<div class="ln-intro">Praktisches Wissen. Klar erklaert. Von Thema zu Thema surfen.</div>';
+    html += '<div class="ln-search-w"><input class="ln-search" type="text" id="lnSearch" placeholder="Thema suchen..." autocomplete="off"></div>';
+    html += '<div class="ln-grid">';
+    lnCats.forEach(function(cat) {
+      var count = lnCards[cat.id] ? lnCards[cat.id].length : 0;
+      html += '<div class="ln-card" data-lncat="' + cat.id + '">';
+      html += '<div class="ln-card-i">' + cat.icon + '</div>';
+      html += '<h4>' + cat.name + '</h4>';
+      html += '<p>' + cat.desc + '</p>';
+      if (count) html += '<span class="ln-cnt">' + count + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  function renderLnSubs(catId, addHistory) {
+    var cat = lnCats.find(function(c){ return c.id === catId; });
+    if (!cat) return;
+    var cards = lnCards[catId] || [];
+
+    lnPath = [{id: catId, name: cat.name, type:'cat'}];
+
+    if (addHistory !== false) {
+      history.pushState({page:'lernen', sub:'cat', catId:catId, lnPath:lnPath.slice()}, '');
+      $('btnBack').classList.add('visible');
+    }
+    renderLnBread();
+
+    var el = $('lnBody');
+    var html = '<div class="ln-intro">' + cat.icon + ' ' + cat.name + '</div>';
+    if (cards.length === 0) {
+      html += '<div class="ln-intro" style="color:#3d4d6e;">Inhalte kommen bald. Die Community kann Karten vorschlagen.</div>';
+    }
+    html += '<div class="ln-list">';
+    cards.forEach(function(c) {
+      html += '<div class="ln-item" data-lnopen="' + c.id + '">';
+      html += '<div class="ln-item-c"><h4>' + c.title + '</h4>';
+      html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">';
+      c.tags.forEach(function(t) {
+        html += '<span class="ln-wcard-tag">' + t + '</span>';
+      });
+      html += '</div></div>';
+      html += '<span class="ln-item-arr">&#x203A;</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+    window.scrollTo(0, 0);
+  }
+
+  function renderCard(cardId, addHistory) {
+    var result = findCard(cardId);
+    if (!result) return;
+    var card = result.card;
+    var catId = result.catId;
+    var catObj = lnCats.find(function(c){ return c.id === catId; });
+
+    // Breadcrumb aufbauen
+    // Wenn noch kein Kategorie-Eintrag: hinzufuegen
+    if (lnPath.length === 0 || lnPath[0].type !== 'cat' || lnPath[0].id !== catId) {
+      if (catObj) {
+        lnPath = [{id: catId, name: catObj.name, type:'cat'}];
+      }
+    }
+    pushBreadcrumb({id: cardId, name: card.title, type:'card'});
+
+    if (addHistory !== false) {
+      history.pushState({page:'lernen', sub:'card', cardId:cardId, catId:catId, lnPath:lnPath.slice()}, '');
+      $('btnBack').classList.add('visible');
+    }
+    renderLnBread();
+
+    var el = $('lnBody');
+    var html = '<div class="ln-wcard"><div class="ln-wcard-bd">';
+    html += '<h3>' + card.title + '</h3>';
+    html += '<div class="ln-wcard-tags">';
+    card.tags.forEach(function(t){ html += '<span class="ln-wcard-tag">' + t + '</span>'; });
+    html += '</div>';
+    html += '<div class="ln-wcard-txt">' + linkify(card.text) + '</div>';
+
+    if (card.facts && card.facts.length) {
+      html += '<div class="ln-wcard-facts">';
+      card.facts.forEach(function(f){
+        html += '<div class="ln-wcard-fact"><span>&#x25CF;</span>' + linkify(f) + '</div>';
+      });
+      html += '</div>';
+    }
+
+    if (card.sources && card.sources.length) {
+      html += '<div class="ln-wcard-sources">';
+      html += '<h4>Zum Vertiefen</h4>';
+      html += '<div class="ln-src-links">';
+      card.sources.forEach(function(s){
+        html += '<a class="ln-src-link" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.name) + '</a>';
+      });
+      html += '</div></div>';
+    }
+
+    html += '</div></div>';
+
+    // Verwandte Karten aus gleicher Kategorie
+    var related = (lnCards[catId] || []).filter(function(c){ return c.id !== cardId; }).slice(0, 3);
+    if (related.length) {
+      html += '<div style="margin-top:16px;font-size:0.62rem;font-weight:700;color:#3d4d6e;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Mehr in ' + (catObj ? catObj.name : '') + '</div>';
+      html += '<div class="ln-list">';
+      related.forEach(function(c) {
+        html += '<div class="ln-item" data-lnopen="' + c.id + '">';
+        html += '<div class="ln-item-c"><h4>' + c.title + '</h4></div>';
+        html += '<span class="ln-item-arr">&#x203A;</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    el.innerHTML = html;
+    window.scrollTo(0, 0);
+  }
+
+  function searchCards(query) {
+    if (!query) return;
+    var q = query.toLowerCase();
+    lnPath = [{id:'__search__', name:'Suche: ' + query, type:'search'}];
+    history.pushState({page:'lernen', sub:'search', q:query, lnPath:lnPath.slice()}, '');
+    renderLnBread();
+
+    var results = [];
+    for (var cat in lnCards) {
+      lnCards[cat].forEach(function(c) {
+        if (c.title.toLowerCase().indexOf(q) !== -1 ||
+            c.text.toLowerCase().indexOf(q) !== -1 ||
+            c.tags.join(' ').toLowerCase().indexOf(q) !== -1) {
+          results.push(c);
+        }
+      });
+    }
+
+    var el = $('lnBody');
+    var html = '<div class="ln-intro">' + results.length + ' Ergebnisse fuer "' + esc(query) + '"</div>';
+    if (results.length === 0) {
+      html += '<div style="color:#3d4d6e;font-size:0.78rem;margin-bottom:16px;">Nichts gefunden. Probier andere Begriffe.</div>';
+    }
+    html += '<div class="ln-list">';
+    results.forEach(function(c) {
+      html += '<div class="ln-item" data-lnopen="' + c.id + '">';
+      html += '<div class="ln-item-c"><h4>' + c.title + '</h4>';
+      html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">';
+      c.tags.forEach(function(t){ html += '<span class="ln-wcard-tag">' + t + '</span>'; });
+      html += '</div></div>';
+      html += '<span class="ln-item-arr">&#x203A;</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  // ═══════ AKTIVITAETEN MODULE ═══════
+  // ═══════ AKTIVITAETEN — MAP + OVERPASS API ═══════
+
+  var leafletLoaded = false;
+  var aktMap = null;
+  var aktLat = null, aktLon = null;
+  var aktRadius = 5000;
+  var aktPOILayers = {};
+  var aktPOIData = {};
+  var aktFilterOpen = false;
+
+  // POI categories with Overpass tags — expanded set
+  var aktPoiCats = [
+    { id:'playground',   icon:'\u{1F3A0}', name:'Spielplaetze',       color:'#3ddc97', query:'node["leisure"="playground"];way["leisure"="playground"]' },
+    { id:'park',         icon:'\u{1F333}', name:'Parks & Gaerten',     color:'#22c55e', query:'way["leisure"="park"];relation["leisure"="park"];way["leisure"="garden"]' },
+    { id:'lake',         icon:'\u{1F30A}', name:'Seen & Baggerseen',   color:'#38bdf8', query:'way["natural"="water"]["name"];relation["natural"="water"]["name"];node["natural"="water"]["name"]' },
+    { id:'pool',         icon:'\u{1F3CA}', name:'Schwimmbad & Freibad',color:'#06b6d4', query:'node["leisure"="swimming_pool"];way["leisure"="swimming_pool"];node["amenity"="public_bath"];node["leisure"="water_park"];way["leisure"="water_park"]' },
+    { id:'fitness',      icon:'\u{1F4AA}', name:'Fitnessstudio',       color:'#f97316', query:'node["leisure"="fitness_centre"];way["leisure"="fitness_centre"]' },
+    { id:'calisthenics', icon:'\u{1F3CB}', name:'Outdoor-Fitness',     color:'#ef4444', query:'node["leisure"="fitness_station"];way["leisure"="fitness_station"]' },
+    { id:'sports',       icon:'\u26BD',    name:'Sportplaetze',        color:'#eab308', query:'way["leisure"="pitch"]["name"];way["leisure"="sports_centre"]["name"];node["leisure"="sports_centre"]' },
+    { id:'tennis',       icon:'\u{1F3BE}', name:'Tennis',              color:'#84cc16', query:'way["sport"="tennis"];node["sport"="tennis"]' },
+    { id:'bowling',      icon:'\u{1F3B3}', name:'Bowling & Kegeln',    color:'#d946ef', query:'node["sport"="bowling"];node["sport"="9pin"];node["leisure"="bowling_alley"];way["sport"="bowling"]' },
+    { id:'tabletennis',  icon:'\u{1F3D3}', name:'Tischtennis',         color:'#14b8a6', query:'node["sport"="table_tennis"];way["sport"="table_tennis"];node["leisure"="pitch"]["sport"="table_tennis"]' },
+    { id:'climbing',     icon:'\u{1FA78}', name:'Klettern & Bouldern', color:'#f43f5e', query:'node["sport"="climbing"];way["sport"="climbing"]' },
+    { id:'skatepark',    icon:'\u{1F6F9}', name:'Skatepark',           color:'#64748b', query:'node["sport"="skateboard"];way["sport"="skateboard"]' },
+    { id:'museum',       icon:'\u{1F3DB}', name:'Museen',              color:'#a78bfa', query:'node["tourism"="museum"];way["tourism"="museum"]' },
+    { id:'cinema',       icon:'\u{1F3AC}', name:'Kino',                color:'#f472b6', query:'node["amenity"="cinema"]' },
+    { id:'theatre',      icon:'\u{1F3AD}', name:'Theater',             color:'#e879f9', query:'node["amenity"="theatre"]' },
+    { id:'library',      icon:'\u{1F4DA}', name:'Bibliotheken',        color:'#fb923c', query:'node["amenity"="library"];way["amenity"="library"]' },
+    { id:'zoo',          icon:'\u{1F981}', name:'Zoo & Tierpark',      color:'#a3e635', query:'node["tourism"="zoo"];way["tourism"="zoo"]' },
+    { id:'minigolf',     icon:'\u26F3',    name:'Minigolf',            color:'#2dd4bf', query:'node["sport"="miniature_golf"];way["sport"="miniature_golf"];node["leisure"="miniature_golf"]' },
+    { id:'viewpoint',    icon:'\u{1F304}', name:'Aussichtspunkte',     color:'#fbbf24', query:'node["tourism"="viewpoint"]' },
+    { id:'bbq',          icon:'\u{1F525}', name:'Grillplaetze',        color:'#dc2626', query:'node["amenity"="bbq"];node["leisure"="firepit"]' },
+    { id:'cafe',         icon:'\u2615',    name:'Cafes',               color:'#92400e', query:'node["amenity"="cafe"]["name"]' },
+    { id:'biergarten',   icon:'\u{1F37A}', name:'Biergarten',          color:'#ca8a04', query:'node["amenity"="biergarten"];node["biergarten"="yes"];way["amenity"="biergarten"]' }
+  ];
+
+  var aktActiveCats = {};
+  aktPoiCats.forEach(function(c) { aktActiveCats[c.id] = true; });
+
+  function showAktivitaeten(state) {
+    var el = $('pg-aktivitaeten');
+    el.style.display = 'flex';
+    animPage(el);
+    renderAktFilterGrid();
+    setTimeout(setupAktSuggest, 100);
+    closeAktFilter();
+    if (aktLat && aktLon && aktMap) {
+      setTimeout(function() { aktMap.invalidateSize(); }, 200);
+    }
+  }
+
+  function renderAktFilterGrid() {
+    var grid = $('aktFilterGrid');
+    if (!grid) return;
+    var html = '';
+    aktPoiCats.forEach(function(cat) {
+      var isActive = aktActiveCats[cat.id];
+      var count = aktPOIData[cat.id] ? aktPOIData[cat.id].length : 0;
+      html += '<div class="akt-fp-item' + (isActive ? ' active' : '') + '" data-aktfcat="' + cat.id + '" '
+        + 'style="--cat-color:' + cat.color + ';--cat-bg:' + cat.color + '14;">'
+        + '<div class="akt-fp-dot"></div>'
+        + '<span class="akt-fp-label">' + cat.icon + ' ' + cat.name + '</span>'
+        + '<span class="akt-fp-count">' + (count > 0 ? count : '') + '</span>'
+        + '</div>';
+    });
+    grid.innerHTML = html;
+    updateFilterCount();
+  }
+
+  function updateFilterCount() {
+    var count = 0;
+    aktPoiCats.forEach(function(c) { if (aktActiveCats[c.id]) count++; });
+    var el = $('aktFilterCount');
+    if (el) el.textContent = count + '/' + aktPoiCats.length;
+  }
+
+  function updateAktStats() {
+    var total = 0;
+    aktPoiCats.forEach(function(c) { total += (aktPOIData[c.id] || []).length; });
+    var el = $('aktStats');
+    if (!el) return;
+    el.style.display = total > 0 ? 'flex' : 'none';
+    el.innerHTML = '<div class="akt-stat"><strong>' + total + '</strong> Orte gefunden</div>'
+      + '<div class="akt-stat">Radius: <strong>' + (aktRadius/1000) + ' km</strong></div>';
+  }
+
+  function toggleAktFilter(catId) {
+    aktActiveCats[catId] = !aktActiveCats[catId];
+    if (aktPOILayers[catId] && aktMap) {
+      if (aktActiveCats[catId]) aktMap.addLayer(aktPOILayers[catId]);
+      else aktMap.removeLayer(aktPOILayers[catId]);
+    }
+    renderAktFilterGrid();
+  }
+
+  function openAktFilter() {
+    $('aktFilterOv').classList.add('open');
+    $('aktFilterPanel').classList.add('open');
+    aktFilterOpen = true;
+  }
+  function closeAktFilter() {
+    $('aktFilterOv').classList.remove('open');
+    $('aktFilterPanel').classList.remove('open');
+    aktFilterOpen = false;
+  }
+
+  // Drag-to-close on filter panel
+  (function() {
+    var panel, startY, currentY, dragging = false;
+    function onStart(e) {
+      panel = $('aktFilterPanel');
+      if (!panel.classList.contains('open')) return;
+      startY = (e.touches ? e.touches[0] : e).clientY;
+      currentY = startY;
+      dragging = true;
+      panel.style.transition = 'none';
+    }
+    function onMove(e) {
+      if (!dragging) return;
+      currentY = (e.touches ? e.touches[0] : e).clientY;
+      var dy = currentY - startY;
+      if (dy > 0) {
+        panel.style.transform = 'translateY(' + dy + 'px)';
+        e.preventDefault();
+      }
+    }
+    function onEnd() {
+      if (!dragging) return;
+      dragging = false;
+      var panel = $('aktFilterPanel');
+      panel.style.transition = '';
+      var dy = currentY - startY;
+      if (dy > 80) { closeAktFilter(); }
+      else { panel.style.transform = ''; }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      var handle = $('aktFPHandle');
+      var header = document.querySelector('.akt-fp-header');
+      if (handle) {
+        handle.addEventListener('touchstart', onStart, {passive:false});
+        handle.addEventListener('mousedown', onStart);
+      }
+      if (header) {
+        header.addEventListener('touchstart', onStart, {passive:false});
+        header.addEventListener('mousedown', onStart);
+      }
+      document.addEventListener('touchmove', onMove, {passive:false});
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('touchend', onEnd);
+      document.addEventListener('mouseup', onEnd);
+    });
+  })();
+
+  function loadLeaflet(cb) {
+    if (leafletLoaded) { cb(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    s.onload = function() { leafletLoaded = true; cb(); };
+    document.head.appendChild(s);
+  }
+
+  function initAktMap(lat, lon) {
+    loadLeaflet(function() {
+      var mapEl = $('aktMap');
+      if (!mapEl) return;
+      mapEl.innerHTML = '';
+      if (aktMap) { aktMap.remove(); aktMap = null; }
+
+      aktMap = L.map('aktMap', { zoomControl: false, tap: true, tapTolerance: 15 }).setView([lat, lon], 14);
+      L.control.zoom({ position: 'bottomright' }).addTo(aktMap);
+
+      // Single dark tile layer — fast
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19
+      }).addTo(aktMap);
+
+      aktMap.attributionControl.setPrefix('');
+      aktMap.attributionControl.addAttribution('&copy; <a href="https://openstreetmap.org">OSM</a> &copy; <a href="https://carto.com">CARTO</a>');
+
+      // Your-location marker
+      L.circleMarker([lat, lon], {
+        radius: 8, fillColor: '#4d94ff', fillOpacity: 1,
+        color: '#fff', weight: 2.5, opacity: 1
+      }).addTo(aktMap).bindPopup('<div style="font-family:Lexend;font-weight:600;font-size:13px;">Dein Standort</div>');
+
+      // Pulse ring
+      L.circleMarker([lat, lon], {
+        radius: 22, fillColor: '#4d94ff', fillOpacity: 0.12,
+        color: '#4d94ff', weight: 1, opacity: 0.25
+      }).addTo(aktMap);
+
+      setTimeout(function() { aktMap.invalidateSize(); }, 200);
+
+      loadAllPOIs(lat, lon, aktRadius);
+    });
+  }
+
+  function loadAllPOIs(lat, lon, radius) {
+    Object.keys(aktPOILayers).forEach(function(k) {
+      if (aktMap && aktPOILayers[k]) aktMap.removeLayer(aktPOILayers[k]);
+    });
+    aktPOILayers = {};
+    aktPOIData = {};
+
+    var loadEl = $('aktLoading');
+    var loadTxt = $('aktLoadingText');
+    if (loadEl) loadEl.classList.add('show');
+
+    var total = aktPoiCats.length;
+    var done = 0;
+
+    aktPoiCats.forEach(function(cat) {
+      loadCategoryPOIs(cat, lat, lon, radius, function() {
+        done++;
+        if (loadTxt) loadTxt.textContent = done + '/' + total + ' Kategorien';
+        if (done >= total) {
+          if (loadEl) loadEl.classList.remove('show');
+          renderAktFilterGrid();
+          updateAktStats();
+        }
+      });
+    });
+  }
+
+  function loadCategoryPOIs(cat, lat, lon, radius, cb) {
+    var parts = cat.query.split(';');
+    var body = '';
+    parts.forEach(function(p) {
+      body += p.trim() + '(around:' + radius + ',' + lat + ',' + lon + ');\n';
+    });
+    var query = '[out:json][timeout:20];(\n' + body + ');\nout center 300;';
+
+    fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'data=' + encodeURIComponent(query)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var pois = [];
+      var seen = {};
+      if (data && data.elements) {
+        data.elements.forEach(function(el) {
+          var elLat = el.lat || (el.center && el.center.lat);
+          var elLon = el.lon || (el.center && el.center.lon);
+          if (!elLat || !elLon) return;
+          // Deduplicate by rounding coords
+          var key = (elLat).toFixed(5) + ',' + (elLon).toFixed(5);
+          if (seen[key]) return;
+          seen[key] = true;
+          var name = (el.tags && el.tags.name) || cat.name;
+          pois.push({ lat: elLat, lon: elLon, name: name, tags: el.tags || {} });
+        });
+      }
+      aktPOIData[cat.id] = pois;
+
+      // Create layer with BIGGER markers for better click targets
+      var markers = [];
+      pois.forEach(function(poi) {
+        var m = L.circleMarker([poi.lat, poi.lon], {
+          radius: 9, fillColor: cat.color, fillOpacity: 0.9,
+          color: '#fff', weight: 1.5, opacity: 0.6
+        });
+        var html = '<div style="font-family:Lexend;">'
+          + '<div class="akt-popup-name">' + esc(poi.name) + '</div>'
+          + '<div class="akt-popup-cat"><div class="dot" style="background:' + cat.color + ';"></div>' + cat.icon + ' ' + cat.name + '</div>';
+        if (poi.tags.opening_hours) html += '<div class="akt-popup-detail">\u{1F555} ' + esc(poi.tags.opening_hours) + '</div>';
+        if (poi.tags.website) html += '<div class="akt-popup-detail"><a href="' + esc(poi.tags.website) + '" target="_blank" rel="noopener" style="color:#4d94ff;text-decoration:none;">\u{1F310} Webseite</a></div>';
+        if (poi.tags.phone) html += '<div class="akt-popup-detail">\u{1F4DE} ' + esc(poi.tags.phone) + '</div>';
+        if (poi.tags['addr:street']) html += '<div class="akt-popup-detail">\u{1F4CD} ' + esc(poi.tags['addr:street']) + (poi.tags['addr:housenumber'] ? ' ' + esc(poi.tags['addr:housenumber']) : '') + '</div>';
+        html += '</div>';
+        m.bindPopup(html, { maxWidth: 240, closeButton: true });
+        markers.push(m);
+      });
+
+      var lg = L.layerGroup(markers);
+      aktPOILayers[cat.id] = lg;
+      if (aktActiveCats[cat.id] && aktMap) aktMap.addLayer(lg);
+      cb();
+    })
+    .catch(function(err) {
+      console.warn('Overpass error (' + cat.id + '):', err);
+      aktPOIData[cat.id] = [];
+      cb();
+    });
+  }
+
+  // Location search
+  function plzToCoords(query, cb) {
+    var isPLZ = /^\d{5}$/.test(query.trim());
+    var url;
+    if (isPLZ) {
+      url = 'https://nominatim.openstreetmap.org/search?postalcode=' + encodeURIComponent(query.trim()) + '&country=de&format=json&limit=1&addressdetails=1';
+    } else {
+      url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(query.trim()) + '&countrycodes=de&format=json&limit=1&addressdetails=1';
+    }
+    fetch(url, { headers: { 'Accept': 'application/json' } })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.length > 0) {
+          var d = data[0];
+          var addr = d.address || {};
+          var name = addr.city || addr.town || addr.village || addr.municipality || addr.county || query;
+          var plz = addr.postcode || '';
+          cb({ lat: parseFloat(d.lat), lon: parseFloat(d.lon), name: name, plz: plz });
+        } else cb(null);
+      }).catch(function() { cb(null); });
+  }
+
+  // Autocomplete
+  var aktSuggestTimer = null;
+  function setupAktSuggest() {
+    var input = $('aktPlz');
+    if (!input || input._aktBound) return;
+    input._aktBound = true;
+    input.addEventListener('input', function() {
+      clearTimeout(aktSuggestTimer);
+      var q = input.value.trim();
+      if (q.length < 2) { closeSuggest(); return; }
+      aktSuggestTimer = setTimeout(function() {
+        fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&countrycodes=de&format=json&limit=5&addressdetails=1', { headers: { 'Accept': 'application/json' } })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            var sg = $('aktSuggest');
+            if (!data || data.length === 0) { closeSuggest(); return; }
+            var html = '';
+            data.forEach(function(d, i) {
+              var addr = d.address || {};
+              var name = addr.city || addr.town || addr.village || addr.municipality || '';
+              var plz = addr.postcode || '';
+              var label = name || d.display_name.split(',')[0];
+              var sub = d.display_name.split(',').slice(1, 3).join(',').trim();
+              html += '<div class="akt-suggest-item" data-aktsg="' + i + '" data-lat="' + d.lat + '" data-lon="' + d.lon + '" data-name="' + esc(label) + '" data-plz="' + esc(plz) + '">';
+              html += esc(label) + (plz ? ' (' + plz + ')' : '');
+              if (sub) html += '<small>' + esc(sub) + '</small>';
+              html += '</div>';
+            });
+            sg.innerHTML = html;
+            sg.classList.add('open');
+          }).catch(function() { closeSuggest(); });
+      }, 350);
+    });
+    input.addEventListener('blur', function() { setTimeout(closeSuggest, 200); });
+  }
+
+  function closeSuggest() {
+    var sg = $('aktSuggest');
+    if (sg) { sg.classList.remove('open'); sg.innerHTML = ''; }
+  }
+
+  function startAktSearch(query) {
+    var loadEl = $('aktLoading');
+    var loadTxt = $('aktLoadingText');
+    $('aktMapSection').style.display = 'block';
+    if (loadEl) loadEl.classList.add('show');
+    if (loadTxt) loadTxt.textContent = 'Suche "' + query + '"...';
+
+    plzToCoords(query, function(r) {
+      if (!r) {
+        if (loadEl) loadEl.classList.remove('show');
+        $('aktMap').innerHTML = '<div style="padding:60px 20px;text-align:center;color:#f87171;font-size:0.8rem;">Ort nicht gefunden.</div>';
+        return;
+      }
+      aktLat = r.lat;
+      aktLon = r.lon;
+      $('aktPlz').value = r.name + (r.plz ? ' (' + r.plz + ')' : '');
+      $('btnAktFilter').style.display = 'flex';
+      if (loadEl) loadEl.classList.remove('show');
+      initAktMap(r.lat, r.lon);
+    });
+  }
+
+  function startAktDirect(lat, lon, name, plz) {
+    aktLat = lat; aktLon = lon;
+    $('aktPlz').value = name + (plz ? ' (' + plz + ')' : '');
+    $('aktMapSection').style.display = 'block';
+    $('btnAktFilter').style.display = 'flex';
+    initAktMap(lat, lon);
+  }
+
+  function aktGeolocate() {
+    if (!navigator.geolocation) { alert('Standort nicht verfuegbar.'); return; }
+    $('aktMapSection').style.display = 'block';
+    var loadEl = $('aktLoading');
+    if (loadEl) loadEl.classList.add('show');
+    $('aktLoadingText').textContent = 'Standort wird ermittelt...';
+
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      fetch('https://nominatim.openstreetmap.org/reverse?lat=' + pos.coords.latitude + '&lon=' + pos.coords.longitude + '&format=json&addressdetails=1&zoom=14', { headers: { 'Accept': 'application/json' } })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          var addr = d.address || {};
+          if (loadEl) loadEl.classList.remove('show');
+          startAktDirect(pos.coords.latitude, pos.coords.longitude,
+            addr.city || addr.town || addr.village || 'Mein Standort', addr.postcode || '');
+        }).catch(function() {
+          if (loadEl) loadEl.classList.remove('show');
+          startAktDirect(pos.coords.latitude, pos.coords.longitude, 'Mein Standort', '');
+        });
+    }, function() {
+      if (loadEl) loadEl.classList.remove('show');
+      alert('Standort konnte nicht ermittelt werden.');
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  }
+
+  // ═══════ EVENT DELEGATION ═══════
+  document.addEventListener('click', function(e) {
+    var t = e.target;
+
+    // Menüs schliessen bei Click ausserhalb
+    if (!t.closest('.r-dots') && !t.closest('.r-menu')) closeMenus();
+
+    // Zurueck-Button (iOS)
+    if (t.closest('#btnBack')) { history.back(); return; }
+
+    // Placeholder Zurueck-Button
+    if (t.closest('[data-gohome]')) { navigate({page:'home'}); return; }
+
+    // Home-Logo
+    if (t.closest('#btnHome') || t.closest('#btnHome2')) {
+      navigate({page:'home'});
+      return;
+    }
+
+    // Topbar Modul-Name klickbar (zurueck zum Modul-Hauptmenue)
+    if (t.closest('#topPageTitle')) {
+      if (currentPage === 'lernen') { showLernen(); return; }
+      if (currentPage === 'aktivitaeten') { navigate({page:'aktivitaeten'}); return; }
+      if (currentPage === 'results') { navigate({page:'home'}); return; }
+      return;
+    }
+
+    // Topbar Buttons
+    if (t.closest('#btnAbout')) { openMo('about'); return; }
+    if (t.closest('#btnUpdates')) { openMo('updates'); return; }
+    if (t.closest('#btnMenu')) { togSb(); return; }
+    if (t.closest('#sbOv') || t.closest('#sbClose')) { togSb(); return; }
+
+    // Sidebar-Items
+    var sbIt = t.closest('.sb-it[data-act]');
+    if (sbIt) {
+      var act = sbIt.getAttribute('data-act');
+      togSb();
+      if (act === 'home') navigate({page:'home'});
+      else if (act === 'lernen') showLernen();
+      else if (act === 'about' || act === 'updates' || act === 'filter') openMo(act);
+      else navigate({page: act});
+      return;
+    }
+
+    // Quick-Buttons
+    var qb = t.closest('.qb[data-act]');
+    if (qb) {
+      var act2 = qb.getAttribute('data-act');
+      if (act2 === 'lernen') showLernen();
+      else navigate({page: act2});
+      return;
+    }
+
+    // Suche
+    if (t.closest('#btnSearch')) { doSearch('si'); return; }
+    if (t.closest('#btnSearch2')) { doSearch('si2'); return; }
+    if (t.closest('#btnResFilter')) { openMo('filter'); return; }
+
+    // Modal schliessen
+    if (t.closest('[data-close]')) { closeMo(); return; }
+    if (t.classList.contains('mo')) { closeMo(); return; }
+
+    // Footer-Link
+    if (t.closest('#btnLearn')) { e.preventDefault(); openMo('about'); return; }
+
+    // Home Roadmap Mini
+    if (t.closest('[data-act-roadmap]')) { navigate({page:'roadmap'}); return; }
+
+    // IPFS-Link kopieren
+    if (t.closest('#btnCopy')) {
+      if (navigator.clipboard) navigator.clipboard.writeText('ipfs://bafybei...x4f');
+      return;
+    }
+
+    // Drei-Punkte-Menue
+    var dots = t.closest('.r-dots');
+    if (dots) {
+      e.stopPropagation();
+      var idx = dots.getAttribute('data-idx');
+      var menu = $('rm-' + idx);
+      var wasOpen = menu.classList.contains('open');
+      closeMenus();
+      if (!wasOpen) menu.classList.add('open');
+      return;
+    }
+
+    // Domain blockieren
+    var blockBtn = t.closest('[data-block]');
+    if (blockBtn) {
+      var dom = blockBtn.getAttribute('data-block');
+      if (blacklist.indexOf(dom) === -1) blacklist.push(dom);
+      closeMenus();
+      return;
+    }
+
+    // Link kopieren (Ergebnis-Menue)
+    var copyBtn = t.closest('[data-copy]');
+    if (copyBtn) {
+      var url = copyBtn.getAttribute('data-copy');
+      if (navigator.clipboard) navigator.clipboard.writeText(url);
+      closeMenus();
+      return;
+    }
+
+    // Filter entfernen
+    var rmf = t.closest('[data-rmf]');
+    if (rmf) {
+      blacklist.splice(parseInt(rmf.getAttribute('data-rmf')), 1);
+      renderFilter();
+      return;
+    }
+    if (t.closest('#btnAddFilter')) { addFilter(); return; }
+
+    // Lernen: Kategorie-Karte
+    var lnCat = t.closest('[data-lncat]');
+    if (lnCat) {
+      renderLnSubs(lnCat.getAttribute('data-lncat'));
+      return;
+    }
+
+    // Aktivitaeten: Filter-Kategorie toggle
+    var aktFCat = t.closest('[data-aktfcat]');
+    if (aktFCat) { toggleAktFilter(aktFCat.getAttribute('data-aktfcat')); return; }
+
+    // Aktivitaeten: Filter-Panel
+    if (t.closest('#btnAktFilter')) { openAktFilter(); return; }
+    if (t.closest('#btnAktFPClose') || t.closest('#aktFilterOv')) { closeAktFilter(); return; }
+    if (t.closest('#btnAktAll')) {
+      aktPoiCats.forEach(function(c) { aktActiveCats[c.id] = true; if (aktPOILayers[c.id] && aktMap) aktMap.addLayer(aktPOILayers[c.id]); });
+      renderAktFilterGrid(); return;
+    }
+    if (t.closest('#btnAktNone')) {
+      aktPoiCats.forEach(function(c) { aktActiveCats[c.id] = false; if (aktPOILayers[c.id] && aktMap) aktMap.removeLayer(aktPOILayers[c.id]); });
+      renderAktFilterGrid(); return;
+    }
+
+    // Aktivitaeten: Standort
+    if (t.closest('#btnAktLocate')) { aktGeolocate(); return; }
+
+    // Aktivitaeten: Radius
+    var radBtn = t.closest('[data-radius]');
+    if (radBtn) {
+      aktRadius = parseInt(radBtn.getAttribute('data-radius'));
+      document.querySelectorAll('[data-radius]').forEach(function(b) { b.classList.remove('active'); });
+      radBtn.classList.add('active');
+      if (aktLat && aktLon) loadAllPOIs(aktLat, aktLon, aktRadius);
+      return;
+    }
+
+    // Aktivitaeten: Suggest-Item
+    var sg = t.closest('[data-aktsg]');
+    if (sg) {
+      closeSuggest();
+      startAktDirect(parseFloat(sg.getAttribute('data-lat')), parseFloat(sg.getAttribute('data-lon')),
+        sg.getAttribute('data-name'), sg.getAttribute('data-plz'));
+      return;
+    }
+
+    // Lernen: Karte oeffnen (Liste, verwandte, Links)
+    var lnOpen = t.closest('[data-lnopen]');
+    if (lnOpen) {
+      e.preventDefault();
+      renderCard(lnOpen.getAttribute('data-lnopen'));
+      return;
+    }
+
+    // Lernen: Breadcrumb Home
+    if (t.closest('[data-lnhome]')) {
+      renderLnMain();
+      return;
+    }
+
+    // Lernen: Breadcrumb Navigation zu gespeichertem Schritt
+    var lnNav = t.closest('[data-lnnav]');
+    if (lnNav) {
+      var navIdx = parseInt(lnNav.getAttribute('data-lnnav'));
+      var target = lnPath[navIdx];
+      if (target) {
+        if (target.type === 'cat') {
+          lnPath = lnPath.slice(0, navIdx + 1);
+          renderLnSubs(target.id);
+        } else if (target.type === 'card') {
+          lnPath = lnPath.slice(0, navIdx + 1);
+          renderCard(target.id);
+        }
+      }
+      return;
+    }
+
+    // Update-Accordion
+    var uh = t.closest('[data-toggle]');
+    if (uh) {
+      var body = uh.nextElementSibling;
+      var wasOpen = body.classList.contains('open');
+      document.querySelectorAll('.ub').forEach(function(b){ b.classList.remove('open'); });
+      if (!wasOpen) body.classList.add('open');
+      return;
+    }
+  });
+
+  // Tastatur
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeMo();
+      if ($('sb').classList.contains('open')) togSb();
+      if (aktFilterOpen) closeAktFilter();
+    }
+    if (e.key === 'Enter') {
+      if (document.activeElement === $('si')) doSearch('si');
+      if (document.activeElement === $('si2')) doSearch('si2');
+      if (document.activeElement === $('filterInput')) addFilter();
+      var aktPlzEl = $('aktPlz');
+      if (aktPlzEl && document.activeElement === aktPlzEl) {
+        var plzVal = aktPlzEl.value.trim();
+        if (plzVal.length >= 2) { closeSuggest(); startAktSearch(plzVal); }
+      }
+      var lnSrch = $('lnSearch');
+      if (lnSrch && document.activeElement === lnSrch) searchCards(lnSrch.value.trim());
+    }
+  });
+
+  // ═══════ SWIPE NAVIGATION ═══════
+  var swipeStartX = 0;
+  var swipeStartY = 0;
+  var swipeStartTime = 0;
+  var isSwiping = false;
+  var swipeEdge = 0.35;
+
+  document.addEventListener('touchstart', function(e) {
+    if (e.touches.length !== 1) return;
+    // Don't swipe-navigate when touching map, filter panel, or leaflet elements
+    var tgt = e.target;
+    if (tgt.closest('.akt-map-area') || tgt.closest('.leaflet-container') || tgt.closest('.akt-filter-panel') || tgt.closest('.akt-filter-ov')) return;
+    var x = e.touches[0].clientX;
+    var w = window.innerWidth;
+    if (x < w * swipeEdge || x > w * (1 - swipeEdge)) {
+      swipeStartX = x;
+      swipeStartY = e.touches[0].clientY;
+      swipeStartTime = Date.now();
+      isSwiping = true;
+    }
+  }, {passive: true});
+
+  document.addEventListener('touchend', function(e) {
+    if (!isSwiping) return;
+    isSwiping = false;
+    var touch = e.changedTouches[0];
+    var dx = touch.clientX - swipeStartX;
+    var dy = touch.clientY - swipeStartY;
+    var dt = Date.now() - swipeStartTime;
+    if (dt < 500 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx > 0 && swipeStartX < window.innerWidth * swipeEdge) {
+        history.back();
+      } else if (dx < 0 && swipeStartX > window.innerWidth * (1 - swipeEdge)) {
+        history.forward();
+      }
+    }
+  }, {passive: true});
+
+  // Initiale History-State setzen
+  history.replaceState({page:'home'}, '');
+
+})();
+</script>
+
+</body>
+</html>
