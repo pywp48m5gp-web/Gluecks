@@ -703,7 +703,7 @@
   .akt-hdr-ic { font-size:1.1rem; }
   .akt-hdr-t { font-size:0.85rem; font-weight:700; color:#f0f4ff; }
   .akt-plz-row { display:flex; gap:8px; position:relative; }
-  .akt-plz { flex:1; height:42px; background:#1a2340; border:1px solid rgba(120,160,255,0.15); border-radius:11px; padding:0 14px; font-family:'Lexend'; font-size:15px; color:#f0f4ff; outline:none; -webkit-appearance:none; }
+  .akt-plz { flex:1; height:42px; background:#1a2340; border:1px solid rgba(120,160,255,0.15); border-radius:11px; padding:0 14px; font-family:'Lexend'; font-size:16px; color:#f0f4ff; outline:none; -webkit-appearance:none; }
   .akt-plz::placeholder { color:#506585; }
   .akt-plz:focus { border-color:rgba(77,148,255,0.5); background:#223058; }
   .akt-go { width:42px; height:42px; flex-shrink:0; background:linear-gradient(135deg,#4d94ff,#3d7de6); border:none; border-radius:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
@@ -734,6 +734,24 @@
   .akt-fc { background:#4d94ff; color:#fff; font-size:0.52rem; font-weight:700; min-width:16px; height:16px; border-radius:8px; padding:0 4px; display:flex; align-items:center; justify-content:center; }
   .akt-stats { display:flex; gap:8px; margin-top:4px; font-size:0.58rem; color:#506585; }
   .akt-stats strong { color:#9aadcc; font-weight:600; }
+  /* Tabs Karte / Liste */
+  .akt-tabs { display:none; gap:4px; padding:6px 16px 4px; flex-shrink:0; }
+  .akt-tabs.show { display:flex; }
+  .akt-tab { flex:1; height:34px; border-radius:9px; border:1px solid rgba(120,160,255,0.12); background:transparent; font-family:'Lexend'; font-size:0.68rem; font-weight:600; color:#506585; cursor:pointer; transition:all 0.2s; }
+  .akt-tab.on { background:#223058; border-color:rgba(77,148,255,0.3); color:#4d94ff; }
+  .akt-tab:active { opacity:0.7; }
+  /* Listenansicht */
+  .akt-list { display:none; flex:1 1 0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:8px 16px 80px; }
+  .akt-list.show { display:block; }
+  .akt-list-cat { margin-bottom:18px; }
+  .akt-list-cat-hdr { display:flex; align-items:center; gap:7px; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid rgba(120,160,255,0.07); font-size:0.72rem; font-weight:700; color:#a0b0cc; }
+  .akt-list-cnt { margin-left:auto; font-size:0.58rem; font-weight:600; color:#3d4d6e; font-family:'DM Mono'; }
+  .akt-list-item { background:#151f38; border:1px solid rgba(120,160,255,0.08); border-radius:10px; padding:10px 12px; margin-bottom:5px; cursor:pointer; transition:background 0.15s; -webkit-tap-highlight-color:transparent; }
+  .akt-list-item:active { background:#1e2d4f; }
+  .akt-list-nm { font-size:0.76rem; font-weight:600; color:#dce4f2; margin-bottom:3px; }
+  .akt-list-sub { font-size:0.6rem; color:#506585; display:flex; flex-wrap:wrap; gap:8px; margin-top:2px; }
+  .akt-list-sub a { color:#4d94ff; text-decoration:none; }
+  .akt-empty { text-align:center; padding:48px 20px; color:#506585; font-size:0.75rem; line-height:1.6; }
   /* Filter panel — fixed overlay, very high z-index, starts fully hidden */
   .akt-fpov { display:none; position:fixed; inset:0; z-index:9000; background:rgba(0,0,0,0.45); }
   .akt-fpov.open { display:block; }
@@ -749,13 +767,13 @@
   .akt-fpa:active { color:#a0b0cc; }
   .akt-fpg { display:grid; grid-template-columns:1fr 1fr; gap:5px; padding:0 14px 16px; overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; }
   .akt-fpi { display:flex; align-items:center; gap:7px; padding:9px 9px; border-radius:9px; background:#1a2340; border:1px solid rgba(120,160,255,0.06); cursor:pointer; user-select:none; -webkit-user-select:none; }
-  .akt-fpi.on { border-color:var(--cc,rgba(77,148,255,0.4)); background:var(--cb,rgba(77,148,255,0.06)); }
-  .akt-fpd { width:8px; height:8px; border-radius:50%; flex-shrink:0; background:var(--cc,#4d94ff); opacity:0.3; }
+  .akt-fpi.on { border-color:rgba(77,148,255,0.4); background:rgba(77,148,255,0.06); }
+  .akt-fpd { width:8px; height:8px; border-radius:50%; flex-shrink:0; background:#4d94ff; opacity:0.3; }
   .akt-fpi.on .akt-fpd { opacity:1; }
   .akt-fpl { font-size:0.63rem; font-weight:500; color:#6678a0; line-height:1.2; }
   .akt-fpi.on .akt-fpl { color:#dce4f2; }
   .akt-fpn { margin-left:auto; font-size:0.52rem; font-weight:600; color:#506585; font-family:'DM Mono'; }
-  .akt-fpi.on .akt-fpn { color:var(--cc,#4d94ff); }
+  .akt-fpi.on .akt-fpn { color:#4d94ff; }
   .leaflet-popup-content { font-family:'Lexend'; min-width:140px; }
   .pn { font-size:0.78rem; font-weight:700; color:#111829; margin-bottom:1px; }
   .pc { font-size:0.58rem; color:#666; display:flex; align-items:center; gap:3px; }
@@ -986,14 +1004,19 @@
         <div class="akt-suggest" id="aktSuggest"></div>
       </div>
     </div>
+    <div class="akt-tabs" id="aktTabs">
+      <button class="akt-tab on" id="aktTabMap">&#x1F5FA; Karte</button>
+      <button class="akt-tab" id="aktTabList">&#x1F4CB; Liste</button>
+    </div>
     <div class="akt-map-area" id="aktMapArea">
       <div id="aktMap" style="width:100%;height:100%;"></div>
       <div class="akt-welcome" id="aktWel"><div style="font-size:1.6rem;margin-bottom:6px;">&#x1F5FA;</div><div style="font-size:0.7rem;color:#506585;max-width:200px;line-height:1.5;">Gib einen Ort ein um Spielplaetze, Parks, Seen und mehr zu entdecken.</div></div>
       <div class="akt-rad" id="aktRadBar"><button class="akt-rad-b" data-rad="2000">2km</button><button class="akt-rad-b on" data-rad="5000">5km</button><button class="akt-rad-b" data-rad="10000">10km</button></div>
       <div class="akt-lp" id="aktLP"><div class="akt-spin"></div><span id="aktLT">Lade...</span></div>
     </div>
+    <div class="akt-list" id="aktList"></div>
     <div class="akt-bot">
-      <button class="akt-filt-btn" id="btnAktFilt">&#x1F3AE; Karten-Overlay <span class="akt-fc" id="aktFC">0</span></button>
+      <button class="akt-filt-btn" id="btnAktFilt">&#x1F3AE; Filter <span class="akt-fc" id="aktFC">0</span></button>
       <div class="akt-stats" id="aktSt"></div>
     </div>
   </div>
@@ -1977,28 +2000,29 @@
   var leafletLoaded=false, aktMap=null, aktLat=null, aktLon=null, aktRadius=5000;
   var aktLayers={}, aktData={}, aktFOpen=false;
   var CATS=[
-    {id:'playground',ic:'\u{1F3A0}',nm:'Spielplaetze',co:'#3ddc97'},
-    {id:'park',ic:'\u{1F333}',nm:'Parks & Gaerten',co:'#22c55e'},
-    {id:'lake',ic:'\u{1F30A}',nm:'Seen & Baggerseen',co:'#38bdf8'},
-    {id:'pool',ic:'\u{1F3CA}',nm:'Schwimmbad & Freibad',co:'#06b6d4'},
-    {id:'fitness',ic:'\u{1F4AA}',nm:'Fitnessstudio',co:'#f97316'},
-    {id:'calisthenics',ic:'\u{1F3CB}',nm:'Outdoor-Fitness',co:'#ef4444'},
-    {id:'sports',ic:'\u26BD',nm:'Sportplaetze',co:'#eab308'},
-    {id:'tennis',ic:'\u{1F3BE}',nm:'Tennis',co:'#84cc16'},
-    {id:'bowling',ic:'\u{1F3B3}',nm:'Bowling & Kegeln',co:'#d946ef'},
-    {id:'tabletennis',ic:'\u{1F3D3}',nm:'Tischtennis',co:'#14b8a6'},
-    {id:'climbing',ic:'\u26F0',nm:'Klettern & Bouldern',co:'#f43f5e'},
-    {id:'skatepark',ic:'\u{1F6F9}',nm:'Skatepark',co:'#64748b'},
-    {id:'museum',ic:'\u{1F3DB}',nm:'Museen',co:'#a78bfa'},
-    {id:'cinema',ic:'\u{1F3AC}',nm:'Kino',co:'#f472b6'},
-    {id:'theatre',ic:'\u{1F3AD}',nm:'Theater',co:'#e879f9'},
-    {id:'library',ic:'\u{1F4DA}',nm:'Bibliotheken',co:'#fb923c'},
-    {id:'zoo',ic:'\u{1F981}',nm:'Zoo & Tierpark',co:'#a3e635'},
-    {id:'minigolf',ic:'\u26F3',nm:'Minigolf',co:'#2dd4bf'},
-    {id:'viewpoint',ic:'\u{1F304}',nm:'Aussichtspunkte',co:'#fbbf24'},
-    {id:'bbq',ic:'\u{1F525}',nm:'Grillplaetze',co:'#dc2626'},
-    {id:'biergarten',ic:'\u{1F37A}',nm:'Biergarten',co:'#ca8a04'},
-    {id:'cafe',ic:'\u2615',nm:'Cafes',co:'#92400e'}
+    {id:'playground',ic:'\u{1F3A0}',nm:'Spielplaetze',       sn:'Spielplatz',        co:'#3ddc97'},
+    {id:'park',      ic:'\u{1F333}',nm:'Parks & Gaerten',     sn:'Park',              co:'#22c55e'},
+    {id:'lake',      ic:'\u{1F30A}',nm:'Seen & Gewaesser',    sn:'See',               co:'#38bdf8'},
+    {id:'pool',      ic:'\u{1F3CA}',nm:'Schwimmbad & Freibad',sn:'Schwimmbad',        co:'#06b6d4'},
+    {id:'fitness',   ic:'\u{1F4AA}',nm:'Fitnessstudio',       sn:'Fitnessstudio',     co:'#f97316'},
+    {id:'calisthenics',ic:'\u{1F3CB}',nm:'Outdoor-Fitness',   sn:'Outdoor-Fitnessgeraet',co:'#ef4444'},
+    {id:'sports',    ic:'\u26BD',   nm:'Sportanlagen',        sn:'Sportanlage',       co:'#eab308'},
+    {id:'tennis',    ic:'\u{1F3BE}',nm:'Tennis',              sn:'Tennisplatz',       co:'#84cc16'},
+    {id:'bowling',   ic:'\u{1F3B3}',nm:'Bowling & Kegeln',    sn:'Bowling',           co:'#d946ef'},
+    {id:'tabletennis',ic:'\u{1F3D3}',nm:'Tischtennis',        sn:'Tischtennisplatte', co:'#14b8a6'},
+    {id:'climbing',  ic:'\u26F0',   nm:'Klettern & Bouldern', sn:'Kletterhalle',      co:'#f43f5e'},
+    {id:'skatepark', ic:'\u{1F6F9}',nm:'Skatepark',           sn:'Skatepark',         co:'#64748b'},
+    {id:'icerink',   ic:'\u26F8',   nm:'Eisbahn & Eislaufhalle',sn:'Eisbahn',         co:'#93c5fd'},
+    {id:'museum',    ic:'\u{1F3DB}',nm:'Museen',              sn:'Museum',            co:'#a78bfa'},
+    {id:'cinema',    ic:'\u{1F3AC}',nm:'Kino',                sn:'Kino',              co:'#f472b6'},
+    {id:'theatre',   ic:'\u{1F3AD}',nm:'Theater',             sn:'Theater',           co:'#e879f9'},
+    {id:'library',   ic:'\u{1F4DA}',nm:'Bibliotheken',        sn:'Bibliothek',        co:'#fb923c'},
+    {id:'zoo',       ic:'\u{1F981}',nm:'Zoo & Tierpark',      sn:'Zoo',               co:'#a3e635'},
+    {id:'minigolf',  ic:'\u26F3',   nm:'Minigolf',            sn:'Minigolfanlage',    co:'#2dd4bf'},
+    {id:'viewpoint', ic:'\u{1F304}',nm:'Aussichtspunkte',     sn:'Aussichtspunkt',    co:'#fbbf24'},
+    {id:'bbq',       ic:'\u{1F525}',nm:'Grillplaetze',        sn:'Grillplatz',        co:'#dc2626'},
+    {id:'biergarten',ic:'\u{1F37A}',nm:'Biergaerten',         sn:'Biergarten',        co:'#ca8a04'},
+    {id:'cafe',      ic:'\u2615',   nm:'Cafes',               sn:'Cafe',              co:'#92400e'}
   ];
   var aktOn={},CM={};
   CATS.forEach(function(c){aktOn[c.id]=true;CM[c.id]=c;});
@@ -2007,27 +2031,28 @@
     if(!t)return null;
     var l=t.leisure||'',s=t.sport||'',a=t.amenity||'',to=t.tourism||'',n=t.natural||'';
     if(l==='playground')return'playground';
-    if(l==='park'||l==='garden')return'park';
-    if(n==='water'||t.water==='lake'||t.water==='pond')return'lake';
-    if(l==='swimming_pool'||a==='public_bath'||l==='water_park')return'pool';
+    if(l==='park'||l==='garden'||l==='nature_reserve'||l==='dog_park'||l==='common')return'park';
+    if(n==='water'||t.water==='lake'||t.water==='pond'||t.water==='reservoir'||t.water==='river'||l==='swimming_area')return'lake';
+    if(l==='swimming_pool'||a==='public_bath'||l==='water_park'||a==='swimming_pool')return'pool';
     if(l==='fitness_centre')return'fitness';
-    if(l==='fitness_station')return'calisthenics';
-    if(s==='tennis')return'tennis';
+    if(l==='fitness_station'||l==='outdoor_seating')return'calisthenics';
+    if(l==='ice_rink'||s==='ice_skating'||s==='ice_hockey'||s==='curling')return'icerink';
+    if(s==='tennis'||l==='tennis')return'tennis';
     if(s==='bowling'||s==='9pin'||l==='bowling_alley')return'bowling';
     if(s==='table_tennis')return'tabletennis';
-    if(s==='climbing')return'climbing';
-    if(s==='skateboard')return'skatepark';
+    if(s==='climbing'||s==='bouldering'||l==='climbing')return'climbing';
+    if(s==='skateboard'||l==='skateboard_park')return'skatepark';
     if(s==='miniature_golf'||l==='miniature_golf')return'minigolf';
-    if(to==='museum')return'museum';
+    if(to==='museum'||a==='museum')return'museum';
     if(a==='cinema')return'cinema';
-    if(a==='theatre')return'theatre';
+    if(a==='theatre'||a==='arts_centre')return'theatre';
     if(a==='library')return'library';
-    if(to==='zoo')return'zoo';
-    if(to==='viewpoint')return'viewpoint';
-    if(a==='bbq'||l==='firepit')return'bbq';
+    if(to==='zoo'||l==='zoo'||to==='aquarium')return'zoo';
+    if(to==='viewpoint'||l==='viewpoint')return'viewpoint';
+    if(a==='bbq'||l==='firepit'||l==='picnic_table')return'bbq';
     if(a==='biergarten'||t.biergarten==='yes')return'biergarten';
     if(a==='cafe')return'cafe';
-    if(l==='sports_centre'||l==='pitch')return'sports';
+    if(l==='sports_centre'||l==='pitch'||l==='sports_hall'||l==='stadium'||l==='track')return'sports';
     return null;
   }
 
@@ -2038,10 +2063,15 @@
   }
   function renderFPG(){
     var g=$('aktFPG');if(!g)return;var h='';
-    CATS.forEach(function(c){var on=aktOn[c.id],n=aktData[c.id]?aktData[c.id].length:0;
-      h+='<div class="akt-fpi'+(on?' on':'')+'" data-fc="'+c.id+'" style="--cc:'+c.co+';--cb:'+c.co+'0d;">'
-        +'<div class="akt-fpd"></div><span class="akt-fpl">'+c.ic+' '+c.nm+'</span>'
-        +'<span class="akt-fpn">'+(n||'')+'</span></div>';
+    CATS.forEach(function(c){
+      var on=aktOn[c.id],n=aktData[c.id]?aktData[c.id].length:0,co=c.co;
+      var sty=on?'border-color:'+co+'99;background:'+co+'18;':'';
+      var dotSty='background:'+co+';opacity:'+(on?'1':'0.25')+';';
+      var numSty=on?'color:'+co+';':'';
+      h+='<div class="akt-fpi'+(on?' on':'')+'" data-fc="'+c.id+'" style="'+sty+'">'
+        +'<div class="akt-fpd" style="'+dotSty+'"></div>'
+        +'<span class="akt-fpl">'+c.ic+' '+c.nm+'</span>'
+        +'<span class="akt-fpn" style="'+numSty+'">'+(n||'')+'</span></div>';
     });g.innerHTML=h;
     var cnt=0;CATS.forEach(function(c){if(aktOn[c.id])cnt++;});
     var fc=$('aktFC');if(fc)fc.textContent=cnt+'/'+CATS.length;
@@ -2078,9 +2108,9 @@
     if(ov)ov.addEventListener('click',function(e){e.stopPropagation();closeAktFP();});
     // All on / All off
     var ba=document.getElementById('btnFPAll');
-    if(ba)ba.addEventListener('click',function(e){e.stopPropagation();CATS.forEach(function(c){aktOn[c.id]=true;if(aktLayers[c.id]&&aktMap)aktMap.addLayer(aktLayers[c.id]);});renderFPG();});
+    if(ba)ba.addEventListener('click',function(e){e.stopPropagation();CATS.forEach(function(c){aktOn[c.id]=true;if(aktLayers[c.id]&&aktMap)aktMap.addLayer(aktLayers[c.id]);});renderFPG();if(aktViewMode==='list')renderAktList();});
     var bn=document.getElementById('btnFPNone');
-    if(bn)bn.addEventListener('click',function(e){e.stopPropagation();CATS.forEach(function(c){aktOn[c.id]=false;if(aktLayers[c.id]&&aktMap)aktMap.removeLayer(aktLayers[c.id]);});renderFPG();});
+    if(bn)bn.addEventListener('click',function(e){e.stopPropagation();CATS.forEach(function(c){aktOn[c.id]=false;if(aktLayers[c.id]&&aktMap)aktMap.removeLayer(aktLayers[c.id]);});renderFPG();if(aktViewMode==='list')renderAktList();});
     // Filter button
     var fb=document.getElementById('btnAktFilt');
     if(fb)fb.addEventListener('click',function(e){e.stopPropagation();openAktFP();});
@@ -2137,102 +2167,113 @@
   }
 
   function loadPOIs(lat,lon,radius){
-    // Clear old layers
+    // Alte Layer entfernen
     Object.keys(aktLayers).forEach(function(k){if(aktMap&&aktLayers[k])try{aktMap.removeLayer(aktLayers[k]);}catch(e){}});
     aktLayers={};aktData={};CATS.forEach(function(c){aktData[c.id]=[];});
     var lp=$('aktLP'),lt=$('aktLT');
     if(lp)lp.classList.add('show');if(lt)lt.textContent='Lade Orte...';
-    var R=radius,A=lat,O=lon;
-    // Build ONE single Overpass query
+    var ar='(around:'+radius+','+lat+','+lon+')';
+    // Overpass-Query: nwr = node+way+relation zusammen, klarere Platzhalter
     var parts=[
-      'node["leisure"="playground"](around:R,A,O)',
-      'way["leisure"="playground"](around:R,A,O)',
-      'way["leisure"="park"](around:R,A,O)',
-      'way["leisure"="garden"](around:R,A,O)',
-      'way["natural"="water"]["name"](around:R,A,O)',
-      'relation["natural"="water"]["name"](around:R,A,O)',
-      'node["leisure"="swimming_pool"](around:R,A,O)',
-      'way["leisure"="swimming_pool"](around:R,A,O)',
-      'node["amenity"="public_bath"](around:R,A,O)',
-      'node["leisure"="fitness_centre"](around:R,A,O)',
-      'way["leisure"="fitness_centre"](around:R,A,O)',
-      'node["leisure"="fitness_station"](around:R,A,O)',
-      'way["sport"="tennis"](around:R,A,O)',
-      'node["sport"="tennis"](around:R,A,O)',
-      'node["sport"="bowling"](around:R,A,O)',
-      'node["sport"="9pin"](around:R,A,O)',
-      'node["sport"="table_tennis"](around:R,A,O)',
-      'node["sport"="climbing"](around:R,A,O)',
-      'way["sport"="climbing"](around:R,A,O)',
-      'node["sport"="skateboard"](around:R,A,O)',
-      'way["sport"="skateboard"](around:R,A,O)',
-      'node["sport"="miniature_golf"](around:R,A,O)',
-      'way["leisure"="pitch"]["name"](around:R,A,O)',
-      'way["leisure"="sports_centre"]["name"](around:R,A,O)',
-      'node["leisure"="sports_centre"](around:R,A,O)',
-      'node["tourism"="museum"](around:R,A,O)',
-      'way["tourism"="museum"](around:R,A,O)',
-      'node["amenity"="cinema"](around:R,A,O)',
-      'node["amenity"="theatre"](around:R,A,O)',
-      'node["amenity"="library"](around:R,A,O)',
-      'way["amenity"="library"](around:R,A,O)',
-      'node["tourism"="zoo"](around:R,A,O)',
-      'way["tourism"="zoo"](around:R,A,O)',
-      'node["tourism"="viewpoint"](around:R,A,O)',
-      'node["amenity"="bbq"](around:R,A,O)',
-      'node["leisure"="firepit"](around:R,A,O)',
-      'node["amenity"="biergarten"](around:R,A,O)',
-      'node["amenity"="cafe"]["name"](around:R,A,O)'
+      'nwr["leisure"="playground"]'+ar,
+      'nwr["leisure"="park"]'+ar,
+      'nwr["leisure"="garden"]'+ar,
+      'nwr["natural"="water"]["name"]'+ar,
+      'nwr["leisure"="swimming_pool"]["name"]'+ar,
+      'node["amenity"="public_bath"]'+ar,
+      'node["amenity"="swimming_pool"]'+ar,
+      'nwr["leisure"="fitness_centre"]'+ar,
+      'node["leisure"="fitness_station"]'+ar,
+      'nwr["leisure"="ice_rink"]'+ar,
+      'nwr["sport"="tennis"]["name"]'+ar,
+      'nwr["sport"="tennis"]["leisure"="pitch"]'+ar,
+      'node["sport"="bowling"]'+ar,
+      'node["sport"="9pin"]'+ar,
+      'node["sport"="table_tennis"]'+ar,
+      'nwr["sport"="climbing"]["name"]'+ar,
+      'nwr["leisure"="climbing"]'+ar,
+      'node["sport"="skateboard"]'+ar,
+      'nwr["leisure"="skateboard_park"]'+ar,
+      'nwr["sport"="miniature_golf"]'+ar,
+      'nwr["leisure"="miniature_golf"]'+ar,
+      'nwr["leisure"="pitch"]["name"]'+ar,
+      'nwr["leisure"="sports_centre"]'+ar,
+      'nwr["leisure"="sports_hall"]'+ar,
+      'nwr["leisure"="track"]["name"]'+ar,
+      'nwr["tourism"="museum"]'+ar,
+      'node["amenity"="cinema"]'+ar,
+      'node["amenity"="theatre"]'+ar,
+      'nwr["amenity"="library"]'+ar,
+      'nwr["tourism"="zoo"]'+ar,
+      'node["tourism"="viewpoint"]'+ar,
+      'node["amenity"="bbq"]'+ar,
+      'node["leisure"="firepit"]'+ar,
+      'node["amenity"="biergarten"]'+ar,
+      'node["amenity"="cafe"]["name"]'+ar
     ];
-    var body=parts.map(function(p){return p.replace(/R/g,R).replace(/A/g,A).replace(/O/g,O)+';';}).join('');
-    var q='[out:json][timeout:30];('+body+');out center 500;';
-    console.log('[Akt] Query length:',q.length,'chars');
+    var body=parts.map(function(p){return p+';';}).join('');
+    var q='[out:json][timeout:30];('+body+');out body center qt 400;';
     fetch('https://overpass-api.de/api/interpreter',{
       method:'POST',
       headers:{'Content-Type':'application/x-www-form-urlencoded'},
       body:'data='+encodeURIComponent(q)
     })
-    .then(function(r){console.log('[Akt] HTTP',r.status);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
     .then(function(data){
       if(lp)lp.classList.remove('show');
-      if(!data||!data.elements){console.warn('[Akt] No elements');return;}
-      console.log('[Akt] Got',data.elements.length,'elements');
+      if(!data||!data.elements||!data.elements.length){
+        if(lt){lt.textContent='Keine Orte gefunden';lp.classList.add('show');setTimeout(function(){lp.classList.remove('show');},3000);}
+        renderFPG();updateSt();renderAktList();return;
+      }
       var seen={};
       data.elements.forEach(function(el){
         var la=el.lat||(el.center&&el.center.lat);
         var lo=el.lon||(el.center&&el.center.lon);
         if(!la||!lo)return;
-        var key=la.toFixed(5)+','+lo.toFixed(5);
+        var key=(el.type||'?')+el.id; // OSM-ID als Dedup-Key (sicherer als Koordinaten)
         if(seen[key])return;seen[key]=true;
         var cid=classifyPOI(el.tags);
         if(!cid||!aktData[cid])return;
         var tg=el.tags||{},cd=CM[cid];
-        aktData[cid].push({la:la,lo:lo,nm:tg.name||cd.nm,tg:tg});
+        // Singularname als Fallback statt Plural-Kategorienamen
+        var nm=tg.name||tg['name:de']||cd.sn;
+        aktData[cid].push({la:la,lo:lo,nm:nm,tg:tg,id:key});
       });
-      // Create marker layers per category
+      // Marker-Layer pro Kategorie erstellen
       CATS.forEach(function(cat){
         var ms=[];
         (aktData[cat.id]||[]).forEach(function(p){
-          var m=L.circleMarker([p.la,p.lo],{radius:8,fillColor:cat.co,fillOpacity:0.85,color:'#fff',weight:1.5,opacity:0.5});
-          var h='<div class="pn">'+esc(p.nm)+'</div><div class="pc"><div class="dd" style="background:'+cat.co+'"></div>'+cat.ic+' '+cat.nm+'</div>';
-          if(p.tg.opening_hours)h+='<div class="pd">\u{1F555} '+esc(p.tg.opening_hours)+'</div>';
-          if(p.tg['addr:street'])h+='<div class="pd">\u{1F4CD} '+esc(p.tg['addr:street'])+(p.tg['addr:housenumber']?' '+esc(p.tg['addr:housenumber']):'')+'</div>';
-          if(p.tg.website)h+='<div class="pd"><a href="'+esc(p.tg.website)+'" target="_blank" rel="noopener">\u{1F310} Webseite</a></div>';
-          if(p.tg.phone)h+='<div class="pd">\u{1F4DE} '+esc(p.tg.phone)+'</div>';
-          m.bindPopup(h,{maxWidth:240,closeButton:true});
+          var m=L.circleMarker([p.la,p.lo],{
+            radius:7,fillColor:cat.co,fillOpacity:0.9,
+            color:'rgba(255,255,255,0.6)',weight:1.5
+          });
+          var h='<div class="pn">'+esc(p.nm)+'</div>';
+          h+='<div class="pc"><div class="dd" style="background:'+cat.co+'"></div>'+cat.ic+' '+esc(cat.nm)+'</div>';
+          var tg=p.tg;
+          if(tg.opening_hours)h+='<div class="pd">&#x1F555; '+esc(tg.opening_hours)+'</div>';
+          if(tg['addr:street']){
+            var adr=tg['addr:street']+(tg['addr:housenumber']?' '+tg['addr:housenumber']:'')+(tg['addr:city']?', '+tg['addr:city']:'');
+            h+='<div class="pd">&#x1F4CD; '+esc(adr)+'</div>';
+          }
+          if(tg.website||tg['contact:website']){
+            var ws=tg.website||tg['contact:website'];
+            h+='<div class="pd"><a href="'+esc(ws)+'" target="_blank" rel="noopener">&#x1F310; Webseite</a></div>';
+          }
+          if(tg.phone||tg['contact:phone']){
+            h+='<div class="pd">&#x1F4DE; '+esc(tg.phone||tg['contact:phone'])+'</div>';
+          }
+          m.bindPopup(h,{maxWidth:260,closeButton:true,className:'akt-pop'});
           ms.push(m);
         });
         var lg=L.layerGroup(ms);aktLayers[cat.id]=lg;
         if(aktOn[cat.id]&&aktMap)aktMap.addLayer(lg);
       });
-      renderFPG();updateSt();
-      var total=0;CATS.forEach(function(c){total+=aktData[c.id].length;});
-      console.log('[Akt] Total POIs:',total);
+      renderFPG();updateSt();renderAktList();
     })
     .catch(function(err){
-      console.error('[Akt] Error:',err);
+      console.error('[Akt] Overpass-Fehler:',err);
       if(lp)lp.classList.remove('show');
-      if(lt){lt.textContent='Fehler beim Laden';lp.classList.add('show');setTimeout(function(){lp.classList.remove('show');},3000);}
+      if(lt){lt.textContent='Laden fehlgeschlagen – Netz pruefen';lp.classList.add('show');setTimeout(function(){if(lp)lp.classList.remove('show');},4000);}
     });
   }
 
@@ -2254,36 +2295,45 @@
   var aktSTmr=null;
   function setupAktSuggest(){
     var inp=$('aktPlz');if(!inp||inp._bound)return;inp._bound=true;
+    // Mobile Fix: mousedown auf Container verhindert blur-vor-click auf iOS
+    var sg=$('aktSuggest');
+    if(sg)sg.addEventListener('mousedown',function(e){e.preventDefault();});
     inp.addEventListener('input',function(){
       clearTimeout(aktSTmr);var q=inp.value.trim();
       if(q.length<2){closeSuggest();return;}
       aktSTmr=setTimeout(function(){
-        fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&countrycodes=de&format=json&limit=5&addressdetails=1',{headers:{'Accept':'application/json'}})
+        fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&countrycodes=de&format=json&limit=6&addressdetails=1',{headers:{'Accept':'application/json'}})
         .then(function(r){return r.json();})
         .then(function(data){
-          var sg=$('aktSuggest');if(!data||!data.length){closeSuggest();return;}
-          var h='';
+          var sg=$('aktSuggest');if(!sg||!data||!data.length){closeSuggest();return;}
+          var h='',seen={};
           data.forEach(function(d,i){
-            var a=d.address||{},nm=a.city||a.town||a.village||a.municipality||'',pz=a.postcode||'';
+            var a=d.address||{},nm=a.city||a.town||a.village||a.municipality||a.county||'',pz=a.postcode||'';
             var lbl=nm||d.display_name.split(',')[0];
+            var dedup=lbl+pz;if(seen[dedup])return;seen[dedup]=true;
             var sub=d.display_name.split(',').slice(1,3).join(',').trim();
             h+='<div class="akt-suggest-item" data-sg="'+i+'" data-lat="'+d.lat+'" data-lon="'+d.lon+'" data-nm="'+esc(lbl)+'" data-pz="'+esc(pz)+'">'
-              +esc(lbl)+(pz?' ('+pz+')':'')+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>';
+              +esc(lbl)+(pz?' <span style="color:#3d4d6e;font-size:0.55rem">('+esc(pz)+')</span>':'')+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>';
           });
-          sg.innerHTML=h;sg.classList.add('open');
+          if(h){sg.innerHTML=h;sg.classList.add('open');}else closeSuggest();
         }).catch(function(){closeSuggest();});
-      },350);
+      },300);
     });
-    inp.addEventListener('blur',function(){setTimeout(closeSuggest,250);});
+    // blur: laengere Wartezeit damit touch-click noch durchkommt
+    inp.addEventListener('blur',function(){setTimeout(closeSuggest,350);});
   }
   function closeSuggest(){var s=$('aktSuggest');if(s){s.classList.remove('open');s.innerHTML='';}}
 
-  function aktGo(query){
-    var lp=$('aktLP'),lt=$('aktLT');
-    if(lp)lp.classList.add('show');if(lt)lt.textContent='Suche...';
+  function aktShowUI(){
     $('aktWel').classList.add('gone');
     $('aktRadBar').classList.add('show');
     $('btnAktFilt').classList.add('show');
+    var tb=$('aktTabs');if(tb)tb.classList.add('show');
+  }
+  function aktGo(query){
+    var lp=$('aktLP'),lt=$('aktLT');
+    if(lp)lp.classList.add('show');if(lt)lt.textContent='Suche...';
+    aktShowUI();
     plzToCoords(query,function(r){
       if(!r){if(lp)lp.classList.remove('show');alert('Ort nicht gefunden.');return;}
       aktLat=r.lat;aktLon=r.lon;
@@ -2295,10 +2345,67 @@
   function aktGoDirect(lat,lon,nm,pz){
     aktLat=lat;aktLon=lon;
     $('aktPlz').value=nm+(pz?' ('+pz+')':'');
-    $('aktWel').classList.add('gone');
-    $('aktRadBar').classList.add('show');
-    $('btnAktFilt').classList.add('show');
+    aktShowUI();
     initAktMap(lat,lon);
+  }
+
+  // ═══════ AKTIVITAETEN: LISTENANSICHT ═══════
+  var aktViewMode='map'; // 'map' oder 'list'
+  function renderAktList(){
+    var el=$('aktList');if(!el)return;
+    var total=0;CATS.forEach(function(c){total+=(aktData[c.id]||[]).length;});
+    if(total===0){
+      el.innerHTML='<div class="akt-empty">Noch keine Orte geladen.<br>Gib eine Stadt oder PLZ ein.</div>';
+      return;
+    }
+    var h='';
+    CATS.forEach(function(cat){
+      var items=aktData[cat.id]||[];
+      if(!items.length||!aktOn[cat.id])return;
+      h+='<div class="akt-list-cat">';
+      h+='<div class="akt-list-cat-hdr"><span>'+cat.ic+'</span> '+esc(cat.nm)
+        +'<span class="akt-list-cnt">'+items.length+'</span></div>';
+      items.forEach(function(p){
+        var tg=p.tg||{};
+        var sub='';
+        if(tg.opening_hours)sub+='<span>&#x1F555; '+esc(tg.opening_hours.length>28?tg.opening_hours.slice(0,28)+'…':tg.opening_hours)+'</span>';
+        if(tg['addr:street']){
+          var adr=tg['addr:street']+(tg['addr:housenumber']?' '+tg['addr:housenumber']:'');
+          sub+='<span>&#x1F4CD; '+esc(adr)+'</span>';
+        }
+        if(tg.website||tg['contact:website']){
+          var ws=tg.website||tg['contact:website'];
+          sub+='<span><a href="'+esc(ws)+'" target="_blank" rel="noopener">&#x1F310; Website</a></span>';
+        }
+        if(tg.phone||tg['contact:phone']){
+          sub+='<span>&#x1F4DE; '+esc(tg.phone||tg['contact:phone'])+'</span>';
+        }
+        h+='<div class="akt-list-item" data-llat="'+p.la+'" data-llon="'+p.lo+'">';
+        h+='<div class="akt-list-nm">'+esc(p.nm)+'</div>';
+        if(sub)h+='<div class="akt-list-sub">'+sub+'</div>';
+        h+='</div>';
+      });
+      h+='</div>';
+    });
+    if(!h)h='<div class="akt-empty">Alle Kategorien ausgeblendet.<br>Filter oeffnen um Kategorien einzuschalten.</div>';
+    el.innerHTML=h;
+  }
+  function switchAktTab(mode){
+    aktViewMode=mode;
+    var ma=$('aktMapArea'),li=$('aktList');
+    var tbm=$('aktTabMap'),tbl=$('aktTabList');
+    if(mode==='map'){
+      if(ma)ma.style.display='';
+      if(li)li.classList.remove('show');
+      if(tbm){tbm.classList.add('on');}
+      if(tbl){tbl.classList.remove('on');}
+      if(aktMap)setTimeout(function(){aktMap.invalidateSize();},100);
+    } else {
+      if(ma)ma.style.display='none';
+      if(li){li.classList.add('show');renderAktList();}
+      if(tbm){tbm.classList.remove('on');}
+      if(tbl){tbl.classList.add('on');}
+    }
   }
 
   // ═══════ EVENT DELEGATION ═══════
@@ -2422,12 +2529,22 @@
       return;
     }
 
+    // Aktivitaeten: Tab-Umschaltung Karte / Liste
+    if(t.closest('#aktTabMap')){switchAktTab('map');return;}
+    if(t.closest('#aktTabList')){switchAktTab('list');return;}
     // Aktivitaeten: Filter item toggle (in grid)
-    var fc=t.closest('[data-fc]');if(fc){toggleFC(fc.getAttribute('data-fc'));return;}
+    var fc=t.closest('[data-fc]');if(fc){toggleFC(fc.getAttribute('data-fc'));if(aktViewMode==='list')renderAktList();return;}
     // Aktivitaeten: Radius buttons
     var rb=t.closest('[data-rad]');if(rb){aktRadius=parseInt(rb.getAttribute('data-rad'));document.querySelectorAll('[data-rad]').forEach(function(b){b.classList.remove('on');});rb.classList.add('on');if(aktLat&&aktLon)loadPOIs(aktLat,aktLon,aktRadius);return;}
     // Aktivitaeten: Suggest item click
     var sg=t.closest('[data-sg]');if(sg){closeSuggest();aktGoDirect(parseFloat(sg.getAttribute('data-lat')),parseFloat(sg.getAttribute('data-lon')),sg.getAttribute('data-nm'),sg.getAttribute('data-pz'));return;}
+    // Aktivitaeten: Listen-Item klick → Karte oeffnen + zentrieren
+    var li=t.closest('[data-llat]');if(li&&!t.closest('a')){
+      var la=parseFloat(li.getAttribute('data-llat')),lo=parseFloat(li.getAttribute('data-llon'));
+      switchAktTab('map');
+      if(aktMap)setTimeout(function(){aktMap.setView([la,lo],16);},150);
+      return;
+    }
 
     // Lernen: Karte oeffnen (Liste, verwandte, Links)
     var lnOpen = t.closest('[data-lnopen]');
@@ -2536,3 +2653,4 @@
 
 </body>
 </html>
+
